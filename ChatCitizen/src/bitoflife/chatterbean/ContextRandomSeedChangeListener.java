@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License along with Cha
 package bitoflife.chatterbean;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 /**
 Property change listener for the <code>bot.randomSeed</code> property. Updates the Context's internal {@link java.util.Random} object with the new random seed.

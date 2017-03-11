@@ -51,7 +51,6 @@ public class Context
   private final List<Response> responses = new LinkedList<Response>();
   
   private final Random random = new Random();
-  private long seed = 0;
 
   private OutputStream output;
 

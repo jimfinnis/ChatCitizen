@@ -15,12 +15,12 @@ You should have received a copy of the GNU General Public License along with Cha
 package bitoflife.chatterbean.parser;
 
 import java.io.InputStream;
-import java.io.Reader;
+
 import bitoflife.chatterbean.AliceBot;
 import bitoflife.chatterbean.Context;
 import bitoflife.chatterbean.Graphmaster;
-import bitoflife.chatterbean.text.Transformations;
 import bitoflife.chatterbean.aiml.AIMLParser;
+import bitoflife.chatterbean.text.Transformations;
 
 public class AliceBotParser
 {

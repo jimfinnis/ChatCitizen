@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -14,16 +14,15 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean;
 
+import static bitoflife.chatterbean.text.Sentence.ASTERISK;
+
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import bitoflife.chatterbean.text.Sentence;
-
-import static bitoflife.chatterbean.text.Sentence.ASTERISK;
 
 /**
 Contains information about a match operation, which is needed by the classes of the <code>bitoflife.chatterbean.aiml</code> to produce a proper response.

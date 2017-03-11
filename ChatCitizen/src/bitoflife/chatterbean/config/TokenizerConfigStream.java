@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -36,7 +36,6 @@ public class TokenizerConfigStream extends DefaultHandler implements TokenizerCo
 
   private final List<String> splitters = new ArrayList<String>(6);
   
-  private boolean ignoreWhitespace;
 
   /*
   Constructor Section
@@ -97,7 +96,6 @@ public class TokenizerConfigStream extends DefaultHandler implements TokenizerCo
     try
     {
       splitters.clear();
-      ignoreWhitespace = true;
       parser.parse(input, this);
     }
     catch (Exception e)

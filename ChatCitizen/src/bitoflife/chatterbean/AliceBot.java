@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2004 Hélio Perroni Filho
+Copyleft (C) 2004 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -14,7 +14,6 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean;
 
-import java.util.List;
 import bitoflife.chatterbean.aiml.Category;
 import bitoflife.chatterbean.text.Request;
 import bitoflife.chatterbean.text.Response;

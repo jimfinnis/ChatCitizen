@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License along with Cha
 package bitoflife.chatterbean.aiml;
 
 import org.xml.sax.Attributes;
-import bitoflife.chatterbean.AliceBot;
-import bitoflife.chatterbean.Context;
+
 import bitoflife.chatterbean.Match;
 
 public class Bot extends TemplateElement

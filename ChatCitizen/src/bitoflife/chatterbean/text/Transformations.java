@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -14,18 +14,16 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean.text;
 
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
+import static java.util.regex.Pattern.UNICODE_CASE;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static java.util.regex.Pattern.CASE_INSENSITIVE;
-import static java.util.regex.Pattern.UNICODE_CASE;
 
 /**
 Provides operations for normalizing a request, before submiting it to the matching operation.
@@ -49,7 +47,6 @@ public class Transformations
     private final List<Integer> mappings = new LinkedList<Integer>();
 
     private String input;
-    private String find;
     private String replace;
 
     /*
@@ -86,7 +83,6 @@ public class Transformations
     public void prepare(String input, String find, String replace)
     {
       this.input = input;
-      this.find = find;
       this.replace = replace;
       spaceCount = spaceCount(find);
       listIndex = 0;
@@ -128,7 +124,6 @@ public class Transformations
 
   // The collection of substitutions known to the system.
   private Map<String, String> correction;
-  private Map<String, String> protection;
   private List<Substitution> person;
   private List<Substitution> person2;
   private List<Substitution> gender;

@@ -33,8 +33,6 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean;
 
-import java.io.InputStream;
-
 import bitoflife.chatterbean.parser.ChatterBeanParser;
 
 public class ChatterBean
@@ -46,9 +44,6 @@ public class ChatterBean
 	/** The underlying AliceBot used to produce responses to user queries. */
 	private AliceBot aliceBot;
 
-	/** Logger object used to keep track of this bot's conversations. */
-	private Logger logger;
-
 	/*
   Constructor Section
 	 */
@@ -58,7 +53,6 @@ public class ChatterBean
 	 */
 	public ChatterBean()
 	{
-		//container.setLayout(new FlowLayout());
 	}
 
 	/**
@@ -103,8 +97,6 @@ public class ChatterBean
 		if(request != null && !"".equals(request.trim())) try
 		{
 			response = aliceBot.respond(request);
-			if (logger != null)
-				logger.append(request, response);
 		}
 		catch (Exception e)
 		{
@@ -138,23 +130,4 @@ public class ChatterBean
 		this.aliceBot = aliceBot;
 	}
 
-	/**
-  Gets the logger object used by this bot.
-
-  @return A Logger object.
-	 */
-	public Logger getLogger()
-	{
-		return logger;
-	}
-
-	/**
-  Sets the logger object used by this bot.
-
-  @param logger A Logger object.
-	 */
-	public void setLogger(Logger logger)
-	{
-		this.logger = logger;
-	}
 }

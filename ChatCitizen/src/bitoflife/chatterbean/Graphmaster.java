@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -15,12 +15,10 @@ You should have received a copy of the GNU General Public License along with Cha
 package bitoflife.chatterbean;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import bitoflife.chatterbean.aiml.Category;
-import bitoflife.chatterbean.aiml.Pattern;
 
 public class Graphmaster
 {
@@ -32,6 +30,7 @@ public class Graphmaster
   private final Map<String, Graphmaster> children = new HashMap<String, Graphmaster>();
 
   private int size = 0;
+  @SuppressWarnings("unused")
   private Graphmaster parent;
   private Category category;
   private String name; // The name of a node is the pattern element it represents.

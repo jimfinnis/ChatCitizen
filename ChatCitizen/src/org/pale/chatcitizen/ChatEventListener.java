@@ -1,7 +1,5 @@
 package org.pale.chatcitizen;
 
-import net.citizensnpcs.api.util.Messaging;
-
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -15,8 +15,7 @@ You should have received a copy of the GNU General Public License along with Cha
 package bitoflife.chatterbean.aiml;
 
 import org.xml.sax.Attributes;
-import bitoflife.chatterbean.AliceBot;
-import bitoflife.chatterbean.Context;
+
 import bitoflife.chatterbean.Match;
 
 public class Get extends TemplateElement

@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -14,11 +14,8 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean;
 
-import bitoflife.chatterbean.Graphmaster;
-import bitoflife.chatterbean.aiml.Srai;
-import bitoflife.chatterbean.aiml.Star;
-import bitoflife.chatterbean.aiml.Text;
 import bitoflife.chatterbean.aiml.Category;
+import bitoflife.chatterbean.aiml.Star;
 
 public class GraphmasterMother
 {

@@ -15,24 +15,17 @@ You should have received a copy of the GNU General Public License along with Cha
 package bitoflife.chatterbean.parser;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Writer;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import bitoflife.chatterbean.ChatterBean;
 import bitoflife.chatterbean.ChatterBeanException;
 import bitoflife.chatterbean.Context;
-import bitoflife.chatterbean.Logger;
 import bitoflife.chatterbean.Graphmaster;
-import bitoflife.chatterbean.util.Searcher;
-import bitoflife.chatterbean.util.Sequence;
 
 public class ChatterBeanParser
 {
@@ -42,7 +35,6 @@ public class ChatterBeanParser
   
   private AliceBotParser botParser;
   
-  private Class<? extends Logger> loggerClass = Logger.class;
   private static final InputStream[] INPUT_STREAM_ARRAY = {};
   
   /*
@@ -68,16 +60,6 @@ public class ChatterBeanParser
   /*
   Methods
   */
-  
-  private Logger newLogger(String root, String dir) throws Exception
-  {
-    if (dir == null) return null;
-    String path = root + dir;
-    
-    Sequence sequence = new Sequence(path + "sequence.txt");
-    File file = new File(path + "log" + sequence.getNext() + ".txt");
-    return loggerClass.getConstructor(Writer.class).newInstance(new FileWriter(file));
-  }
   
   private InputStream newResourceStream(String resource, String root, String path) throws Exception
   {
@@ -106,16 +88,11 @@ public class ChatterBeanParser
 
       String root = path.substring(0, path.lastIndexOf('/') + 1);
       String categories = /*root + */ properties.getProperty("categories");
-      String logs = properties.getProperty("logs");
 
       InputStream context = newResourceStream("context", root, properties.getProperty("context"));
       InputStream splitters = newResourceStream("splitters", root, properties.getProperty("splitters"));
       InputStream substitutions = newResourceStream("substitutions", root, properties.getProperty("substitutions"));
-
-      Searcher searcher = new Searcher();
-      bot.setLogger(newLogger(root, logs));
-//      botParser.parse(bot.getAliceBot(), context, splitters, substitutions, searcher.search(categories, ".*\\.aiml"));
-      
+  
       System.out.println("Alice cats at "+categories);
       
       try
@@ -157,11 +134,6 @@ public class ChatterBeanParser
   public <C extends Context> void contextClass(Class<C> contextClass)
   {
     botParser.contextClass(contextClass);
-  }
-
-  public <L extends Logger> void loggerClass(Class<L> loggerClass)
-  {
-    this.loggerClass = loggerClass;
   }
   
   public <M extends Graphmaster> void graphmasterClass(Class<M> matcherClass)

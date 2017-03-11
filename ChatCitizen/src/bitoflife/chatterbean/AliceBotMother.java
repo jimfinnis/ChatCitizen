@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -14,9 +14,9 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean;
 
-import java.io.FileInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.FileInputStream;
+
 import bitoflife.chatterbean.parser.AliceBotParser;
 import bitoflife.chatterbean.util.Searcher;
 
