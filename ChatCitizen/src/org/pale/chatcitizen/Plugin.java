@@ -1,13 +1,17 @@
 package org.pale.chatcitizen;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.citizensnpcs.api.npc.NPC;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -20,6 +24,11 @@ public class Plugin extends JavaPlugin {
 	 * Make the plugin a weird singleton.
 	 */
 	static Plugin instance = null;
+	
+	/**
+	 * All the bot wrappers - the Traits share the bots.
+	 */
+	private Map<String,ChatterWrapper> bots = new HashMap<String,ChatterWrapper>();
 	
 	/**
 	 * Use this to get plugin instances - don't play silly buggers creating new
@@ -62,7 +71,22 @@ public class Plugin extends JavaPlugin {
 		net.citizensnpcs.api.CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(ChatTrait.class));	
 
 		saveDefaultConfig();
-		getLogger().info("ChatCitizen enabled has been enabled");
+		loadBots();
+		getLogger().info("ChatCitizen has been enabled");
+	}
+	
+	public void loadBots(){
+		FileConfiguration c = this.getConfig();
+		ConfigurationSection bots = c.getConfigurationSection("bots");
+		if(bots==null){
+			throw new RuntimeException("No bots section in config");
+		}
+		for(String name : bots.getKeys(false)){
+			String confpath = bots.getString(name);
+			log("Loading bot "+name+" from path "+confpath);
+			this.bots.put(name,new ChatterWrapper(confpath));
+		}
+		log("Bots all loaded.");
 	}
 
 	@Override
@@ -74,6 +98,13 @@ public class Plugin extends JavaPlugin {
 			return true;
 		}
 		return false;
+	}
+	
+	public ChatterWrapper getBot(String s){
+		if(bots.containsKey(s)){
+			return bots.get(s);
+		} else
+			throw new RuntimeException("Bot "+s+" not found - is it in the config?");
 	}
 
 	List<NPC> chatters = new ArrayList<NPC>();

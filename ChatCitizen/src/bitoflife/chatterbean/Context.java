@@ -84,6 +84,16 @@ public class Context
     this.transformations = transformations;
   }
   
+  /**
+   * Copy constructor - will copy things that change, and just reference the transformations.
+   */
+  public Context(Context c){
+	  this.transformations = c.transformations;
+	  for(String s : c.properties.keySet()){
+		  this.properties.put(s, c.properties.get(s));
+	  }
+  }
+  
   /*
   Event Section
   */

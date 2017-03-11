@@ -33,7 +33,7 @@ public class ChatTrait extends Trait {
 	@Persist("mysettingname") boolean automaticallyPersistedSetting = false;
 
 	// the actual chatbot
-	private ChatterBean bot;
+	private ChatterWrapper bot;
 
 	// Here you should load up any values you have previously saved (optional). 
 	// This does NOT get called when applying the trait for the first time, only loading onto an existing npc at server start.
@@ -81,8 +81,9 @@ public class ChatTrait extends Trait {
 	public void onAttach() {
 		plugin.getServer().getLogger().info(npc.getName() + " has been assigned ChatCitizen!");
 		
-		bot = new ChatterBean("plugins/ChatCitizen/alice/config.xml");
-		bot.getAliceBot().getContext().property("bot.name",npc.getFullName());
+		bot = plugin.getBot("default");
+		bot.switchNPC(npc); // initial switch to create a context
+		bot.setProperty(npc,"bot.name",npc.getFullName());
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.
@@ -104,7 +105,7 @@ public class ChatTrait extends Trait {
 	}
 
 	public void respondTo(String msg) {
-		String botresp = bot.respond(msg);
+		String botresp = bot.respond(npc,msg);
 		Plugin.log("Bot response: "+botresp);
 		String response = ChatColor.AQUA+"["+npc.getFullName()+"] "+ChatColor.WHITE+botresp;
 		for(Player p: plugin.getServer().getOnlinePlayers()){
