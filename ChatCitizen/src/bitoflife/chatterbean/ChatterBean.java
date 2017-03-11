@@ -33,22 +33,24 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Container;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import javax.swing.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import bitoflife.chatterbean.AliceBot;
-import bitoflife.chatterbean.Context;
+import javax.swing.JApplet;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
 import bitoflife.chatterbean.parser.AliceBotParser;
 import bitoflife.chatterbean.parser.ChatterBeanParser;
-import bitoflife.chatterbean.script.JavascriptInterpreter;
-import bitoflife.chatterbean.script.Interpreter;
 import bitoflife.chatterbean.util.Searcher;
 
 public class ChatterBean extends JApplet
@@ -62,9 +64,6 @@ public class ChatterBean extends JApplet
 
   private static final InputStream[] INPUT_STREAM_ARRAY = {};
   
-  /** Javascript interpreter used by the underlying chatterbot. */
-  private final Interpreter javascript = new JavascriptInterpreter(this);
-
   /** The component container for this object. */  
   private final Container container = getContentPane();
 
@@ -151,7 +150,6 @@ public class ChatterBean extends JApplet
   private void afterConfigure()
   {
     Context context = aliceBot.getContext();
-    context.property("javascript.interpreter", javascript);
   }
 
   public void init()
