@@ -1,12 +1,16 @@
 package org.pale.chatcitizen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
+import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,12 +28,12 @@ public class Plugin extends JavaPlugin {
 	 * Make the plugin a weird singleton.
 	 */
 	static Plugin instance = null;
-	
+
 	/**
 	 * All the bot wrappers - the Traits share the bots.
 	 */
 	private Map<String,ChatterWrapper> bots = new HashMap<String,ChatterWrapper>();
-	
+
 	/**
 	 * Use this to get plugin instances - don't play silly buggers creating new
 	 * ones all over the place!
@@ -63,18 +67,19 @@ public class Plugin extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);	
 			return;
 		}	
-		
+
 		new ChatEventListener(this);
-		
+
 
 		//Register your trait with Citizens.        
 		net.citizensnpcs.api.CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(ChatTrait.class));	
 
 		saveDefaultConfig();
 		loadBots();
+		autoRegisterCommands();
 		getLogger().info("ChatCitizen has been enabled");
 	}
-	
+
 	public void loadBots(){
 		FileConfiguration c = this.getConfig();
 		ConfigurationSection bots = c.getConfigurationSection("bots");
@@ -84,41 +89,59 @@ public class Plugin extends JavaPlugin {
 		for(String name : bots.getKeys(false)){
 			String confpath = bots.getString(name);
 			log("Loading bot "+name+" from path "+confpath);
-			this.bots.put(name,new ChatterWrapper(confpath));
+			this.bots.put(name,new ChatterWrapper(name,confpath));
 		}
 		log("Bots all loaded.");
+	}
+
+	public static void sendCmdMessage(CommandSender s,String msg){
+		s.sendMessage(ChatColor.AQUA+"[ChatCitizen] "+ChatColor.YELLOW+msg);
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		String cn = command.getName();
-		if(cn.equals("chattest")){
-			log("All going swimmingly so far");
+		if(cn.equals("ccz") || cn.equals("chatcitizen")){
+			if(args.length == 0){
+				String cmds="";
+				for(String cc: cmdMap.keySet())cmds+=cc+" ";
+				sendCmdMessage(sender,cmds);
+				return true;
+			}
+			String cmdName = args[0];
+			args = Arrays.copyOfRange(args, 1, args.length);
+			if(!cmdMap.containsKey(cmdName)){
+				sendCmdMessage(sender,"unknown chatcitizen command: "+cmdName);
+				return true;
+			}
+			CommandAction ca = cmdMap.get(cmdName);
+			ca.execute(sender,args);
 			return true;
 		}
 		return false;
 	}
-	
+
 	public ChatterWrapper getBot(String s){
 		if(bots.containsKey(s)){
 			return bots.get(s);
-		} else
-			throw new RuntimeException("Bot "+s+" not found - is it in the config?");
+		} else return null;
 	}
 
 	List<NPC> chatters = new ArrayList<NPC>();
+
+	private TreeMap<String, CommandAction> cmdMap = new TreeMap<String,CommandAction>();
 	public void addChatter(NPC npc) {
 		chatters.add(npc);
 	}
 	public void removeChatter(NPC npc){
 		chatters.remove(npc);
 	}
-	
+
 	public static boolean isNear(Location a,Location b){
 		return (a.distance(b)<10 && Math.abs(a.getY()-b.getY())<2);
 	}
-	
+
 	public void handleMessage(Location l, String msg){
 		for(NPC npc: chatters){
 			Location npcl = npc.getEntity().getLocation();
@@ -128,5 +151,57 @@ public class Plugin extends JavaPlugin {
 			}
 		}
 	}
+	private void autoRegisterCommands(){
+		FileConfiguration conf = new ConfigAccessor("commands.yml").getConfig();
 
+		ConfigurationSection cmds = conf.getRoot();
+
+		for(String s: cmds.getKeys(false)){
+			ConfigurationSection sec = cmds.getConfigurationSection(s);
+			for(String ss: sec.getKeys(false)){
+				Object o = sec.get(ss);
+				log("Command "+s+" Thing " + ss + " type "+o.getClass().getCanonicalName());
+			}
+
+			// get the usage details from plugin.yml
+			String usage;
+			int argc;
+			if(sec.contains("usage") && sec.get("usage") instanceof String)
+				usage = sec.getString("usage");
+			else
+				usage = "??";
+			if(sec.contains("argc") && sec.get("argc") instanceof Integer)
+				argc = sec.getInt("argc");
+			else
+				argc = -1; // default is varargs.
+
+			// try to find the class
+			String className = "org.pale.chatcitizen.Command."+s.substring(0, 1).toUpperCase() + s.substring(1);
+			try {
+				Class<?> cl = Class.forName(className);
+				// instantiate and register
+				CommandAction ca = (CommandAction)(cl.newInstance());
+				ca.init(argc,usage);
+				cmdMap.put(s, ca);
+			} catch (ClassNotFoundException e) {
+				log("class not found for command: "+s+" ["+className+"]");
+			} catch (InstantiationException e) {
+				log("cannot instantiate: "+className);
+			} catch (IllegalAccessException e) {
+				log("illegal access: "+className);
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public static ChatTrait getChatCitizenFor(CommandSender sender) {
+		NPC npc = CitizensAPI.getDefaultNPCSelector().getSelected(sender);
+		if (npc == null) {
+			return null;
+		}
+		if (npc.hasTrait(ChatTrait.class)) {
+			return npc.getTrait(ChatTrait.class);
+		}
+		return null;
+	}	
 }

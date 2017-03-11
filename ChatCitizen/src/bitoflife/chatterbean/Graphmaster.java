@@ -125,10 +125,13 @@ public class Graphmaster
     return null;
   }
 
+  //TODO there seems to be a problem with wildcard matching
+  // in here somewhere - the pattern SORRY recurses through the SORRY * pattern. Delete
+  // that latter pattern, all is fine.
   private Category matchWildcard(Match match, int index)
   {
     int n = match.getMatchPathLength();
-    for (int i = index; i < n; i++)
+    for (int i = index; i < n; i++) 
     {
       Category category = matchChildren(match, i);
       if (category != null)

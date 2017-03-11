@@ -1,2 +1,3 @@
 # configuration data
-soupy: twist
+bots:
+    default: "plugins/ChatCitizen/default/config.xml"

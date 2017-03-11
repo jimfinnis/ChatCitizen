@@ -1,0 +1,3 @@
+setbot:
+    argc: 1
+    usage: ccz setbot [botname] - sets the current NPC's bot. The NPC must be a ChatCitizen.

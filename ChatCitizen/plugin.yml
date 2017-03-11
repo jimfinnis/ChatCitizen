@@ -3,7 +3,10 @@ main: org.pale.chatcitizen.Plugin
 version: 1.1
 depend: [Citizens]
 commands:
-  chattest:
-    description: test chat
-    usage: /chattest
+  ccz:
+    description: ChatCitizen configuration command
+    usage: /ccz
+  chatcitizen:
+    description: ChatCitizen configuration command
+    usage: /chatcitizen
 

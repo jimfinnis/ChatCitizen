@@ -1,5 +1,5 @@
 /*
-Copyleft (C) 2005 Hélio Perroni Filho
+Copyleft (C) 2005 Hï¿½lio Perroni Filho
 xperroni@yahoo.com
 ICQ: 2490863
 
@@ -45,7 +45,7 @@ public class Srai extends TemplateElement
   public String process(Match match)
   {
     String request = super.process(match);
-
+	  java.lang.System.out.println("Req: "+request);
     try
     {
       AliceBot bot = (match != null ? match.getCallback() : null);

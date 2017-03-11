@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import bitoflife.chatterbean.ChatterBean;
-
 
 //This is your trait that will be applied to a npc using the /trait mytraitname command. 
 //Each NPC gets its own instance of this class.
@@ -26,11 +24,9 @@ public class ChatTrait extends Trait {
 	}
 
 	Plugin plugin = null;
-
+	@Persist String botName = null;
+	
 	boolean SomeSetting = false;
-
-	// see the 'Persistence API' section
-	@Persist("mysettingname") boolean automaticallyPersistedSetting = false;
 
 	// the actual chatbot
 	private ChatterWrapper bot;
@@ -79,16 +75,22 @@ public class ChatTrait extends Trait {
 	//This would be a good place to load configurable defaults for new NPCs.
 	@Override
 	public void onAttach() {
+		botName = "default";
 		plugin.getServer().getLogger().info(npc.getName() + " has been assigned ChatCitizen!");
-		
-		bot = plugin.getBot("default");
-		bot.switchNPC(npc); // initial switch to create a context
-		bot.setProperty(npc,"bot.name",npc.getFullName());
+	}
+	
+	public void setBot(ChatterWrapper b){
+		b.switchNPC(npc); // initial switch to create a context
+		b.setProperty(npc,"bot.name",npc.getFullName());		
+		bot = b;
+		botName = b.getName();
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.
 	@Override
 	public void onDespawn() {
+		Plugin.log(" Despawn run on "+npc.getFullName());
+		bot=null;
 		plugin.removeChatter(npc);
 	}
 
@@ -96,7 +98,15 @@ public class ChatTrait extends Trait {
 	//This is called AFTER onAttach and AFTER Load when the server is started.
 	@Override
 	public void onSpawn() {
+		if(botName==null)botName="default"; // this really shouldn't be required.
+		ChatterWrapper b = plugin.getBot(botName);
+		if(b==null)
+			throw new RuntimeException("bot \""+botName+"\" not found - is it in the config?");
+		
+		setBot(b);
+
 		plugin.addChatter(npc);
+		Plugin.log(" Spawn run on "+npc.getFullName());
 	}
 
 	//run code when the NPC is removed. Use this to tear down any repeating tasks.

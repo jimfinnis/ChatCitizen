@@ -1,6 +1,4 @@
-Compiling: you have to play sillybuggers to get it to let you use JSObject.
-I did this by adding the jfxrt.jar separately to the build path as an external JAR,
-then making it the first JAR scanned in the Order tab.
+Multiple NPCs can share the same bot; the bot switches between them.
 
-ChatterBean reloads everything for every instance - use a single instance and make the AliceBot
-switch contexts. 
+Bots are registered in config.yml
+Commands are named in commands.yml and must have a corresponding class in Command (found by reflection)

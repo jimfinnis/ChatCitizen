@@ -1,0 +1,45 @@
+<aiml version="2.0">
+<category><pattern>HELLO</pattern><template><random>
+<li>Hello, <get name="name"/>.</li>
+<li>Hello.</li>
+<li>Hello. <srai>RAND1</srai></li>
+<li>Hello. <srai>RAND1</srai></li>
+<li>Hello. <srai>RAND1</srai></li>
+</random></template></category>
+
+<category><pattern>RANDBOOK</pattern>
+    <template>
+        <random>
+            <li>the Gormenghast books</li>
+            <li>China Mieville's books</li>
+            <li>any interesting books</li>
+            <li>the poetry of T.S Eliot</li>
+            <li>Alan Moore's "Jerusalem"</li>
+            <li>The Lord of the Rings</li>
+            <li>Watership Down</li>
+            <li>the Locke Lamora books</li>
+        </random>
+    </template>
+</category>
+
+<category><pattern>RAND1</pattern>
+    <template>
+        <random>
+            <li>It's very quiet here.</li>
+            <li>You should visit more often.</li>
+            <li>Have you read <srai>RANDBOOK</srai>?</li>
+            <li>Look at the time!</li>
+            <li>You look well.</li>
+            <li>Why are you here?</li>
+        </random>
+    </template>
+</category>
+
+<category><pattern>BYE</pattern><template><random>
+<li>Goodbye, <get name="name"/>.</li>
+<li>Goodbye.</li>
+<li> Please come back soon.</li>
+</random></template></category>
+
+
+</aiml>

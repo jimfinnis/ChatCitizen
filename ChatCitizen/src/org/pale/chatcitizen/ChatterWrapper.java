@@ -17,12 +17,14 @@ public class ChatterWrapper {
 	private ChatterBean bot;
 	private Context baseContext;
 	private String path;
+	private String name;
 	private NPC cachedNPC = null;
 	private Map<Integer,Context> contexts = new HashMap<Integer,Context>();
 
-	public ChatterWrapper(String path){
+	public ChatterWrapper(String name,String path){
 		bot = new ChatterBean(path);
 		this.path = path;
+		this.name = name;
 		baseContext = bot.getAliceBot().getContext();
 	}
 
@@ -53,5 +55,9 @@ public class ChatterWrapper {
 	public String respond(NPC npc, String msg) {
 		switchNPC(npc);
 		return bot.respond(msg);
+	}
+
+	public String getName() {
+		return name;
 	}
 }
