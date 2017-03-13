@@ -41,8 +41,17 @@ Feel free to just copy and modify all the files from **default**, of course.
 You will probably run into problems. ChatterBean isn't ideal, but it does work fairly well for simpler bots.
 
 ## Future work
+* Extensions to the tags to allow an NPC to be given orders or suggestions,
+or extract and use server data (such as time, players etc.)
 * Having the NPC say random things from time to time (this should be easy, so I'll probably do it first).
+* Scripting language
+** probably through JSR-223 and Javascript (ugh).
+** This will need some way of getting at bot properties, including the
+server properties alluded to above
+** and some way of actually doing stuff by connecting to Citizens API.
+** Also support for other APIs such as NPCDestinations, Sentinel.
 * It would be nice if ChatterBean used a more recent AIML spec (and I think there are a few bugs in there)
-* Extensions to the tags to allow an NPC to be given orders or suggestions
-* Some nice bots (you can help with this!)
+
+And above all
+* **Some nice bots (you can help with this!)**
 

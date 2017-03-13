@@ -35,6 +35,10 @@
     </template>
 </category>
 
+<category><pattern>NAME</pattern><template>
+My name is <get name="name"/>.
+</template></category>
+
 <category><pattern>BYE</pattern><template><random>
 <li>Goodbye, <get name="name"/>.</li>
 <li>Goodbye.</li>
