@@ -31,7 +31,7 @@ public class ChatterWrapper {
 	// switch to the context for the NPC, creating a new one from the base context
 	// if required.
 
-	public void switchNPC(NPC npc){
+	public synchronized void switchNPC(NPC npc){ // synch - more than one chatbot might be using this!
 		if(npc!=cachedNPC){
 			Context c;
 			if(contexts.containsKey(npc.getId())){
@@ -42,17 +42,22 @@ public class ChatterWrapper {
 				contexts.put(npc.getId(), c);
 			}
 			bot.getAliceBot().setContext(c);
+			Plugin.log("Context switch to "+c.toString());
 			cachedNPC = npc;
+			c.dumpProperties(Plugin.getInstance().getLogger());
 		}
 	}
 
-	public void setProperty(NPC npc,String s,Object o){
+	public synchronized void setProperty(NPC npc,String s,Object o){// synch - more than one chatbot might be using this!
 		if(!contexts.containsKey(npc.getId()))
 			throw new RuntimeException("cannot set property \""+s+"\" in bot \""+path+"\" for npc \""+npc.getFullName()+"\" - no context.");
-		contexts.get(npc.getId()).property(s,o);
+		Context c = contexts.get(npc.getId());
+		Plugin.log("Property set in "+c.toString()+", "+s+"="+o.toString());
+		c.property("predicate."+s,o); // changeable stuff is prefixed with "predicate.", apparently. See bitoflife.chatterbean.aiml.Get.
+		c.dumpProperties(Plugin.getInstance().getLogger());
 	}
 
-	public String respond(NPC npc, String msg) {
+	public synchronized String respond(NPC npc, String msg) {// synch - more than one chatbot might be using this!
 		switchNPC(npc);
 		return bot.respond(msg);
 	}

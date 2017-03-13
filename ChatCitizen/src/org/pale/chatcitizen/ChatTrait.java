@@ -81,7 +81,7 @@ public class ChatTrait extends Trait {
 	
 	public void setBot(ChatterWrapper b){
 		b.switchNPC(npc); // initial switch to create a context
-		b.setProperty(npc,"bot.name",npc.getFullName());		
+		b.setProperty(npc,"name",npc.getFullName());		
 		bot = b;
 		botName = b.getName();
 	}
