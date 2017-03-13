@@ -1,6 +1,5 @@
 package org.pale.chatcitizen;
 
-import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -19,8 +18,7 @@ public final class ChatEventListener implements Listener {
 				// might be better do do this in thread...
 				@Override
 				public void run() {
-					Location l = e.getPlayer().getLocation();
-					plugin.handleMessage(l,e.getMessage());
+					plugin.handleMessage(e.getPlayer(),e.getMessage());
 				}
 			});
 		}

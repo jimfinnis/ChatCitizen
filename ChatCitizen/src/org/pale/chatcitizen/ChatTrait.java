@@ -81,7 +81,7 @@ public class ChatTrait extends Trait {
 	
 	public void setBot(ChatterWrapper b){
 		b.switchNPC(npc); // initial switch to create a context
-		b.setProperty(npc,"name",npc.getFullName());		
+		b.setBotProperty(npc,"name",npc.getFullName());		
 		bot = b;
 		botName = b.getName();
 	}
@@ -124,6 +124,14 @@ public class ChatTrait extends Trait {
 			}
 		}
 		
+	}
+
+	/**
+	 * Set properties within the chat bot based on the player who has just spoken to it.
+	 * @param player
+	 */
+	public void setPropertiesForSender(Player player) {
+		bot.setPredicate(npc, "name", player.getDisplayName());
 	}
 
 }

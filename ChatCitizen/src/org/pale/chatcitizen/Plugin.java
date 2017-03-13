@@ -16,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -142,11 +143,13 @@ public class Plugin extends JavaPlugin {
 		return (a.distance(b)<10 && Math.abs(a.getY()-b.getY())<2);
 	}
 
-	public void handleMessage(Location l, String msg){
+	public void handleMessage(Player player, String msg){
+		Location playerloc = player.getLocation();
 		for(NPC npc: chatters){
 			Location npcl = npc.getEntity().getLocation();
-			if(isNear(l,npcl)){
+			if(isNear(playerloc,npcl)){
 				ChatTrait ct = npc.getTrait(ChatTrait.class);
+				ct.setPropertiesForSender(player);
 				ct.respondTo(msg);
 			}
 		}

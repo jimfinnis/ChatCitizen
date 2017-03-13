@@ -48,13 +48,38 @@ public class ChatterWrapper {
 		}
 	}
 
-	public synchronized void setProperty(NPC npc,String s,Object o){// synch - more than one chatbot might be using this!
+	/**
+	 * Set a property in the context of a given chat bot (as indicated by the NPC)
+	 * @param npc the Citizens NPC
+	 * @param s the name of the property
+	 * @param o the property 
+	 */
+	private synchronized void setProperty(NPC npc,String s,Object o){// synch - more than one chatbot might be using this!
 		if(!contexts.containsKey(npc.getId()))
 			throw new RuntimeException("cannot set property \""+s+"\" in bot \""+path+"\" for npc \""+npc.getFullName()+"\" - no context.");
 		Context c = contexts.get(npc.getId());
 		Plugin.log("Property set in "+c.toString()+", "+s+"="+o.toString());
 		c.property("predicate."+s,o); // changeable stuff is prefixed with "predicate.", apparently. See bitoflife.chatterbean.aiml.Get.
 		c.dumpProperties(Plugin.getInstance().getLogger());
+	}
+	
+	/**
+	 * Used for setting properties the bot will access with <get name="..."/>
+	 * @param npc
+	 * @param s property name, will have "predicate." bolted on the front
+	 * @param o
+	 */
+	public void setPredicate(NPC npc,String s,Object o){
+		setProperty(npc,"predicate."+s,o);
+	}
+	/**
+	 * Used for setting properties the bot will access with <bot name="..."/>
+	 * @param npc
+	 * @param s property name, will have "bot." bolted on the front
+	 * @param o
+	 */
+	public void setBotProperty(NPC npc,String s,Object o){
+		setProperty(npc,"bot."+s,o);
 	}
 
 	public synchronized String respond(NPC npc, String msg) {// synch - more than one chatbot might be using this!

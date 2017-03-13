@@ -56,8 +56,10 @@ public class AIMLParser
 		{
 			int i=0;
 			for (InputStream aiml : sources){
-				java.lang.System.out.println("Chatterbean parsing AIML stream "+i++);
+				java.lang.System.out.println("Chatterbean parsing AIML stream "+i);
+				handler.setFileNumber(i);
 				parser.parse(aiml, handler);
+				i++;
 			}
 
 			graphmaster.append(handler.unload());

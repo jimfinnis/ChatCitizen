@@ -14,18 +14,56 @@ You should have received a copy of the GNU General Public License along with Cha
 
 package bitoflife.chatterbean.aiml;
 
+import java.lang.reflect.Constructor;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.lang.reflect.Constructor;
+
 import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 public class AIMLHandler extends DefaultHandler
 {
+	/**
+	 * This debugging stuff is really unpleasant because 
+	 * - I can't put the locator data in the element without making AIMLElement an abstract class
+	 *   and that's too much refactoring,
+	 * - different AIMLelements have different comparisons (hence IdentityHashMap)
+	 */
+	public static class LocatorData {
+		public LocatorData(int f, int l) {
+			filenumber = f;
+			line = l;
+		}
+		int filenumber;
+		int line;
+	}
+
+	private static Map<Object,LocatorData> debugMap = new IdentityHashMap<Object,LocatorData>();
+	private static Map<Integer,String> fileMap = new HashMap<Integer,String>();
+	private static int filenumber;
+	
+	public static void addFile(int n,String fn){
+		fileMap.put(n,fn);
+	}
+	
+	private static void addDebugData(Object e){
+		LocatorData l = new LocatorData(filenumber,locator.getLineNumber());
+		debugMap.put(e, l);
+	}
+	
+	public static String getDebugData(AIMLElement e){
+		LocatorData l =debugMap.get((Object)e); 
+		return fileMap.get(l.filenumber)+":"+l.line;
+	}
+	
 	/*
   Attribute Section
 	 */
@@ -37,6 +75,7 @@ public class AIMLHandler extends DefaultHandler
 
 	/** The stack of AIML objects is used to build the Categories as AIML documents are parsed. The scope is defined as package for testing purposes. */
 	final AIMLStack stack = new AIMLStack();
+	private static Locator locator;
 
 	/*
   Constructor Section
@@ -114,12 +153,19 @@ public class AIMLHandler extends DefaultHandler
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			Constructor constructor = tagClass.getConstructor(Attributes.class);
 			Object tag = constructor.newInstance(attributes);
+			addDebugData(tag);
 			stack.push(tag);
 		}
 		catch (Exception e)
 		{
 			throw new RuntimeException("Cannot instantiate class " + className, e);
 		}
+	}
+
+	@Override
+	public void setDocumentLocator(Locator l) {
+		super.setDocumentLocator(l);
+		locator = l;
 	}
 
 	public void endElement(String namespace, String name, String qname) throws SAXException
@@ -153,5 +199,10 @@ public class AIMLHandler extends DefaultHandler
 				throw new SAXException(e);
 			}
 		}
+	}
+
+	public void setFileNumber(int i) {
+		filenumber = i;
+		
 	}
 }
