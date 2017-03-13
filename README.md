@@ -1,5 +1,9 @@
 # ChatCitizen
-This is a Citizens 2 Trait for chatbot NPCs, using a (large) subset of AIML 1.0. The underlying code used is Chatterbean, which is extremely elderly but works fairly well. The AIML subset used is documented at the [Chatterbean website](http://www.geocities.ws/phelio/chatterbean/). I have modified the code, adding a few tags (nothing important) and removing the Applet and GUI aspects. Chatterbean has a GPL license, so ChatCitizen is also GPL (unfortunately).
+This is a Citizens 2 Trait for chatbot NPCs, using a subset of AIML
+2.0 (sans <sraix>, because I'm trying to keep the dependencies down,
+and the Japanese stuff for the same reason). The underlying code used is Richard Wallace's
+[Program AB](http://alicebot.blogspot.co.uk/2013/01/program-ab-aiml-20-reference.html)
+Program AB has a GPL license, so ChatCitizen is also GPL.
 
 ## Caveats
 * This is very, very, very preliminary work. Use at your own risk.
@@ -9,7 +13,7 @@ This is a Citizens 2 Trait for chatbot NPCs, using a (large) subset of AIML 1.0.
 ## Installing
 You will (obviously) need Citizens 2 installed. Install the ChatCitizen JAR as usual, but you will need to take some extra steps. 
 * Run the server once with the JAR installed to make the plugin directory.
-* Move the **default** directory into the **plugins/ChatCitizen** directory - this is the default robot.
+* Move the **bots** directory into the **plugins/ChatCitizen** directory - these are the robot definitions.
 * You should now be able to run the server and attach the trait. Note that the server will now take a little more time to boot - AIML files can be large and take a long time to load!
 
 ## Attaching the trait
@@ -23,14 +27,9 @@ Only one at the moment:
 *	**ccz setbot [name]** will set the currently selected NPC to use the named bot.
 
 ## Adding bots
-I'll have to assume you know some AIML, perhaps by playing with [pandorabots.com](http://pandorabots.com). You should end up with a set of AIML files. Note that the PandoraBots substitutions, maps and sets are supported, but you can edit **substitutions.xml** if required or use parts of the default bot.
-
-Create a new directory inside **plugins/ChatCitizen** and put your AIML files in there, along with
-* a **splitters.xml** file describing punctuation,
-* a **substitutions.xml** for common substitutions,
-* a **context.xml** file for some common properties (be aware that some may be changed by the plugin - "name" will be set to the NPC name, for example),
-* a **list.txt** file (NOT XML) which lists all the AIML files in the order in which they should be loaded and parsed,
-* a **config.xml** file which lists all the above.
+I'll have to assume you know some AIML, perhaps by playing with [pandorabots.com](http://pandorabots.com). 
+You should end up with a set of AIML files. You should start by copying one of the smaller bots (perhaps Jokebot) and then
+copy your files over its AIML files.
 
 Feel free to just copy and modify all the files from **default**, of course. 
 * Add the new directory to **config.yml** in the plugin directory. This tells the server which bot name is associated with which data directory.

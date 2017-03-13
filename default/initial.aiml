@@ -1,5 +1,0 @@
-<aiml version="2.0">
-    <category><pattern>*</pattern>
-        <template><srai>RAND1</srai></template>
-    </category>
-</aiml>

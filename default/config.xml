@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-  <entry key="context">context.xml</entry>
-  <entry key="splitters">splitters.xml</entry>
-  <entry key="substitutions">substitutions.xml</entry>
-  <entry key="categories">list.txt</entry>
-</properties>

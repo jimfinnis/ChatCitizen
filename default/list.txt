@@ -1,7 +1,0 @@
-initial.aiml
-reduction0.safe.aiml
-reduction1.safe.aiml
-reduction2.safe.aiml
-reduction3.safe.aiml
-reduction4.safe.aiml
-pand_learn.aiml
