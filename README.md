@@ -10,7 +10,6 @@ This is a Citizens 2 Trait for chatbot NPCs, using a (large) subset of AIML 1.0.
 You will (obviously) need Citizens 2 installed. Install the ChatCitizen JAR as usual, but you will need to take some extra steps. 
 * Run the server once with the JAR installed to make the plugin directory.
 * Move the **default** directory into the **plugins/ChatCitizen** directory - this is the default robot.
-* Copy the **substitutions.xml** directory into the **plugins/ChatCitizen** directory.
 * You should now be able to run the server and attach the trait. Note that the server will now take a little more time to boot - AIML files can be large and take a long time to load!
 
 ## Attaching the trait
