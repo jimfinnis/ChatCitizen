@@ -1,3 +1,6 @@
 # configuration data
 bots:
-    default: "plugins/ChatCitizen/default/config.xml"
+    default: "plugins/ChatCitizen/bots/alice2"
+    currentevents: "plugins/ChatCitizen/bots/currentevents"
+    jokebot: "plugins/ChatCitizen/bots/jokebot"
+    wndef: "plugins/ChatCitizen/bots/wndef"

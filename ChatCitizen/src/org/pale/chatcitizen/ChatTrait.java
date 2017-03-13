@@ -80,8 +80,7 @@ public class ChatTrait extends Trait {
 	}
 	
 	public void setBot(ChatterWrapper b){
-		b.switchNPC(npc); // initial switch to create a context
-		b.setBotProperty(npc,"name",npc.getFullName());		
+		b.setProperty(npc,"botname",npc.getFullName());		
 		bot = b;
 		botName = b.getName();
 	}
@@ -131,7 +130,7 @@ public class ChatTrait extends Trait {
 	 * @param player
 	 */
 	public void setPropertiesForSender(Player player) {
-		bot.setPredicate(npc, "name", player.getDisplayName());
+		bot.setProperty(npc, "name", player.getDisplayName());
 	}
 
 }

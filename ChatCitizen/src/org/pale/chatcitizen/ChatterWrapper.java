@@ -4,48 +4,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 import net.citizensnpcs.api.npc.NPC;
-import bitoflife.chatterbean.ChatterBean;
-import bitoflife.chatterbean.Context;
+
+import org.alicebot.ab.Bot;
+import org.alicebot.ab.Chat;
 
 /**
- * This class wraps a single chatbot (ChatterBean) so that it can be reused in
- * multiple conversations by switching its context.
+ * This class wraps a single chatbot so that it can be reused in
+ * multiple conversations by switching its context. With Program AB we
+ * do this by using a Chat for each NPC.
+ * 
  * @author white
  *
  */
 public class ChatterWrapper {
-	private ChatterBean bot;
-	private Context baseContext;
+	private Bot bot;
 	private String path;
 	private String name;
-	private NPC cachedNPC = null;
-	private Map<Integer,Context> contexts = new HashMap<Integer,Context>();
+	private Map<Integer,Chat> chats= new HashMap<Integer,Chat>();
 
 	public ChatterWrapper(String name,String path){
-		bot = new ChatterBean(path);
+		bot = new Bot(name,path);
 		this.path = path;
 		this.name = name;
-		baseContext = bot.getAliceBot().getContext();
 	}
 
-	// switch to the context for the NPC, creating a new one from the base context
-	// if required.
-
-	public synchronized void switchNPC(NPC npc){ // synch - more than one chatbot might be using this!
-		if(npc!=cachedNPC){
-			Context c;
-			if(contexts.containsKey(npc.getId())){
-				c = contexts.get(npc.getId());
-			} else {
-				Plugin.log("Creating new context from base, bot="+path+", npc="+npc.getFullName());
-				c = new Context(baseContext);
-				contexts.put(npc.getId(), c);
-			}
-			bot.getAliceBot().setContext(c);
-			Plugin.log("Context switch to "+c.toString());
-			cachedNPC = npc;
-			c.dumpProperties(Plugin.getInstance().getLogger());
+	public synchronized Chat getChat(NPC npc){ // synch - more than one chatbot might be using this!
+		Chat c;
+		if(chats.containsKey(npc.getId())){
+			c = chats.get(npc.getId());
+		} else {
+			Plugin.log("Creating new chat, bot="+path+", npc="+npc.getFullName());
+			c = new Chat(bot);
+			chats.put(npc.getId(), c);
 		}
+		return c;
 	}
 
 	/**
@@ -54,37 +46,15 @@ public class ChatterWrapper {
 	 * @param s the name of the property
 	 * @param o the property 
 	 */
-	private synchronized void setProperty(NPC npc,String s,Object o){// synch - more than one chatbot might be using this!
-		if(!contexts.containsKey(npc.getId()))
-			throw new RuntimeException("cannot set property \""+s+"\" in bot \""+path+"\" for npc \""+npc.getFullName()+"\" - no context.");
-		Context c = contexts.get(npc.getId());
-		Plugin.log("Property set in "+c.toString()+", "+s+"="+o.toString());
-		c.property("predicate."+s,o); // changeable stuff is prefixed with "predicate.", apparently. See bitoflife.chatterbean.aiml.Get.
-		c.dumpProperties(Plugin.getInstance().getLogger());
-	}
-	
-	/**
-	 * Used for setting properties the bot will access with <get name="..."/>
-	 * @param npc
-	 * @param s property name, will have "predicate." bolted on the front
-	 * @param o
-	 */
-	public void setPredicate(NPC npc,String s,Object o){
-		setProperty(npc,"predicate."+s,o);
-	}
-	/**
-	 * Used for setting properties the bot will access with <bot name="..."/>
-	 * @param npc
-	 * @param s property name, will have "bot." bolted on the front
-	 * @param o
-	 */
-	public void setBotProperty(NPC npc,String s,Object o){
-		setProperty(npc,"bot."+s,o);
+	public synchronized void setProperty(NPC npc,String s,String o){// synch - more than one chatbot might be using this!
+		Chat c = getChat(npc);
+		Plugin.log("Property set in "+c.toString()+", "+s+"="+o);
+		c.predicates.put(s,o);
+//		c.dumpProperties(Plugin.getInstance().getLogger());
 	}
 
 	public synchronized String respond(NPC npc, String msg) {// synch - more than one chatbot might be using this!
-		switchNPC(npc);
-		return bot.respond(msg);
+		return getChat(npc).multisentenceRespond(msg);
 	}
 
 	public String getName() {
