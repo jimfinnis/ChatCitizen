@@ -1,5 +1,11 @@
 package org.pale.chatcitizen;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitName;
@@ -7,6 +13,7 @@ import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.api.util.Messaging;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,13 +30,57 @@ public class ChatTrait extends Trait {
 		plugin = JavaPlugin.getPlugin(Plugin.class);
 	}
 
+	static Random rand = new Random();
+
 	Plugin plugin = null;
-	@Persist String botName = null;
-	
+	@Persist String botName = null; //!< name of the bot in config.yml
+
+	/**
+	 * In the discussion below, "dist" means horizontal XZ distance, Y distance must always be < 2.
+	 * The bot will say RANDSAY to the player 
+	 *  - if sayInterval has passed since the last time something was said
+	 *  - if random [0:1] < sayProbability (checked when the last check passes)
+	 * 	- if dist < sayDist for some player (picked at random)
+	 * Will do nothing if the pattern RANDSAY has no category. 
+	 */
+	@Persist double sayDist = 3; //!< distance before the bot says something random to the player
+	@Persist double sayInterval = 20; //!< min time between the bot saying stuff randomly
+	@Persist double sayProbability = 0.3; //!< chance the NPC will try to speak each sayInterval
+	/**
+	 * Say GREETSAY when the dist (see above) drops below greetDist having been above greetDist for
+	 * greetTime seconds.
+	 * Will do nothing if the pattern GREETSAY has no category. 
+	 */
+	@Persist double greetDist = 3; //!< how close a player should be before greet
+	@Persist double greetTime = 20; //!< how long between greeting each player
+	@Persist double greetProbability = 0.9; //!< how likely is it we will greet a player? If this fails, we just ignore them.
+
+	@Persist double audibleDistance=10; //!< how far this robot is audible
+	@Persist double spontaneousSpeechDistance = 10; //!< how far the bot will look for someone to randomly talk at.
+
+	private boolean hasGreetSay;
+	private boolean hasRandSay;
+
+
+
+	// example setting.
 	boolean SomeSetting = false;
 
 	// the actual chatbot
 	private ChatterWrapper bot;
+	private long lastRandSay;
+
+
+
+	List<Player> getNearPlayers(double d){
+		List<Player> r = new ArrayList<Player>();
+		for(Entity e: npc.getEntity().getNearbyEntities(d,d,d)){
+			if(e instanceof Player){
+				r.add((Player)e);
+			}
+		}
+		return r;
+	}
 
 	// Here you should load up any values you have previously saved (optional). 
 	// This does NOT get called when applying the trait for the first time, only loading onto an existing npc at server start.
@@ -63,11 +114,17 @@ public class ChatTrait extends Trait {
 			Plugin.log("Punch.");
 		}
 	}
-	
 
+
+	private int tickint=0;
 	// Called every tick
 	@Override
 	public void run() {
+		if(tickint++==20){ // to reduce CPU usage
+			processRandSay();
+			processGreetSay();
+			tickint=0;
+		}
 	}
 
 	//Run code when your trait is attached to a NPC. 
@@ -78,11 +135,14 @@ public class ChatTrait extends Trait {
 		botName = "default";
 		plugin.getServer().getLogger().info(npc.getName() + " has been assigned ChatCitizen!");
 	}
-	
+
 	public void setBot(ChatterWrapper b){
 		b.setProperty(npc,"botname",npc.getFullName());		
 		bot = b;
 		botName = b.getName();
+
+		hasGreetSay = bot.hasSpecialCategory("greetsay");
+		hasRandSay = bot.hasSpecialCategory("randsay");
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.
@@ -101,7 +161,7 @@ public class ChatTrait extends Trait {
 		ChatterWrapper b = plugin.getBot(botName);
 		if(b==null)
 			throw new RuntimeException("bot \""+botName+"\" not found - is it in the config?");
-		
+
 		setBot(b);
 
 		plugin.addChatter(npc);
@@ -113,16 +173,20 @@ public class ChatTrait extends Trait {
 	public void onRemove() {
 	}
 
-	public void respondTo(String msg) {
+	/**
+	 * Respond to a player saying something nearby. Alternatively used to just say something randomly,
+	 * in which case the player argument is to whom it should be said and the string is a special pattern (like RANDSAY).
+	 * @param player the player who spoke
+	 * @param msg what they said
+	 */
+	public void respondTo(Player player,String msg) {
 		String botresp = bot.respond(npc,msg);
 		Plugin.log("Bot response: "+botresp);
-		String response = ChatColor.AQUA+"["+npc.getFullName()+"] "+ChatColor.WHITE+botresp;
-		for(Player p: plugin.getServer().getOnlinePlayers()){
-			if(Plugin.isNear(p.getLocation(), npc.getEntity().getLocation())){
-				p.sendMessage(response);
-			}
+		String response = ChatColor.AQUA+"["+npc.getFullName()+" -> "+player.getDisplayName()+"] "+ChatColor.WHITE+botresp;
+		// say it out loud to all nearby players
+		for(Player p: getNearPlayers(audibleDistance)){
+			p.sendMessage(response);
 		}
-		
 	}
 
 	/**
@@ -133,4 +197,45 @@ public class ChatTrait extends Trait {
 		bot.setProperty(npc, "name", player.getDisplayName());
 	}
 
+	private void processRandSay(){
+		long t = System.currentTimeMillis();
+		if(hasRandSay && (t-lastRandSay > sayInterval*1000)){
+			if(rand.nextDouble()<sayProbability){
+				// try to find someone to talk to
+				List<Player> ps  = getNearPlayers(spontaneousSpeechDistance);
+				if(ps.size() > 0){
+					Player p = ps.get(rand.nextInt(ps.size()));
+					respondTo(p,"RANDSAY");
+					lastRandSay = t;
+				}
+			}
+		}
+	}
+
+	Map<String,Long> lastGreeted = new HashMap<String,Long>();
+
+	List<Player> nearPlayersForGreet  = new ArrayList<Player>();
+	private void processGreetSay(){
+		if(hasGreetSay){
+			List<Player> nearPlayersNew = getNearPlayers(greetDist);
+			for(Player p : nearPlayersNew){
+				// is this someone who has just appeared?
+				if(!nearPlayersForGreet.contains(p)){
+					long lasttime;
+					long t = System.currentTimeMillis();
+					if(lastGreeted.containsKey(p.getName()))
+						lasttime = lastGreeted.get(p.getName());
+					else
+						lasttime = 0;
+					// we didn't greet them recently; let's do that.
+					if(t-lasttime > greetTime*1000){
+						if(rand.nextDouble()<greetProbability)
+							respondTo(p,"GREETSAY");
+						lastGreeted.put(p.getName(), t);
+					}
+				}
+			}
+			nearPlayersForGreet = nearPlayersNew;
+		}
+	}
 }

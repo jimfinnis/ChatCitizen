@@ -20,7 +20,13 @@ You will (obviously) need Citizens 2 installed. Install the ChatCitizen JAR as u
 Do this as usual with **/trait chatcitizen** with an NPC selected. They will be assigned the default bot, but each will have a different context so shouldn't get confused.
 
 ## Talking
-Talk to the bot by standing near it and saying things in chat. There's currently no standard way of talking to a non-player in private messaging, and this seemed to be the best way to do it (any thoughts, anyone?) The bot will assume you are talking to it if you are within 10 meters horizontally (XZ plane) and 2 vertically (Y plane).
+Talk to the bot by standing near it and saying things in chat. There's
+currently no standard way of talking to a non-player in private messaging, and
+this seemed to be the best way to do it (any thoughts, anyone?) The bot will
+assume you are talking to it if you are within 5 meters horizontally (XZ
+plane) and 2 vertically (Y plane).
+
+
 
 ## Commands
 Only one at the moment:
@@ -36,12 +42,19 @@ Feel free to just copy and modify all the files from **default**, of course.
 * Once this has been done, restart the server. The plugin will show the AIML files being loaded, and you can refer to this if there are XML parsing problems.
 * Then assign your bot to an NPC (after giving it the trait), and test it.
 
-You will probably run into problems. ChatterBean isn't ideal, but it does work fairly well for simpler bots.
+### Spontaneous speech patterns
+Adding categories with certain special patterns will make the robot
+produce spontaneous speech:
+* **RANDSAY** is fired off at random
+* **GREETSAY** is fired off when a player moves close and hasn't been greeted for a while.
+
+There are properties associated with these which need to be settable!
+
 
 ## Future work
+* settability of random speech (RANDSAY/GREETSAY) properties by commands
 * Extensions to the tags to allow an NPC to be given orders or suggestions,
 or extract and use server data (such as time, players etc.)
-* Having the NPC say random things from time to time (this should be easy, so I'll probably do it first).
 * Scripting language
 ** probably through JSR-223 and Javascript (ugh).
 ** This will need some way of getting at bot properties, including the

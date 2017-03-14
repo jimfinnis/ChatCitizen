@@ -171,8 +171,44 @@ public class Bot {
 		brain.addCategory(b);
 		brain.nodeStats();
 		learnfGraph.nodeStats();
-
 	}
+	
+	/**
+	 * JCF - see getSpecialCategoriesPresent() and hasSpecialCategory().
+	 */
+	Set<String> specialCatSet = new HashSet<String>();
+	
+	/**
+	 * JCF - there are certain categories the system needs to know we have, but we don't want to save a bit
+	 * list of categories. For this reason, we pass in an array of strings - the categories we want to know
+	 * about - and this method will set up a set of those we have.
+	 */
+	public void getSpecialCategoriesPresent(String... cats){
+		// first convert array to a set 
+		Set<String> catset = new HashSet<String>();
+		for(String s: cats)catset.add(s.toUpperCase());
+
+		ArrayList<Category> clist = brain.getCategories();
+		for(Category c: clist){
+			if(catset.contains(c.getPattern())){
+				specialCatSet.add(c.getPattern());
+				if(MagicBooleans.trace_mode)
+					System.out.println("BOT HAS SPECIAL CATEGORY: "+c.getPattern());
+			}
+		}
+	}
+	
+	/**
+	 * return whether the bot has a category with this string as the pattern. getSpecialCategoriesPresent()
+	 * must have been called.
+	 * @param c
+	 * @return
+	 */
+	public boolean hasSpecialCategory(String c){
+		return specialCatSet.contains(c.toUpperCase());
+	}
+
+	
 	HashSet<String> getPronouns() {
 		HashSet<String> pronounSet = new HashSet<String>();
 		String pronouns = Utilities.getFile(config_path+"/pronouns.txt");

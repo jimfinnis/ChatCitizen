@@ -139,18 +139,18 @@ public class Plugin extends JavaPlugin {
 		chatters.remove(npc);
 	}
 
-	public static boolean isNear(Location a,Location b){
-		return (a.distance(b)<10 && Math.abs(a.getY()-b.getY())<2);
+	public static boolean isNear(Location a,Location b,double dist){
+		return (a.distance(b)<5 && Math.abs(a.getY()-b.getY())<2);
 	}
 
 	public void handleMessage(Player player, String msg){
 		Location playerloc = player.getLocation();
 		for(NPC npc: chatters){
 			Location npcl = npc.getEntity().getLocation();
-			if(isNear(playerloc,npcl)){
+			if(isNear(playerloc,npcl,2)){ // chatters assume <2m and you're talking to them.
 				ChatTrait ct = npc.getTrait(ChatTrait.class);
 				ct.setPropertiesForSender(player);
-				ct.respondTo(msg);
+				ct.respondTo(player,msg);
 			}
 		}
 	}
