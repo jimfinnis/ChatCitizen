@@ -29,7 +29,7 @@ plane) and 2 vertically (Y plane).
 
 
 ## Commands
-*	**ccz setbot [name]** will set the currently selected NPC to use the named bot.
+*       **ccz setbot [name]** will set the currently selected NPC to use the named bot.
 *       **ccz info** get info on the NPC's ChatCitizen parameters
 *       **ccz set [paramname] [value]** set a parameter
 
