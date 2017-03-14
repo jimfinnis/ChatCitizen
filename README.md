@@ -29,23 +29,23 @@ plane) and 2 vertically (Y plane).
 
 
 ## Commands
-*       **ccz setbot [name]** will set the currently selected NPC to use the named bot.
-*       **ccz info** get info on the NPC's ChatCitizen parameters
-*       **ccz set [paramname] [value]** set a parameter
+* **ccz setbot [name]** will set the currently selected NPC to use the named bot.
+* **ccz info** get info on the NPC's ChatCitizen parameters
+* **ccz set [paramname] [value]** set a parameter
 
 ## Parameters
-*       **saydist** how far the bot will look for someone to randomly
+* **saydist** how far the bot will look for someone to randomly
 talk to - if there's no-one nearby, it stays quiet.
-*       **sayint** the time it will wait between random speech events.
-*       **sayprob** the chance (%) that it will try to speak, once every 5
+* **sayint** the time it will wait between random speech events.
+* **sayprob** the chance (%) that it will try to speak, once every 5
 seconds after the interval has elapsed.
-*       **greetdist** how close a player has to be before the bot will
+* **greetdist** how close a player has to be before the bot will
 greet it.
-*       **greetinterval** how long between greeting each player (i.e. how
+* **greetinterval** how long between greeting each player (i.e. how
 long the player has to go away for).
-*       **greetprob** the probability the bot will greet an appearing
+* **greetprob** the probability the bot will greet an appearing
 player, or just ignore them.
-*       **auddist** the distance the bot's speech can be heard over.
+* **auddist** the distance the bot's speech can be heard over.
 
 
 ## Adding bots
@@ -69,6 +69,7 @@ There are properties associated with these: see above.
 
 ## Future work
 * Make sure that **sayprob** works as advertised. It doesn't right now.
+* Line of sight for audibility?
 * Extensions to the tags to allow an NPC to be given orders or suggestions,
 or extract and use server data (such as time, players etc.)
 * Scripting language
