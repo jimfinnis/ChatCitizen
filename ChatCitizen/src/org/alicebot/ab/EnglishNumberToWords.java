@@ -11,7 +11,6 @@ package org.alicebot.ab;
 
 
 import java.text.DecimalFormat;
-import java.util.Scanner;
 
 public class EnglishNumberToWords
 {

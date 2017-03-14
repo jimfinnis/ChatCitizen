@@ -19,10 +19,10 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
+import java.util.Set;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.util.Set;
 
 /**
  * This is just a stub to make the contactaction.aiml file work on a PC

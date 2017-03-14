@@ -1,7 +1,9 @@
 package org.alicebot.ab.utils;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.io.StringWriter;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -11,10 +13,9 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.io.StringWriter;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 
 public class DomUtils {

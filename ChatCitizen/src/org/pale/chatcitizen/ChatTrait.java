@@ -43,20 +43,19 @@ public class ChatTrait extends Trait {
 	 * 	- if dist < sayDist for some player (picked at random)
 	 * Will do nothing if the pattern RANDSAY has no category. 
 	 */
-	@Persist double sayDist = 3; //!< distance before the bot says something random to the player
-	@Persist double sayInterval = 20; //!< min time between the bot saying stuff randomly
-	@Persist double sayProbability = 0.3; //!< chance the NPC will try to speak each sayInterval
+	@Persist public double sayInterval = 20; //!< min time between the bot saying stuff randomly
+	@Persist public double sayProbability = 0.3; //!< chance the NPC will try to speak each sayInterval
+	@Persist public double sayDist = 10; //!< how far the bot will look for someone to randomly talk at.
 	/**
 	 * Say GREETSAY when the dist (see above) drops below greetDist having been above greetDist for
 	 * greetTime seconds.
 	 * Will do nothing if the pattern GREETSAY has no category. 
 	 */
-	@Persist double greetDist = 3; //!< how close a player should be before greet
-	@Persist double greetTime = 20; //!< how long between greeting each player
-	@Persist double greetProbability = 0.9; //!< how likely is it we will greet a player? If this fails, we just ignore them.
+	@Persist public double greetDist = 3; //!< how close a player should be before greet
+	@Persist public double greetInterval = 20; //!< how long between greeting each player
+	@Persist public double greetProbability = 0.9; //!< how likely is it we will greet a player? If this fails, we just ignore them.
 
-	@Persist double audibleDistance=10; //!< how far this robot is audible
-	@Persist double spontaneousSpeechDistance = 10; //!< how far the bot will look for someone to randomly talk at.
+	@Persist public double audibleDistance=10; //!< how far this robot is audible
 
 	private boolean hasGreetSay;
 	private boolean hasRandSay;
@@ -71,6 +70,9 @@ public class ChatTrait extends Trait {
 	private long lastRandSay;
 
 
+	public String getBotName(){
+		return botName;
+	}
 
 	List<Player> getNearPlayers(double d){
 		List<Player> r = new ArrayList<Player>();
@@ -202,7 +204,7 @@ public class ChatTrait extends Trait {
 		if(hasRandSay && (t-lastRandSay > sayInterval*1000)){
 			if(rand.nextDouble()<sayProbability){
 				// try to find someone to talk to
-				List<Player> ps  = getNearPlayers(spontaneousSpeechDistance);
+				List<Player> ps  = getNearPlayers(sayDist);
 				if(ps.size() > 0){
 					Player p = ps.get(rand.nextInt(ps.size()));
 					respondTo(p,"RANDSAY");
@@ -228,7 +230,7 @@ public class ChatTrait extends Trait {
 					else
 						lasttime = 0;
 					// we didn't greet them recently; let's do that.
-					if(t-lasttime > greetTime*1000){
+					if(t-lasttime > greetInterval*1000){
 						if(rand.nextDouble()<greetProbability)
 							respondTo(p,"GREETSAY");
 						lastGreeted.put(p.getName(), t);

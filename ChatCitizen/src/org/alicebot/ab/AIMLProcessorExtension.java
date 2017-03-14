@@ -19,9 +19,9 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
-import org.w3c.dom.Node;
-
 import java.util.Set;
+
+import org.w3c.dom.Node;
 
 /**
  * The interface needed to implement AIML Extension

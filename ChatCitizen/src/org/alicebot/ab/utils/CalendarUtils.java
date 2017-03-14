@@ -1,7 +1,5 @@
 package org.alicebot.ab.utils;
 
-import org.alicebot.ab.MagicBooleans;
-
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

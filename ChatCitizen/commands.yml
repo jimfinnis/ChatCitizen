@@ -1,3 +1,10 @@
 setbot:
     argc: 1
     usage: ccz setbot [botname] - sets the current NPC's bot. The NPC must be a ChatCitizen.
+
+info:
+    argc: 0
+    usage: ccz info - shows info about the current bot
+
+set:
+    usage: ccz set [parameter] [value] - set the current parameters, or ccz set to list params.

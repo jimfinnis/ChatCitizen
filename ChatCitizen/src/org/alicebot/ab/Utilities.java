@@ -18,10 +18,14 @@ package org.alicebot.ab;
         Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
         Boston, MA  02110-1301, USA.
 */
-import org.alicebot.ab.utils.CalendarUtils;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
+
+import org.alicebot.ab.utils.CalendarUtils;
 
 public class Utilities {
 
