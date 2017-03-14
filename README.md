@@ -72,13 +72,11 @@ There are properties associated with these: see above.
 * Line of sight for audibility?
 * Extensions to the tags to allow an NPC to be given orders or suggestions,
 or extract and use server data (such as time, players etc.)
-* Scripting language
-** probably through JSR-223 and Javascript (ugh).
-** This will need some way of getting at bot properties, including the
+* Scripting language, probably through JSR-223 and Javascript (ugh).
+This will need some way of getting at bot properties, including the
 server properties alluded to above
-** and some way of actually doing stuff by connecting to Citizens API.
-** Also support for other APIs such as NPCDestinations, Sentinel.
-* It would be nice if ChatterBean used a more recent AIML spec (and I think there are a few bugs in there)
+* Some way of actually doing stuff by connecting to Citizens API.
+* Also support for other APIs such as NPCDestinations, Sentinel.
 
 And above all
 * **Some nice bots (you can help with this!)**
