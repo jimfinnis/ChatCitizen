@@ -8,3 +8,5 @@ info:
 
 set:
     usage: ccz set [parameter] [value] - set the current parameters, or ccz set to list params.
+help:
+    usage: ccz help - list commands

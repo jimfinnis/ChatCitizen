@@ -23,4 +23,9 @@ public abstract class CommandAction {
 		this.argc=argc;
 		this.usage=usage;
 	}
+
+
+	public String getUsage() {
+		return usage;
+	}
 }

@@ -71,6 +71,7 @@ There are properties associated with some of these: see above.
 
 ## Future work
 * Make sure that **sayprob** works as advertised. It doesn't right now.
+* Predicates not being set correctly from game (e.g. "name" is still "Friend").
 * Line of sight for audibility?
 * Extensions to the tags to allow an NPC to be given orders or suggestions,
 or extract and use server data (such as time, players etc.)

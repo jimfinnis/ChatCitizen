@@ -199,6 +199,13 @@ public class Plugin extends JavaPlugin {
 			}
 		}
 	}
+	
+	public void showCommandHelp(CommandSender sender){
+		for(String ss: cmdMap.keySet()){
+			CommandAction ca = cmdMap.get(ss);
+			sendCmdMessage(sender, ca.getUsage());
+		}
+	}
 
 	public static ChatTrait getChatCitizenFor(CommandSender sender) {
 		NPC npc = CitizensAPI.getDefaultNPCSelector().getSelected(sender);
