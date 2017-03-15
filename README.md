@@ -2,7 +2,7 @@
 This is a Citizens 2 Trait for chatbot NPCs, using a subset of AIML
 2.0 (sans <sraix>, because I'm trying to keep the dependencies down,
 and the Japanese stuff for the same reason). The underlying code used is Richard Wallace's
-[Program AB](http://alicebot.blogspot.co.uk/2013/01/program-ab-aiml-20-reference.html)
+[Program AB](http://alicebot.blogspot.co.uk/2013/01/program-ab-aiml-20-reference.html).
 Program AB has a GPL license, so ChatCitizen is also GPL.
 
 ## Caveats
@@ -29,11 +29,13 @@ plane) and 2 vertically (Y plane).
 
 
 ## Commands
-* **ccz setbot [name]** will set the currently selected NPC to use the named bot.
+* **ccz setbot [name]** will set the currently selected NPC to use the named bot (these are subdirectories of the **bots** directory).
 * **ccz info** get info on the NPC's ChatCitizen parameters
 * **ccz set [paramname] [value]** set a parameter
 
 ## Parameters
+Many of these require spontaneous speech to be enabled by adding RANDSAY and GREETSAY to the bot's categories. The default
+bot doesn't have these.
 * **saydist** how far the bot will look for someone to randomly
 talk to - if there's no-one nearby, it stays quiet.
 * **sayint** the time it will wait between random speech events.
