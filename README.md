@@ -60,11 +60,13 @@ Feel free to just copy and modify all the files from **default**, of course.
 
 ### Spontaneous speech patterns
 Adding categories with certain special patterns will make the robot
-produce spontaneous speech:
+produce spontaneous speech. If the category is not present, the speech
+will not trigger.
 * **RANDSAY** is fired off at random
 * **GREETSAY** is fired off when a player moves close and hasn't been greeted for a while.
-
-There are properties associated with these: see above.
+* **ENTITYHITME** triggers when the bot is hit by a non-player
+* **PLAYERHITME** triggers when the bot is hit by player
+There are properties associated with some of these: see above.
 
 
 ## Future work

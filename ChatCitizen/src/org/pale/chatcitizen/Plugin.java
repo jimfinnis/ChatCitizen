@@ -69,6 +69,7 @@ public class Plugin extends JavaPlugin {
 			return;
 		}	
 
+		// this is the listener for pretty much ALL events EXCEPT NPC events, not just chat.
 		new ChatEventListener(this);
 
 
@@ -148,9 +149,11 @@ public class Plugin extends JavaPlugin {
 		for(NPC npc: chatters){
 			Location npcl = npc.getEntity().getLocation();
 			if(isNear(playerloc,npcl,2)){ // chatters assume <2m and you're talking to them.
-				ChatTrait ct = npc.getTrait(ChatTrait.class);
-				ct.setPropertiesForSender(player);
-				ct.respondTo(player,msg);
+				if(npc.hasTrait(ChatTrait.class)){
+					ChatTrait ct = npc.getTrait(ChatTrait.class);
+					ct.setPropertiesForSender(player);
+					ct.respondTo(player,msg);
+				}
 			}
 		}
 	}

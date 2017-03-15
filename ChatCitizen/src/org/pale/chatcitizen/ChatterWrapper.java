@@ -28,7 +28,7 @@ public class ChatterWrapper {
 		this.name = name;
 		
 		// look for special categories the bot might need to have for spontaneous speech, etc.
-		bot.getSpecialCategoriesPresent("randsay","greetsay");
+		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme");
 	}
 	public boolean hasSpecialCategory(String s){
 		return bot.hasSpecialCategory(s);

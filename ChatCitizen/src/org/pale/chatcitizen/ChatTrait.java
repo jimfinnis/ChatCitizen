@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitName;
@@ -16,6 +18,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -25,6 +29,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 //The Trait class also implements Listener so you can add EventHandlers directly to your trait.
 @TraitName("chatcitizen") // convenience annotation in recent CitizensAPI versions for specifying trait name
 public class ChatTrait extends Trait {
+	
+	private static final long sayCheckInterval = 5000; //!< how often (in ms) we check random say.
+
+
 	public ChatTrait() {
 		super("chatcitizen");
 		plugin = JavaPlugin.getPlugin(Plugin.class);
@@ -57,8 +65,7 @@ public class ChatTrait extends Trait {
 
 	@Persist public double audibleDistance=10; //!< how far this robot is audible
 
-	private boolean hasGreetSay;
-	private boolean hasRandSay;
+	private boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe;
 
 
 
@@ -107,18 +114,23 @@ public class ChatTrait extends Trait {
 			Plugin.log("Click.");
 		}
 	}
-	@EventHandler
-	public void punch(net.citizensnpcs.api.event.NPCLeftClickEvent event){
-		//Handle a click on a NPC. The event has a getNPC() method. 
-		//Be sure to check event.getNPC() == this.getNPC() so you only handle clicks on this NPC!
-		if(event.getNPC() == this.getNPC()){
-			Messaging.send(event.getClicker(), "OW!");
-			Plugin.log("Punch.");
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void monitorDamageFromEntity(final net.citizensnpcs.api.event.NPCDamageByEntityEvent e){
+		if(e.getNPC() == this.getNPC()){
+			Entity bastard = e.getDamager();
+			if(bastard instanceof Player){
+				if(hasPlayerHitMe)respondTo((Player)bastard,"PLAYERHITME");
+			} else {
+				if(hasEntityHitMe)sayToAll("ENTITYHITME");
+			}
 		}
 	}
 
 
+
 	private int tickint=0;
+
 	// Called every tick
 	@Override
 	public void run() {
@@ -145,6 +157,8 @@ public class ChatTrait extends Trait {
 
 		hasGreetSay = bot.hasSpecialCategory("greetsay");
 		hasRandSay = bot.hasSpecialCategory("randsay");
+		hasEntityHitMe = bot.hasSpecialCategory("entityhitme");
+		hasPlayerHitMe = bot.hasSpecialCategory("playerhitme");
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.
@@ -174,6 +188,16 @@ public class ChatTrait extends Trait {
 	@Override
 	public void onRemove() {
 	}
+	
+	/**
+	 * Format and send a response to all nearby players
+	 */
+	private void say(String toName,String msg){
+		String s = ChatColor.AQUA+"["+npc.getFullName()+" -> "+toName+"] "+ChatColor.WHITE+msg;
+		for(Player p: getNearPlayers(audibleDistance)){
+			p.sendMessage(s);
+		}		
+	}
 
 	/**
 	 * Respond to a player saying something nearby. Alternatively used to just say something randomly,
@@ -184,11 +208,17 @@ public class ChatTrait extends Trait {
 	public void respondTo(Player player,String msg) {
 		String botresp = bot.respond(npc,msg);
 		Plugin.log("Bot response: "+botresp);
-		String response = ChatColor.AQUA+"["+npc.getFullName()+" -> "+player.getDisplayName()+"] "+ChatColor.WHITE+botresp;
-		// say it out loud to all nearby players
-		for(Player p: getNearPlayers(audibleDistance)){
-			p.sendMessage(response);
-		}
+		say(player.getDisplayName(),botresp);
+	}
+	
+	/**
+	 * Say something (typically a spontaneous speech) to everyone nearby. The msg is passed to be bot,
+	 * and should be a special (RANDSAY etc.). 
+	 */
+	public void sayToAll(String msg){
+		String botresp = bot.respond(npc,msg);
+		Plugin.log("Bot response (saytoall): "+botresp);
+		say("(nearby)",botresp);
 	}
 
 	/**
@@ -199,10 +229,11 @@ public class ChatTrait extends Trait {
 		bot.setProperty(npc, "name", player.getDisplayName());
 	}
 
+	private long lastSayCheckIntervalTime=0;
 	private void processRandSay(){
 		long t = System.currentTimeMillis();
-		if(hasRandSay && (t-lastRandSay > sayInterval*1000)){
-			if(rand.nextDouble()<sayProbability){
+		if(hasRandSay && (t-lastSayCheckIntervalTime > sayCheckInterval)){
+			if((t-lastRandSay > sayInterval*1000) && (rand.nextDouble()<sayProbability)){
 				// try to find someone to talk to
 				List<Player> ps  = getNearPlayers(sayDist);
 				if(ps.size() > 0){
@@ -211,6 +242,7 @@ public class ChatTrait extends Trait {
 					lastRandSay = t;
 				}
 			}
+			lastSayCheckIntervalTime = t;
 		}
 	}
 
