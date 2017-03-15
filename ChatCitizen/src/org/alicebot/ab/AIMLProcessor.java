@@ -410,6 +410,7 @@ public class AIMLProcessor {
         String limit = getAttributeOrTagValue(node, ps, "limit");
         String defaultResponse = getAttributeOrTagValue(node, ps, "default");
         String evalResult = evalTagContent(node, ps, attributeNames);
+        // TODO JCF SRAIX NOT SUPPORTED
 		String result = "SRAIX NOT SUPPORTED";
         return result;
 
@@ -559,7 +560,7 @@ public class AIMLProcessor {
         if (to == null) {
             to = CalendarUtils.date(jformat, null, null);
         }
-        String result = "unknown";
+        String result = "unknown"; // TODO JCF intervals unsupported
         /*
         if (style.equals("years")) result = ""+IntervalUtils.getYearsBetween(from, to, jformat);
         if (style.equals("months")) result = ""+IntervalUtils.getMonthsBetween(from, to, jformat);

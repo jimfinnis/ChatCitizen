@@ -66,6 +66,7 @@ will not trigger.
 * **GREETSAY** is fired off when a player moves close and hasn't been greeted for a while.
 * **ENTITYHITME** triggers when the bot is hit by a non-player
 * **PLAYERHITME** triggers when the bot is hit by player
+* **HITSOMETHING** triggers when the bot hits something (fun with Sentinel!) 
 There are properties associated with some of these: see above.
 
 

@@ -65,7 +65,7 @@ public class ChatTrait extends Trait {
 
 	@Persist public double audibleDistance=10; //!< how far this robot is audible
 
-	private boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe;
+	private boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe,hasHitSomething;
 
 
 
@@ -120,10 +120,18 @@ public class ChatTrait extends Trait {
 		if(e.getNPC() == this.getNPC()){
 			Entity bastard = e.getDamager();
 			if(bastard instanceof Player){
+				setPropertiesForSender((Player)bastard);
 				if(hasPlayerHitMe)respondTo((Player)bastard,"PLAYERHITME");
 			} else {
 				if(hasEntityHitMe)sayToAll("ENTITYHITME");
 			}
+		}
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void monitorDamageEntity(final net.citizensnpcs.api.event.NPCDamageEntityEvent e){
+		if(e.getNPC() == this.getNPC()){
+			if(hasHitSomething)sayToAll("HITSOMETHING");
 		}
 	}
 
@@ -159,6 +167,7 @@ public class ChatTrait extends Trait {
 		hasRandSay = bot.hasSpecialCategory("randsay");
 		hasEntityHitMe = bot.hasSpecialCategory("entityhitme");
 		hasPlayerHitMe = bot.hasSpecialCategory("playerhitme");
+		hasHitSomething = bot.hasSpecialCategory("hitsomething");
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.
@@ -190,13 +199,17 @@ public class ChatTrait extends Trait {
 	}
 	
 	/**
-	 * Format and send a response to all nearby players
+	 * Generate and send a response to a list of players. 
 	 */
-	private void say(String toName,String msg){
-		String s = ChatColor.AQUA+"["+npc.getFullName()+" -> "+toName+"] "+ChatColor.WHITE+msg;
-		for(Player p: getNearPlayers(audibleDistance)){
-			p.sendMessage(s);
-		}		
+	private void say(String toName,String pattern){
+		List<Player> q = getNearPlayers(audibleDistance);
+		if(q.size()>0){
+			String msg = bot.respond(npc, pattern);
+			String s = ChatColor.AQUA+"["+npc.getFullName()+" -> "+toName+"] "+ChatColor.WHITE+msg;
+			for(Player p: getNearPlayers(audibleDistance)){
+				p.sendMessage(s);
+			}
+		}
 	}
 
 	/**
@@ -205,20 +218,16 @@ public class ChatTrait extends Trait {
 	 * @param player the player who spoke
 	 * @param msg what they said
 	 */
-	public void respondTo(Player player,String msg) {
-		String botresp = bot.respond(npc,msg);
-		Plugin.log("Bot response: "+botresp);
-		say(player.getDisplayName(),botresp);
+	public void respondTo(Player player,String input) {
+		say(player.getDisplayName(),input);
 	}
 	
 	/**
 	 * Say something (typically a spontaneous speech) to everyone nearby. The msg is passed to be bot,
 	 * and should be a special (RANDSAY etc.). 
 	 */
-	public void sayToAll(String msg){
-		String botresp = bot.respond(npc,msg);
-		Plugin.log("Bot response (saytoall): "+botresp);
-		say("(nearby)",botresp);
+	public void sayToAll(String pattern){
+		say("(nearby)",pattern);
 	}
 
 	/**
@@ -263,8 +272,10 @@ public class ChatTrait extends Trait {
 						lasttime = 0;
 					// we didn't greet them recently; let's do that.
 					if(t-lasttime > greetInterval*1000){
-						if(rand.nextDouble()<greetProbability)
+						if(rand.nextDouble()<greetProbability){
+							setPropertiesForSender(p);
 							respondTo(p,"GREETSAY");
+						}
 						lastGreeted.put(p.getName(), t);
 					}
 				}

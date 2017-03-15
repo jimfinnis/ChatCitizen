@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -120,10 +121,14 @@ public class IOUtils {
 	
 	public static String evalScript(String engineName, String script) throws Exception {
         //System.out.println("evaluating "+script);
+		// JCF modified to write to a StringWriter, so we capture the output properly.
+		// Is this a new Nashorn thing?
         ScriptEngineManager mgr = new ScriptEngineManager();
         ScriptEngine engine = mgr.getEngineByName("JavaScript");
+        StringWriter sw = new StringWriter();
+        engine.getContext().setWriter(sw);
 		String result = ""+engine.eval(script);
-		return result;
+		return sw.toString();
 	}
 
 }
