@@ -2,7 +2,7 @@
 This is a Citizens 2 Trait for chatbot NPCs, using a subset of AIML
 2.0 (sans <sraix>, because I'm trying to keep the dependencies down,
 and the Japanese stuff for the same reason). The underlying code used is Richard Wallace's
-[Program AB](http://alicebot.blogspot.co.uk/2013/01/program-ab-aiml-20-reference.html)
+[Program AB](http://alicebot.blogspot.co.uk/2013/01/program-ab-aiml-20-reference.html).
 Program AB has a GPL license, so ChatCitizen is also GPL.
 
 ## Caveats
