@@ -40,7 +40,7 @@ public class ChatterWrapper {
 			c = chats.get(npc.getId());
 		} else {
 			Plugin.log("Creating new chat, bot="+path+", npc="+npc.getFullName());
-			c = new Chat(bot);
+			c = new Chat(bot,npc,npc.getTrait(ChatTrait.class));
 			chats.put(npc.getId(), c);
 		}
 		return c;

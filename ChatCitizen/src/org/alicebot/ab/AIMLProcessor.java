@@ -363,13 +363,14 @@ public class AIMLProcessor {
      * or a subtag of the same name.  This function tries to read the value from the XML attribute first,
      * then tries to look for the subtag.
      *
+     *JCF TODO public so that extensions can use it too.
      * @param node       current parse node.
      * @param ps         current parse state.
      * @param attributeName   the name of the attribute.
      * @return             the attribute value.
      */
     // value can be specified by either attribute or tag
-    private static String getAttributeOrTagValue (Node node, ParseState ps, String attributeName) {        // AIML 2.0
+    public static String getAttributeOrTagValue (Node node, ParseState ps, String attributeName) {        // AIML 2.0
         //MagicBooleans.trace("AIMLProcessor.getAttributeOrTagValue (node: " + node + ", attributeName: " + attributeName + ")");
         String result = "";
         Node m = node.getAttributes().getNamedItem(attributeName);

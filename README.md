@@ -71,6 +71,14 @@ will not trigger.
 * **HITSOMETHING** triggers when the bot hits something (fun with Sentinel!) 
 There are properties associated with some of these: see above.
 
+## AIML extensions
+These will increase over time. Speaking of time..
+** <mctime type=".."/> will give the in-game time of day
+    *** **type="digital"** (default) will give HH:MM
+    *** **type="raw"** will give raw ticks
+    *** **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
+    
+
 
 ## Future work
 * Make sure that **sayprob** works as advertised. It doesn't right now.

@@ -8,7 +8,11 @@ import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.Trait;
+
 import org.alicebot.ab.utils.IOUtils;
+import org.pale.chatcitizen.ChatTrait;
 
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
@@ -47,14 +51,22 @@ public class Chat {
 	public static String longitude;
 	public static String latitude;
 	public TripleStore tripleStore = new TripleStore("anon", this);
+	
+	/**
+	 * JCF backreference to trait and NPC. Allows the extensions to get these.
+	 */
+	public ChatTrait trait;
+	public NPC npc;
 
 	/**
 	 * Constructor  (defualt customer ID)
 	 *
 	 * @param bot    the bot to chat with
 	 */
-	public Chat(Bot bot)  {
+	public Chat(Bot bot,NPC npc, ChatTrait trait)  {
 		this(bot, true, "0");
+		this.npc = npc;
+		this.trait = trait;
 	}
 
 	public Chat(Bot bot, boolean doWrites) {

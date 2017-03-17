@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
+import org.alicebot.ab.AIMLProcessor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -68,6 +69,9 @@ public class Plugin extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);	
 			return;
 		}	
+		
+		// initialise AIML extensions
+		AIMLProcessor.extension = new ChatBotAIMLExtension();
 
 		// this is the listener for pretty much ALL events EXCEPT NPC events, not just chat.
 		new ChatEventListener(this);
