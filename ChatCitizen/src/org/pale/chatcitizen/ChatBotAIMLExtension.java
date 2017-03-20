@@ -42,13 +42,13 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		ChatTrait t = getTrait(ps.chatSession.npc);
 		NPCDestinations.NPCDestData d = t.nddat;
 		if(d==null){
-			return "";
+			return "NO";
 		}
 		if(cmd.equalsIgnoreCase("go")){
 			String name = AIMLProcessor.getAttributeOrTagValue(node, ps, "loc");
 			if(name == null){
 				Plugin.warn("No loc tag in <npcdest cmd=\"go\"> for NPC: "+d.npc.getFullName());
-				return "";
+				return "NO";
 			}
 			String stime = AIMLProcessor.getAttributeOrTagValue(node, ps, "time");
 			long time;
@@ -59,7 +59,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 
 			return d.go(name, time);
 		} else
-			return "";
+			return "NO";
 	}
 
 
