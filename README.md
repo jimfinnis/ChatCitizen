@@ -142,7 +142,7 @@ These are those tags which do not require any extra plugins.
     * **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
 
 ### NPC Destinations
-These will only work if a recent version of nuNPC Destinations is installed.
+These will only work if a recent version (at least 1.43) of nuNPC Destinations is installed.
 * ```<npcdest cmd="go" loc="location" time="staytime"/>``` will tell the bot to go to a given location, specified by name or number. The time is how long the NPC should linger in milliseconds, and is 1 day if not specified.  If this fails for any reason (trait not present, can't find location) the command will return NO. If it succeeds, it will return YES. A suitable usage might be:
  ```
 <category><pattern>go home</pattern>
