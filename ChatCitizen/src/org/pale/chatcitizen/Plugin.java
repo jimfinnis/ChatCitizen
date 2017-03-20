@@ -19,6 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
 
 
 
@@ -35,6 +36,8 @@ public class Plugin extends JavaPlugin {
 	 * All the bot wrappers - the Traits share the bots.
 	 */
 	private Map<String,ChatterWrapper> bots = new HashMap<String,ChatterWrapper>();
+
+	private NPCDestinations ndPlugin;
 
 	/**
 	 * Use this to get plugin instances - don't play silly buggers creating new
@@ -68,7 +71,10 @@ public class Plugin extends JavaPlugin {
 			getLogger().severe("Citizens 2.0 not found or not enabled");
 			getServer().getPluginManager().disablePlugin(this);	
 			return;
-		}	
+		}
+		
+		// check other optional plugins
+		ndPlugin = new NPCDestinations();
 		
 		// initialise AIML extensions
 		AIMLProcessor.extension = new ChatBotAIMLExtension();
@@ -77,12 +83,13 @@ public class Plugin extends JavaPlugin {
 		new ChatEventListener(this);
 
 
-		//Register your trait with Citizens.        
+		//Register.        
 		net.citizensnpcs.api.CitizensAPI.getTraitFactory().registerTrait(net.citizensnpcs.api.trait.TraitInfo.create(ChatTrait.class));	
 
 		saveDefaultConfig();
 		loadBots();
 		autoRegisterCommands();
+		
 		getLogger().info("ChatCitizen has been enabled");
 	}
 
