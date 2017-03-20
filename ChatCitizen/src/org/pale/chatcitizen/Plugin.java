@@ -118,7 +118,7 @@ public class Plugin extends JavaPlugin {
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		String cn = command.getName();
-		if(cn.equals("ccz") || cn.equals("chatcitizen")){
+		if(cn.equals("chatcitizen")){
 			if(args.length == 0){
 				String cmds="";
 				for(String cc: cmdMap.keySet())cmds+=cc+" ";

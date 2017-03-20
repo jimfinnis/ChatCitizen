@@ -3,11 +3,8 @@ main: org.pale.chatcitizen.Plugin
 version: 1.2
 depend: [Citizens]
 commands:
-  ccz:
-    description: ChatCitizen configuration command
-    usage: /ccz
-    permission: chatcitizen
   chatcitizen:
     description: ChatCitizen configuration command
+    aliases: [ccz]
     usage: /chatcitizen
     permission: chatcitizen
