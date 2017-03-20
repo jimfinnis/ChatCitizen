@@ -25,7 +25,7 @@ public class ExternalPluginInterface {
 			int req = Integer.parseInt(mvarray[i]);
 			if(got>req)break;
 			if(got<req){
-				Plugin.getInstance().getLogger().warning("Plugin "+name+" has version "+vn+", but "+required+" is required for "+level);
+				Plugin.warn("Plugin "+name+" has version "+vn+", but "+required+" is required for "+level);
 				return false;
 			}
 		}
@@ -36,7 +36,7 @@ public class ExternalPluginInterface {
 		this.name = name;
 		plugin = Plugin.getInstance().getServer().getPluginManager().getPlugin(name);
 		if(plugin==null){
-			Plugin.getInstance().getLogger().warning("Cannot load plugin "+name+", extensions for it will not work.");
+			Plugin.warn("Cannot load plugin "+name+", extensions for it will not work.");
 		} else {
 			String vn = plugin.getDescription().getVersion();
 			// check we meet the minimum requirements.

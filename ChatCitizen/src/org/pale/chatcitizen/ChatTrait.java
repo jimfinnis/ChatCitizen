@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
 import net.citizensnpcs.api.trait.TraitName;
@@ -19,8 +17,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
 
 
 //This is your trait that will be applied to a npc using the /trait mytraitname command. 
@@ -32,6 +30,10 @@ public class ChatTrait extends Trait {
 	
 	private static final long sayCheckInterval = 5000; //!< how often (in ms) we check random say.
 
+	/**
+	 * This will point to some data if we have NPCDestinations.
+	 */
+	public NPCDestinations.NPCDestData nddat;
 
 	public ChatTrait() {
 		super("chatcitizen");
@@ -156,6 +158,8 @@ public class ChatTrait extends Trait {
 	public void onAttach() {
 		botName = "default";
 		plugin.getServer().getLogger().info(npc.getName() + " has been assigned ChatCitizen!");
+		// set up the NPCDestinations data (if present)
+		nddat = plugin.ndPlugin.makeData(npc);
 	}
 
 	public void setBot(ChatterWrapper b){

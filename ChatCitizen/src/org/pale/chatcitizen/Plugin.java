@@ -27,6 +27,9 @@ public class Plugin extends JavaPlugin {
 	public static void log(String msg) {
 		getInstance().getLogger().info(msg);
 	}
+	public static void warn(String msg) {
+		getInstance().getLogger().warning(msg);
+	}
 	/**
 	 * Make the plugin a weird singleton.
 	 */
@@ -37,7 +40,7 @@ public class Plugin extends JavaPlugin {
 	 */
 	private Map<String,ChatterWrapper> bots = new HashMap<String,ChatterWrapper>();
 
-	private NPCDestinations ndPlugin;
+	public NPCDestinations ndPlugin;
 
 	/**
 	 * Use this to get plugin instances - don't play silly buggers creating new

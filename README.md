@@ -133,60 +133,51 @@ will not trigger.
 There are properties associated with some of these: see above.
 
 ## AIML extensions
-These will increase over time. Speaking of time..
-** <mctime type=".."/> will give the in-game time of day
-    *** **type="digital"** (default) will give HH:MM
-    *** **type="raw"** will give raw ticks
-    *** **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
-    
-
-
-## Future work
-* Make sure that **sayprob** works as advertised. It doesn't right now.
-* Predicates not being set correctly from game (e.g. "name" is still "Friend").
-* Line of sight for audibility?
-* Extensions to the tags to allow an NPC to be given orders or suggestions,
-or extract and use server data (such as time, players etc.)
-* Scripting language, probably through JSR-223 and Javascript (ugh).
-This will need some way of getting at bot properties, including the
-server properties alluded to above
-* Some way of actually doing stuff by connecting to Citizens API.
-* Also support for other APIs such as NPCDestinations, Sentinel.
-
-And above all
-* **Some nice bots (you can help with this!)**
-
-### Spontaneous speech patterns
-Adding categories with certain special patterns will make the robot
-produce spontaneous speech. If the category is not present, the speech
-will not trigger.
-* **RANDSAY** is fired off at random
-* **GREETSAY** is fired off when a player moves close and hasn't been greeted for a while.
-* **ENTITYHITME** triggers when the bot is hit by a non-player
-* **PLAYERHITME** triggers when the bot is hit by player
-* **HITSOMETHING** triggers when the bot hits something (fun with Sentinel!) 
-There are properties associated with some of these: see above.
-
-## AIML extensions
-These will increase over time. Speaking of time..
+These have been added using the ```AIMLProcessorExtension``` class inside Program AB. These will hopefully increase over time.
+### General
+These are those tags which do not require any extra plugins.
 * ```<mctime type=".."/>``` will give the in-game time of day
     * **type="digital"** (default) will give HH:MM
     * **type="raw"** will give raw ticks
     * **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
-    
 
+### NPC Destinations
+These will only work if a recent version of nuNPC Destinations is installed.
+* ```<npcdest cmd="go" loc="location" time="staytime"/>``` will tell the bot to go to a given location, specified by name or number. The time is how long the NPC should linger in milliseconds, and is 1 day if not specified.  If this fails for any reason (trait not present, can't find location) the command will return NO. If it succeeds, it will return YES. A suitable usage might be:
+ ```
+<category><pattern>go home</pattern>
+    <template><think>
+        <set name="topic">npcgo</set>
+        <set name="dest">home</set>
+        </think>
+        <srai>
+            <npcdest cmd="go" loc="0"/>
+        </srai>
+    </template>
+</category>
+
+<topic name="npcgo">
+    <category><pattern>YES</pattern>
+    <template>OK, I'll go <get name="dest"/>.
+    <set name="topic"/></template>
+    </category>
+    <category><pattern>NO</pattern>
+    <template>I don't know where <get name="dest"/> is!
+    <set name="topic"/></template>
+    </category>
+</topic>
+```
+Bear in mind I am far from an expert in AIML!
 
 ## Future work
 * Make sure that **sayprob** works as advertised. It doesn't right now.
-* Predicates not being set correctly from game (e.g. "name" is still "Friend").
 * Line of sight for audibility?
-* Extensions to the tags to allow an NPC to be given orders or suggestions,
-or extract and use server data (such as time, players etc.)
+* More extensions! **Any ideas?**
 * Scripting language, probably through JSR-223 and Javascript (ugh).
 This will need some way of getting at bot properties, including the
-server properties alluded to above
-* Some way of actually doing stuff by connecting to Citizens API.
-* Also support for other APIs such as NPCDestinations, Sentinel.
+server properties alluded to above.
+* Sharing of common AIML files across all bots - for example, Pandorabots tend to share a set of common reductions which will currently be loaded separately. 
 
 And above all
 * **Some nice bots (you can help with this!)**
+
