@@ -33,6 +33,14 @@ public class ChatterWrapper {
 	public boolean hasSpecialCategory(String s){
 		return bot.hasSpecialCategory(s);
 	}
+	
+	/**
+	 * Discard and reload this bot and clear all chats (and all properties therein).
+	 */
+	public void reload(){
+		bot = new Bot(name,path);
+		chats= new HashMap<Integer,Chat>();
+	}
 
 	public synchronized Chat getChat(NPC npc){ // synch - more than one chatbot might be using this!
 		Chat c;

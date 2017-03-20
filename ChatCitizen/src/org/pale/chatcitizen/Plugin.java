@@ -230,5 +230,10 @@ public class Plugin extends JavaPlugin {
 			return npc.getTrait(ChatTrait.class);
 		}
 		return null;
+	}
+	public void reloadAllBots() {
+		for(ChatterWrapper b : bots.values()){
+			b.reload();
+		}
 	}	
 }

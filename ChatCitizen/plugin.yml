@@ -6,7 +6,8 @@ commands:
   ccz:
     description: ChatCitizen configuration command
     usage: /ccz
+    permission: chatcitizen
   chatcitizen:
     description: ChatCitizen configuration command
     usage: /chatcitizen
-
+    permission: chatcitizen
