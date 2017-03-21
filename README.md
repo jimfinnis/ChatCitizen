@@ -17,7 +17,9 @@ You will (obviously) need Citizens 2 installed. Install the ChatCitizen JAR as u
 * You should now be able to run the server and attach the trait. Note that the server will now take a little more time to boot - AIML files can be large and take a long time to load!
 
 ## Attaching the trait
-Do this as usual with **/trait chatcitizen** with an NPC selected. They will be assigned the default bot, but each will have a different context so shouldn't get confused.
+Do this as usual with **/trait chatcitizen** with an NPC selected. All NPCs will initially be assigned the default bot, but each will have a different context so shouldn't get confused. It's important to remember that multiple NPCs can share the same bot, making them respond the same way, but that each NPC has a different context for its bot. For example, you could have two bots ```soldier``` and ```idiot```. Your guards could then all use the ```soldier``` bot, and your idiots could use the ```idiot``` bot. 
+
+You can change the bot used by an NPC by selecting the NPC and using ```ccz setbot [botname]```. To find out which NPCs are using which bot, use ```ccz info``` to get info for a selected NPC, or ```ccz bots``` which will list all the bots and their NPCs.
 
 ## Talking
 Talk to the bot by standing near it and saying things in chat. There's
