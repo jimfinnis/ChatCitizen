@@ -9,10 +9,12 @@ import org.alicebot.ab.AIMLProcessorExtension;
 import org.alicebot.ab.ParseState;
 import org.alicebot.ab.Utilities;
 import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
+import org.pale.chatcitizen.plugininterfaces.Sentinel;
+import org.pale.chatcitizen.plugininterfaces.Sentinel.SentinelData;
 import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
-	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest");
+	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
 	}
@@ -30,6 +32,8 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return mctime(node, ps);
 			else if(nodeName.equals("npcdest"))
 				return npcdest(node,ps);
+			else if(nodeName.equals("sentinel"))
+				return sentinel(node,ps);
 			else return (AIMLProcessor.genericXML(node, ps));
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -61,6 +65,23 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		} else
 			return "NO";
 	}
+	
+	private String sentinel(Node node, ParseState ps){
+		String cmd = AIMLProcessor.getAttributeOrTagValue(node, ps, "cmd");
+		Sentinel.SentinelData d = Plugin.getInstance().sentinelPlugin.makeData(ps.chatSession.npc);
+		if(d==null){
+			return "NO";
+		} else {
+			if(cmd.equalsIgnoreCase("timeSinceAttack")){
+				return Long.toString(d.timeSinceAttack);
+			} else if(cmd.equalsIgnoreCase("timeSinceSpawn")){
+				return Long.toString(d.timeSinceSpawn);
+			} else if(cmd.equalsIgnoreCase("guarding")){
+				return d.guarding;
+			} else 
+				return "NO";
+		}
+	}
 
 
 	// <mctime type=".."/> get Minecraft time in several formats:
@@ -72,6 +93,14 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		if(type==null)type="digital";
 		if(type.equals("digital")){
 			return String.format("%02d:%02d", hours,minutes);
+		} else if(type.equals("todstring")) {
+			if(t>22000 || t<6000)
+				return "morning";
+			if(t>=6000 && t<11500)
+				return "afternoon";
+			if(t>=11500 && t<15000)
+				return "evening";
+			else return "night";
 		} else if(type.equals("approx")){
 			if (t > 22700 || t <= 450) {
 				return "dawn";	

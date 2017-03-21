@@ -81,6 +81,7 @@ These are those tags which do not require any extra plugins.
     * **type="digital"** (default) will give HH:MM
     * **type="raw"** will give raw ticks
     * **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
+    * **type="todstring"** will also return a string: morning, afternoon, evening or night.
 
 ### NPC Destinations
 These will only work if a recent version (at least 1.43) of nuNPC Destinations is installed.
@@ -110,10 +111,19 @@ These will only work if a recent version (at least 1.43) of nuNPC Destinations i
 ```
 Bear in mind I am far from an expert in AIML!
 
+### Sentinel
+This is work in progress. Currently it will tell you what
+is being guarded and how long the sentinel has been spawned. I
+would like it to somehow be able to give a list of targets in a useful
+way, and how "busy" it has been (how long since attack). The trait
+doesn't keep that data, so it'll be a hack (count number of attacks
+every few ticks and see when it changes?)
+
 ## Dependencies
 You will need to add the following JARs to your build path if you want to build ChatCitizen yourself:
 * Citizens 2
 * NPC Destinations
+* Sentinel 1.0
 
 ## Future work
 * Make sure that **sayprob** works as advertised. It doesn't right now.

@@ -22,6 +22,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
+import org.pale.chatcitizen.plugininterfaces.Sentinel;
 import org.pale.chatcitizen.Command.CallInfo;
 import org.pale.chatcitizen.Command.Cmd;
 import org.pale.chatcitizen.Command.Registry;
@@ -46,6 +47,7 @@ public class Plugin extends JavaPlugin {
 	private Map<String,ChatterWrapper> bots = new HashMap<String,ChatterWrapper>();
 
 	public NPCDestinations ndPlugin;
+	public Sentinel sentinelPlugin;
 	
 	private Registry commandRegistry=new Registry();
 
@@ -85,6 +87,8 @@ public class Plugin extends JavaPlugin {
 
 		// check other optional plugins
 		ndPlugin = new NPCDestinations();
+		
+		sentinelPlugin = new Sentinel();
 
 		// initialise AIML extensions
 		AIMLProcessor.extension = new ChatBotAIMLExtension();
