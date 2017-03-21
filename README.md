@@ -111,10 +111,9 @@ These will only work if a recent version (at least 1.43) of nuNPC Destinations i
 Bear in mind I am far from an expert in AIML!
 
 ## Dependencies
-You will need add the following JARs if you want to build ChatCitizen yourself:
+You will need to add the following JARs to your build path if you want to build ChatCitizen yourself:
 * Citizens 2
 * NPC Destinations
-* MondoCommand
 
 ## Future work
 * Make sure that **sayprob** works as advertised. It doesn't right now.
