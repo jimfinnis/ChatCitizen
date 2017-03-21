@@ -8,9 +8,9 @@ Program AB has a GPL license, so ChatCitizen is also GPL.
 ## Caveats
 * This is very, very, very preliminary work. Use at your own risk.
 * You're going to need to know some AIML.
-
-
 ## Installing
+
+
 You will (obviously) need Citizens 2 installed. Install the ChatCitizen JAR as usual, but you will need to take some extra steps. 
 * Run the server once with the JAR installed to make the plugin directory.
 * Move the **bots** directory into the **plugins/ChatCitizen** directory - these are the robot definitions.
@@ -90,9 +90,13 @@ plane) and 2 vertically (Y plane).
 
 
 ## Commands
-* **ccz setbot [name]** will set the currently selected NPC to use the named bot (these are subdirectories of the **bots** directory).
-* **ccz info** get info on the NPC's ChatCitizen parameters
-* **ccz set [paramname] [value]** set a parameter
+* **ccz help [commandname]** get help on a command - with no arguments, list the commands.
+* **ccz setbot [name]** will set the currently selected NPC to use the named bot (these are subdirectories of the **bots** directory). (Required permission ```chatcitizen.set```.)
+* **ccz info** get info on the NPC's ChatCitizen parameters.
+* **ccz set [paramname] [value]** set a parameter (requires ```chatcitizen.set```).
+* **ccz reloadall** reload all AIML and data files (requires ```chatcitizen.reloadall```).
+* **ccz reload [botname]** reload the AIML and data files for a bot (requires ```chatcitizen.reload```). Note that the name is that of the bot as given in config.yml, not an NPC using that bot.
+* **ccz bots** list all bots and the NPCs which use them.
 
 ## Parameters
 Many of these require spontaneous speech to be enabled by adding RANDSAY and GREETSAY to the bot's categories. The default
@@ -168,6 +172,12 @@ These will only work if a recent version (at least 1.43) of nuNPC Destinations i
 </topic>
 ```
 Bear in mind I am far from an expert in AIML!
+
+## Dependencies
+You will need add the following JARs if you want to build ChatCitizen yourself:
+* Citizens 2
+* NPC Destinations
+* MondoCommand
 
 ## Future work
 * Make sure that **sayprob** works as advertised. It doesn't right now.

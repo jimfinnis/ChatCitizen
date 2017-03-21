@@ -1,5 +1,6 @@
 package org.pale.chatcitizen;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
 import org.alicebot.ab.AIMLProcessor;
+import org.alicebot.ab.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -20,6 +22,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
+import org.pale.chatcitizen.Command.CallInfo;
+import org.pale.chatcitizen.Command.Cmd;
+import org.pale.chatcitizen.Command.Registry;
 
 
 
@@ -41,6 +46,8 @@ public class Plugin extends JavaPlugin {
 	private Map<String,ChatterWrapper> bots = new HashMap<String,ChatterWrapper>();
 
 	public NPCDestinations ndPlugin;
+	
+	private Registry commandRegistry=new Registry();
 
 	/**
 	 * Use this to get plugin instances - don't play silly buggers creating new
@@ -75,10 +82,10 @@ public class Plugin extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);	
 			return;
 		}
-		
+
 		// check other optional plugins
 		ndPlugin = new NPCDestinations();
-		
+
 		// initialise AIML extensions
 		AIMLProcessor.extension = new ChatBotAIMLExtension();
 
@@ -91,8 +98,8 @@ public class Plugin extends JavaPlugin {
 
 		saveDefaultConfig();
 		loadBots();
-		autoRegisterCommands();
-		
+		commandRegistry.register(this); // register commands
+
 		getLogger().info("ChatCitizen has been enabled");
 	}
 
@@ -119,20 +126,7 @@ public class Plugin extends JavaPlugin {
 			String label, String[] args) {
 		String cn = command.getName();
 		if(cn.equals("chatcitizen")){
-			if(args.length == 0){
-				String cmds="";
-				for(String cc: cmdMap.keySet())cmds+=cc+" ";
-				sendCmdMessage(sender,cmds);
-				return true;
-			}
-			String cmdName = args[0];
-			args = Arrays.copyOfRange(args, 1, args.length);
-			if(!cmdMap.containsKey(cmdName)){
-				sendCmdMessage(sender,"unknown chatcitizen command: "+cmdName);
-				return true;
-			}
-			CommandAction ca = cmdMap.get(cmdName);
-			ca.execute(sender,args);
+			commandRegistry.handleCommand(sender, args);
 			return true;
 		}
 		return false;
@@ -146,7 +140,6 @@ public class Plugin extends JavaPlugin {
 
 	List<NPC> chatters = new ArrayList<NPC>();
 
-	private TreeMap<String, CommandAction> cmdMap = new TreeMap<String,CommandAction>();
 	public void addChatter(NPC npc) {
 		chatters.add(npc);
 	}
@@ -171,55 +164,6 @@ public class Plugin extends JavaPlugin {
 			}
 		}
 	}
-	private void autoRegisterCommands(){
-		FileConfiguration conf = new ConfigAccessor("commands.yml").getConfig();
-
-		ConfigurationSection cmds = conf.getRoot();
-
-		for(String s: cmds.getKeys(false)){
-			ConfigurationSection sec = cmds.getConfigurationSection(s);
-			for(String ss: sec.getKeys(false)){
-				Object o = sec.get(ss);
-				log("Command "+s+" Thing " + ss + " type "+o.getClass().getCanonicalName());
-			}
-
-			// get the usage details from plugin.yml
-			String usage;
-			int argc;
-			if(sec.contains("usage") && sec.get("usage") instanceof String)
-				usage = sec.getString("usage");
-			else
-				usage = "??";
-			if(sec.contains("argc") && sec.get("argc") instanceof Integer)
-				argc = sec.getInt("argc");
-			else
-				argc = -1; // default is varargs.
-
-			// try to find the class
-			String className = "org.pale.chatcitizen.Command."+s.substring(0, 1).toUpperCase() + s.substring(1);
-			try {
-				Class<?> cl = Class.forName(className);
-				// instantiate and register
-				CommandAction ca = (CommandAction)(cl.newInstance());
-				ca.init(argc,usage);
-				cmdMap.put(s, ca);
-			} catch (ClassNotFoundException e) {
-				log("class not found for command: "+s+" ["+className+"]");
-			} catch (InstantiationException e) {
-				log("cannot instantiate: "+className);
-			} catch (IllegalAccessException e) {
-				log("illegal access: "+className);
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void showCommandHelp(CommandSender sender){
-		for(String ss: cmdMap.keySet()){
-			CommandAction ca = cmdMap.get(ss);
-			sendCmdMessage(sender, ca.getUsage());
-		}
-	}
 
 	public static ChatTrait getChatCitizenFor(CommandSender sender) {
 		NPC npc = CitizensAPI.getDefaultNPCSelector().getSelected(sender);
@@ -231,9 +175,130 @@ public class Plugin extends JavaPlugin {
 		}
 		return null;
 	}
-	public void reloadAllBots() {
+
+	/**
+	 * Commands
+	 */
+
+	@Cmd(desc="get info on a bot",argc=0,usage="<npcname>",cz=true)
+	public void info(CallInfo c){
+		String [] a;
+		ChatTrait ct = c.getCitizen();
+		a = new String[] {
+				"Bot name = "+ct.getBotName(),
+				"Random speech distance [saydist] = "+ct.sayDist,
+				"Random speech interval [sayint] = "+ct.sayInterval,
+				"Random speech chance [sayprob] = "+(int)(ct.sayProbability*100),
+				"Greet distance [greetdist] = "+ct.greetDist,
+				"Greet interval [greetint] = "+ct.greetInterval,
+				"Greet chance = [greetprob] "+(int)(ct.greetProbability*100),
+				"Audible distance [auddist] = "+ct.audibleDistance
+		};
+
+		StringBuilder b = new StringBuilder();
+		for(String s: a){
+			b.append(s);b.append("\n");
+		}
+		c.msg(b.toString());
+	}
+
+	@Cmd(desc="reload all bots",argc=0,permission="chatcitizen.reloadall")
+	public void reloadall(CallInfo c){
 		for(ChatterWrapper b : bots.values()){
 			b.reload();
+		}		
+	}
+	
+	@Cmd(desc="reload a given bot",argc=1,permission="chatcitizen.reload",usage="[botname]")
+	public void reload(CallInfo c){
+		String n = c.getArgs()[0];
+		if(!bots.containsKey(n)){
+			c.msg("Bot not known. List bots with \"ccz bots\".");
+		} else {
+			ChatterWrapper b = bots.get(n);
+			b.reload();
 		}
-	}	
+	}
+	
+	@Cmd(name="bots",desc="list all bots and which NPCs use them",argc=0)
+	public void listBots(CallInfo c){
+		for(String s : bots.keySet()){
+			ChatterWrapper b = bots.get(s);
+			StringBuilder sb = new StringBuilder();
+			sb.append(ChatColor.AQUA+s+": "+ChatColor.GREEN);
+			for(Chat chat: b.getChats()){
+				sb.append(chat.npc.getFullName()+" ");
+			}
+			c.msg(sb.toString());
+		}
+	}
+
+
+
+	private static String[] paramNames={"saydist","sayint","sayprob","greetdist","greetint","greetprob","auddist"};
+
+	// same ordering as paramNames - these are the actual field names!
+	private static String[] paramFields={"sayDist","sayInterval","sayProbability","greetDist","greetInterval",
+		"greetProbability","audibleDistance"
+	};
+
+	@Cmd(desc="set a property in a bot",argc=-1,usage="<property> <value>", cz=true, permission="chatcitizen.set")
+	public void set(CallInfo c) {
+		if(c.getArgs().length < 2){
+			StringBuilder b = new StringBuilder();
+			b.append("Parameters are: ");
+			for(String s: paramNames){
+				b.append(s);b.append(" ");
+			}
+			c.msg(b.toString());
+		} else {
+			ChatTrait ct = c.getCitizen();
+			String[] args=c.getArgs();
+			for(int i=0;i<paramNames.length;i++){
+				if(args[0].equals(paramNames[i])){
+					try {
+						Field f = ChatTrait.class.getDeclaredField(paramFields[i]);
+						double val = Double.parseDouble(args[1]);
+						if(paramNames[i].contains("prob")){
+							val *= 100; // convert "prob"abilities from percentages.
+						}
+						f.setDouble(ct,val);
+					} catch (NumberFormatException e) {
+						c.msg("that is not a number");							
+					} catch (NoSuchFieldException | SecurityException e) {
+						c.msg("no such field - this shouldn't happen:"+paramFields[i]);
+					} catch (IllegalArgumentException e) {
+						c.msg("probably a type mismatch - this shouldn't happen:"+paramFields[i]);
+					} catch (IllegalAccessException e) {
+						c.msg("illegal access to field - this shouldn't happen:"+paramFields[i]);
+					}
+					return; // found and handled, so exit.
+				}
+			}
+			c.msg("No parameter of that name found");
+			return;
+		}
+	}
+	
+	@Cmd(desc="set a chatbot for an NPC",argc=1,usage="<botname>",cz=true,permission="chatcitizen.set")
+	public void setbot(CallInfo c){
+		String name = c.getArgs()[0];
+		ChatTrait ct = c.getCitizen();
+		ChatterWrapper b = Plugin.getInstance().getBot(name);
+		if(b==null){
+			 c.msg("\""+name+"\" is not installed on this server.");
+		} else {
+			ct.setBot(b);
+			c.msg(ct.getNPC().getFullName()+" is now using bot \""+name+"\".");
+		}
+	}
+	
+	@Cmd(desc="show help for a command or list commands",argc=-1,usage="[<command name>]")
+	public void help(CallInfo c){
+		if(c.getArgs().length==0){
+			commandRegistry.listCommands(c);
+		} else {
+			commandRegistry.showHelp(c,c.getArgs()[0]);
+		}
+	}
 }

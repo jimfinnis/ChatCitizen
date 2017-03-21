@@ -1,5 +1,6 @@
 package org.pale.chatcitizen;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,10 @@ public class ChatterWrapper {
 	}
 	public boolean hasSpecialCategory(String s){
 		return bot.hasSpecialCategory(s);
+	}
+	
+	public Collection<Chat> getChats(){
+		return chats.values();
 	}
 	
 	/**
