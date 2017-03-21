@@ -95,7 +95,7 @@ plane) and 2 vertically (Y plane).
 * **ccz info** get info on the NPC's ChatCitizen parameters.
 * **ccz set [paramname] [value]** set a parameter (requires ```chatcitizen.set```).
 * **ccz reloadall** reload all AIML and data files (requires ```chatcitizen.reloadall```).
-* **ccz reload [botname]** reload the AIML and data files for a bot (requires ```chatcitizen.reload```). Note that the name is that of the bot as given in config.yml, not the name an NPC using that bot: if ```ccz bots``` says that NPC Steve, Graham and Betty are all using the "soldier" bot, doing ```ccz reload soldier``` will work and reset them all, but ```ccz reload Betty``` will give an error.
+* **ccz reload [botname]** reload the AIML and data files for a bot (requires ```chatcitizen.reload```). Note that the name is that of the bot as given in config.yml, not the name of an NPC using that bot: if ```ccz bots``` says that NPC Steve, Graham and Betty are all using the "soldier" bot, doing ```ccz reload soldier``` will work and reset them all, but ```ccz reload Betty``` will give an error.
 * **ccz bots** list all bots and the NPCs which use them.
 
 ## Parameters
