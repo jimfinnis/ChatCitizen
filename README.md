@@ -115,10 +115,10 @@ Bear in mind I am far from an expert in AIML!
 
 ### Sentinel
 * ```<sentinel cmd="..."/>``` will return information about a Sentinel, or "NO" if the NPC is not a sentinel. The commands are
-    * **cmd=timeSinceAttack** to give the time since the NPC last attacked something
-    * **cmd=timeSinceSpawn** to give the time since the sentinel was created or died and respawned
-    * **cmd=guarding** to describe the sentinel's guard: either a player name, or "something" (for a non-player entity) or "nothing" for normal behaviour.
-    * **cmd=health** to give the health as a percentage. **TODO: THIS SHOULD BE A GENERAL COMMAND!**
+    * **cmd="timeSinceAttack"** to give the time since the NPC last attacked something
+    * **cmd="timeSinceSpawn"** to give the time since the sentinel was created or died and respawned
+    * **cmd="guarding"** to describe the sentinel's guard: either a player name, or "something" (for a non-player entity) or "nothing" for normal behaviour.
+    * **cmd="health"** to give the health as a percentage. **TODO: THIS SHOULD BE A GENERAL COMMAND!**
 
 ## Dependencies
 You will need to add the following JARs to your build path if you want to build ChatCitizen yourself:
