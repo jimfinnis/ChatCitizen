@@ -1,10 +1,12 @@
 package org.pale.chatcitizen.plugininterfaces;
 
 import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.trait.trait.Inventory;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.mcmonkey.sentinel.SentinelTrait;
+import org.pale.chatcitizen.ChatTrait;
 import org.pale.chatcitizen.ExternalPluginInterface;
 
 public class Sentinel extends ExternalPluginInterface {
@@ -14,6 +16,8 @@ public class Sentinel extends ExternalPluginInterface {
 		public long timeSinceAttack;
 		public String guarding; // "nothing", player name, or "something" if not guarding a player
 		public long timeSinceSpawn;
+		public double health;
+		public String debug;
 		
 	}
 	public Sentinel() {
@@ -25,8 +29,24 @@ public class Sentinel extends ExternalPluginInterface {
 		if(isValid()){
 			SentinelData d = new SentinelData();
 			SentinelTrait t = n.getTrait(SentinelTrait.class);
-			d.timeSinceAttack = 0;
+			ChatTrait ct = n.getTrait(ChatTrait.class);
+			
+			// Sentinel resets TSA at attach, so it will be artificially low.
+			if(Math.abs(t.timeSinceAttack - ct.timeSpawned)<100)
+				d.timeSinceAttack = 1000000;
+			else
+				d.timeSinceAttack = t.timeSinceAttack;
+			
 			d.timeSinceSpawn = t.stats_ticksSpawned;
+			
+// hack for debugging
+			d.debug = "TSA: "+t.timeSinceAttack+" TS: "+ct.timeSpawned;
+			
+			
+			double maxh = t.getLivingEntity().getMaxHealth();
+			double h = t.getLivingEntity().getHealth();
+			
+			d.health = (h/maxh)*100.0;
 			
 			if(t.getGuarding()!=null){
 				Player p = Bukkit.getPlayer(t.getGuarding());

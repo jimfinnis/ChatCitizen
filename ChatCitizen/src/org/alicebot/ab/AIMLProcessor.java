@@ -1034,7 +1034,7 @@ public class AIMLProcessor {
     /**
      * implements all 3 forms of the {@code <condition> tag}
      * In AIML 2.0 the conditional may return a {@code <loop/>}
-     *
+     * JCF: heavily modified to permit min>=x<max and speed things up a bit.
      * @param node     current XML parse node
      * @param ps       AIML parse state
      * @return         result of conditional expression
@@ -1049,41 +1049,68 @@ public class AIMLProcessor {
         // First check if the <condition> has an attribute "name".  If so, get the predicate name.
         predicate = getAttributeOrTagValue(node, ps, "name");
         varName = getAttributeOrTagValue(node, ps, "var");
+        
+        // JCF optimisation
+        String comparisonValue=null;
+        if(predicate!=null)
+        	comparisonValue = ps.chatSession.predicates.get(predicate);
+        else if(varName!=null)
+        	comparisonValue = ps.vars.get(varName);
+        
+        
         // Make a list of all the <li> child nodes:
         for (int i = 0; i < childList.getLength(); i++)
             if (childList.item(i).getNodeName().equals("li")) liList.add(childList.item(i));
         // if there are no <li> nodes, this is a one-shot condition.
         if (liList.size() == 0 && (value = getAttributeOrTagValue(node, ps, "value")) != null   &&
-                   predicate != null  &&
-                   ps.chatSession.predicates.get(predicate).equalsIgnoreCase(value))  {
+        		comparisonValue!=null && 
+                   comparisonValue.equalsIgnoreCase(value))  {
                    return evalTagContent(node, ps, attributeNames);
         }
-        else if (liList.size() == 0 && (value = getAttributeOrTagValue(node, ps, "value")) != null   &&
-                varName != null  &&
-                ps.vars.get(varName).equalsIgnoreCase(value))  {
-            return evalTagContent(node, ps, attributeNames);
-        }
         // otherwise this is a <condition> with <li> items:
+        // JCF a <li> can contain a var or name clause, allowing you to do separate comparisons.
         else for (int i = 0; i < liList.size() && result.equals(""); i++) {
             Node n = liList.get(i);
-            String liPredicate = predicate;
-            String liVarName = varName;
-            if (liPredicate == null) liPredicate = getAttributeOrTagValue(n, ps, "name");
-            if (liVarName == null) liVarName = getAttributeOrTagValue(n, ps, "var");
+            
+            String liPredicate = getAttributeOrTagValue(n, ps, "name");
+            String liVarName = getAttributeOrTagValue(n, ps, "var");
+            String compVal = comparisonValue; // default comparison value
+            
+            // name and var inside the <li> can override the one operating on the whole condition
+            // permitting separate comparisons.
+            if(liPredicate!=null)
+            	compVal = ps.chatSession.predicates.get(liPredicate);
+            else if(liVarName!=null)
+            	compVal = ps.vars.get(liVarName);
+            
             value = getAttributeOrTagValue(n, ps, "value");
             //System.out.println("condition name="+liPredicate+" value="+value);
             if (value != null) {
-                // if the predicate equals the value, return the <li> item.
-                if (liPredicate != null && value != null && (ps.chatSession.predicates.get(liPredicate).equalsIgnoreCase(value) ||
-                        (ps.chatSession.predicates.containsKey(liPredicate) && value.equals("*"))))
+            	if(compVal.equalsIgnoreCase(value))
                     return evalTagContent(n, ps, attributeNames);
-                else if (liVarName != null && value != null && (ps.vars.get(liVarName).equalsIgnoreCase(value) ||
-                        (ps.vars.containsKey(liPredicate) && value.equals("*"))))
-                    return evalTagContent(n, ps, attributeNames);
-
+           } else {
+        	   // JCF - range enhancement
+        	   String minv = getAttributeOrTagValue(n,ps,"min");
+        	   String maxv = getAttributeOrTagValue(n,ps,"max");
+        	   if(minv!=null || maxv!=null){
+            	   try {
+            	   double v = Double.parseDouble(compVal);
+        		   boolean perform = true;
+        		   // INTERVAL CLOSED AT LOWER END
+        		   if(minv!=null && v<Double.parseDouble(minv))
+        			   perform=false;
+        		   if(maxv!=null && v>=Double.parseDouble(maxv))
+        			   perform=false;
+        		   if(perform)
+                       return evalTagContent(n, ps, attributeNames);
+            	   } catch(NumberFormatException e){
+            		   // ugly, I know.
+            	   }
+        	   } else
+        		// this is a terminal <li> with no predicate or value, i.e. the default condition.
+                   return evalTagContent(n, ps, attributeNames);
            }
-            else  // this is a terminal <li> with no predicate or value, i.e. the default condition.
-                return evalTagContent(n, ps, attributeNames);
+           
         }
         return "";
 

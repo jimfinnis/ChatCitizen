@@ -17,7 +17,7 @@ public class ExternalPluginInterface {
 	 */
 	boolean isVersionOK(String required,String level){
 		String pvn = plugin.getDescription().getVersion();
-		String vn = pvn.replaceAll("[^0-9\\.]", "");
+		String vn = pvn.replaceAll("[^0-9\\.]", ""); // remove everything that isn't part of a version number.
 		Plugin.log("Version before ["+pvn+"] and after repl ["+vn+"]");
 		String[] version = vn.split("\\.");
 		String[] mvarray = required.split("\\.");

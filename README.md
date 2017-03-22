@@ -75,6 +75,9 @@ There are properties associated with some of these: see above.
 
 ## AIML extensions
 These have been added using the ```AIMLProcessorExtension``` class inside Program AB. These will hopefully increase over time.
+### Extensions to the core AIML language
+These have been added to make life easier for bot writers.
+* ```<li min="..." max="...">...</li>``` tags in conditions are permitted, so you can check over a range of values. The condition will be false if the value or either extreme is not a number. The interval is closed at the lower end (i.e. it tests for min<=x<max). Max or min may be omitted.
 ### General
 These are those tags which do not require any extra plugins.
 * ```<mctime type=".."/>``` will give the in-game time of day
@@ -82,7 +85,6 @@ These are those tags which do not require any extra plugins.
     * **type="raw"** will give raw ticks
     * **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
     * **type="todstring"** will also return a string: morning, afternoon, evening or night.
-
 ### NPC Destinations
 These will only work if a recent version (at least 1.43) of nuNPC Destinations is installed.
 * ```<npcdest cmd="go" loc="location" time="staytime"/>``` will tell the bot to go to a given location, specified by name or number. The time is how long the NPC should linger in milliseconds, and is 1 day if not specified.  If this fails for any reason (trait not present, can't find location) the command will return NO. If it succeeds, it will return YES. A suitable usage might be:
@@ -112,12 +114,11 @@ These will only work if a recent version (at least 1.43) of nuNPC Destinations i
 Bear in mind I am far from an expert in AIML!
 
 ### Sentinel
-This is work in progress. Currently it will tell you what
-is being guarded and how long the sentinel has been spawned. I
-would like it to somehow be able to give a list of targets in a useful
-way, and how "busy" it has been (how long since attack). The trait
-doesn't keep that data, so it'll be a hack (count number of attacks
-every few ticks and see when it changes?)
+* ```<sentinel cmd="..."/>``` will return information about a Sentinel, or "NO" if the NPC is not a sentinel. The commands are
+    * **cmd=timeSinceAttack** to give the time since the NPC last attacked something
+    * **cmd=timeSinceSpawn** to give the time since the sentinel was created or died and respawned
+    * **cmd=guarding** to describe the sentinel's guard: either a player name, or "something" (for a non-player entity) or "nothing" for normal behaviour.
+    * **cmd=health** to give the health as a percentage. **TODO: THIS SHOULD BE A GENERAL COMMAND!**
 
 ## Dependencies
 You will need to add the following JARs to your build path if you want to build ChatCitizen yourself:

@@ -76,8 +76,12 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return Long.toString(d.timeSinceAttack);
 			} else if(cmd.equalsIgnoreCase("timeSinceSpawn")){
 				return Long.toString(d.timeSinceSpawn);
-			} else if(cmd.equalsIgnoreCase("guarding")){
+			} else if(cmd.equalsIgnoreCase("guarding")){ // playername, "something" or "nothing"
 				return d.guarding;
+			} else if(cmd.equalsIgnoreCase("health")){
+				return Double.toString(d.health); // percentage of max
+			} else if(cmd.equalsIgnoreCase("debug")){
+				return d.debug;
 			} else 
 				return "NO";
 		}
@@ -88,7 +92,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 	private String mctime(Node node, ParseState ps) {
 		String type = AIMLProcessor.getAttributeOrTagValue(node, ps, "type");
 		long t = ps.chatSession.npc.getEntity().getWorld().getTime();
-		int hours = (int) ((t / 1000 + 8) % 24);
+		int hours = (int) ((t / 1000 + 6) % 24);
 		int minutes = (int) (60 * (t % 1000) / 1000);
 		if(type==null)type="digital";
 		if(type.equals("digital")){

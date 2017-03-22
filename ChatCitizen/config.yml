@@ -4,3 +4,4 @@ bots:
     currentevents: "plugins/ChatCitizen/bots/currentevents"
     jokebot: "plugins/ChatCitizen/bots/jokebot"
     wndef: "plugins/ChatCitizen/bots/wndef"
+    soldier: "plugins/ChatCitizen/bots/soldier"

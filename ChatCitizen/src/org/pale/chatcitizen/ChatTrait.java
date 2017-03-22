@@ -140,6 +140,7 @@ public class ChatTrait extends Trait {
 
 
 	private int tickint=0;
+	public long timeSpawned=0;
 
 	// Called every tick
 	@Override
@@ -149,6 +150,7 @@ public class ChatTrait extends Trait {
 			processGreetSay();
 			tickint=0;
 		}
+		timeSpawned++;
 	}
 
 	//Run code when your trait is attached to a NPC. 
