@@ -14,7 +14,7 @@ import org.pale.chatcitizen.plugininterfaces.Sentinel.SentinelData;
 import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
-	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel");
+	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
 	}
@@ -34,11 +34,25 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return npcdest(node,ps);
 			else if(nodeName.equals("sentinel"))
 				return sentinel(node,ps);
+			else if(nodeName.equals("clean"))
+				return clean(node,ps);
 			else return (AIMLProcessor.genericXML(node, ps));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return "";
 		}
+	}
+
+	private String clean(Node node, ParseState ps) {
+		String r = AIMLProcessor.evalTagContent(node, ps, Utilities.stringSet("opts")).trim();
+		String opts = AIMLProcessor.getAttributeOrTagValue(node, ps, "opts");
+		r = r.replaceAll("\\s+", " "); // replace mult. whitespace with space
+		r = r.replaceAll("\\.(\\w)", ". $1"); // replace "." followed by word char with ". "
+		if(opts!=null){
+			if(opts.contains("s")) // capitalize initial if true, like <sentence><clean>...
+				r= (r.length() > 1) ? r.substring(0, 1).toUpperCase()+r.substring(1, r.length()) : "";
+		}
+		return r;
 	}
 
 	private String npcdest(Node node, ParseState ps) {

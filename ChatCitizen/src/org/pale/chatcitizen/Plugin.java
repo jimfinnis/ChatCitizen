@@ -264,7 +264,7 @@ public class Plugin extends JavaPlugin {
 						Field f = ChatTrait.class.getDeclaredField(paramFields[i]);
 						double val = Double.parseDouble(args[1]);
 						if(paramNames[i].contains("prob")){
-							val *= 100; // convert "prob"abilities from percentages.
+							val *= 0.01; // convert "prob"abilities from percentages.
 						}
 						f.setDouble(ct,val);
 					} catch (NumberFormatException e) {

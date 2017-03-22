@@ -78,6 +78,7 @@ These have been added using the ```AIMLProcessorExtension``` class inside Progra
 ### Extensions to the core AIML language
 These have been added to make life easier for bot writers.
 * ```<li min="..." max="...">...</li>``` tags in conditions are permitted, so you can check over a range of values. The condition will be false if the value or either extreme is not a number. The interval is closed at the lower end (i.e. it tests for min<=x<max). Max or min may be omitted.
+* ```<clean opts="..."></clean>``` will remove spurious whitespace from the text it wraps, replacing all whitespace runs with a single space. Any "." immediately followed by a word character will be also replaced with ". ". If opts contains "s", the resulting text will have the first character capitalised.
 ### General
 These are those tags which do not require any extra plugins.
 * ```<mctime type=".."/>``` will give the in-game time of day

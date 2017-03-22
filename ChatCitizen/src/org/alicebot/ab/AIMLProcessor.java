@@ -863,8 +863,12 @@ public class AIMLProcessor {
      */
     private static String sentence(Node node, ParseState ps) {
         String result = evalTagContent(node, ps, null);
-        if (result.length() > 1) return result.substring(0, 1).toUpperCase()+result.substring(1, result.length());
-        else return "";
+        System.out.println("Output before: "+result);
+        if (result.length() > 1) result=result.substring(0, 1).toUpperCase()+result.substring(1, result.length());
+        else result="";
+        System.out.println("Output after: "+result);
+        
+        return result;
     }
     /**
      * evaluate tag contents and swap 1st and 2nd person pronouns
