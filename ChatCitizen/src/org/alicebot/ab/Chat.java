@@ -180,7 +180,6 @@ public class Chat {
 		// they get checked for repetition.
 
 		boolean isSpecial = bot.hasSpecialCategory(input.toUpperCase());
-		System.out.println("Input "+input+" is special: "+isSpecial);
 		if(!isSpecial){
 			for (int i = 0; i < MagicNumbers.repetition_count; i++) {
 				//System.out.println(request.toUpperCase()+"=="+inputHistory.get(i)+"? "+request.toUpperCase().equals(inputHistory.get(i)));

@@ -1,0 +1,77 @@
+require "xmlgen.ang" drop
+require "util.ang" drop
+
+# import with shuffling - I don't like how xmlgen works :)
+
+:mktag |cons,attrs,name:|
+    ?name ?attrs ?cons xmlgen$mktag;
+
+# simple tag with no attrs
+:stag |con,name:| ?con [%] ?name mktag;
+
+:aiml [%`version "2.0" ] `aiml mktag;
+
+:deb `debug stag;
+
+:cat |template,pattern:|
+    [
+     ?pattern `pattern stag,
+     ?template `template stag
+     ]
+    `category
+    stag
+;
+
+:topic |catlist,name:| ?catlist [%`name ?name] `topic mktag;
+    
+################################################## category mods (postfix fluent)
+
+:that |cat,string:| :"(cat string -- cat) adds a that"
+    ?string `that stag
+    ?cat?`contents push ?cat;
+
+################################################## template aids
+
+:random |list:|
+    ?list (`li stag) map
+    `random stag
+;
+
+:clean [%`opts "s"] `clean mktag;
+
+# category with template wrapped in <clean opt="s">
+:cleancat |t,p:| ?t [%`opts "s"] `clean mktag ?p cat;
+
+:sr `srai stag;
+:think `think stag;
+
+:star none `star stag;
+
+
+# set and get
+:s |v,name:| ?v [%`name ?name] `set mktag;
+:g |name:| none [%`name ?name] `get mktag;
+
+# conditions - this one requires a list of li tags
+:cond |tags,name:| ?tags [%`name ?name ] `condition mktag;
+
+:limin |v,mn:| ?v [%`min ?mn] `li mktag;
+:limax |v,mx:| ?v [%`max ?mx] `li mktag;
+:lirng |v,mn,mx:| ?v [%`min ?mn, `max ?mx] `li mktag;
+
+# conditions - this is a shorthand for <li value=> tags
+:switch |hash,name:|
+    []
+    ?hash each {
+        i `default = if
+            ival `li stag
+        else
+            ival [%`value i] `li mktag
+        then,
+    }
+    ?name cond;
+:show ?`output@.;
+
+:done show quit;    
+
+

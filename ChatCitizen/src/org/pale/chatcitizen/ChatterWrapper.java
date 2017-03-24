@@ -21,15 +21,12 @@ public class ChatterWrapper {
 	private Bot bot;
 	private String path;
 	private String name;
-	private Map<Integer,Chat> chats= new HashMap<Integer,Chat>();
+	private Map<Integer,Chat> chats;
 
 	public ChatterWrapper(String name,String path){
-		bot = new Bot(name,path);
 		this.path = path;
 		this.name = name;
-		
-		// look for special categories the bot might need to have for spontaneous speech, etc.
-		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething");
+		reload();
 	}
 	public boolean hasSpecialCategory(String s){
 		return bot.hasSpecialCategory(s);
@@ -44,6 +41,7 @@ public class ChatterWrapper {
 	 */
 	public void reload(){
 		bot = new Bot(name,path);
+		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething");
 		chats= new HashMap<Integer,Chat>();
 	}
 

@@ -26,6 +26,7 @@ import java.util.Set;
 import org.alicebot.ab.utils.CalendarUtils;
 import org.alicebot.ab.utils.DomUtils;
 import org.alicebot.ab.utils.IOUtils;
+import org.pale.chatcitizen.Plugin;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -863,10 +864,8 @@ public class AIMLProcessor {
      */
     private static String sentence(Node node, ParseState ps) {
         String result = evalTagContent(node, ps, null);
-        System.out.println("Output before: "+result);
         if (result.length() > 1) result=result.substring(0, 1).toUpperCase()+result.substring(1, result.length());
         else result="";
-        System.out.println("Output after: "+result);
         
         return result;
     }

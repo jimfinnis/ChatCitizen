@@ -1,0 +1,58 @@
+include "../../aimlgen.ang"
+
+
+[
+ [
+  [
+   `RANDSUBJ sr `s1 s,
+   `RANDSUBJ sr `s2 s,
+   `RANDSUBJ sr `s3 s,
+   `RANDADJ sr `a1 s,
+   `RANDADJ sr `a2 s
+   ] think,
+  `POEMROOT sr
+  ]
+ `POEM cat,
+ 
+ 
+ [
+  `LINE sr,
+  [`LINE, `POEMROOT] random sr
+  ] `POEMROOT cleancat,
+
+ [
+  `RANDBEGIN sr,
+  [
+   [[`s1 g,`s2 g,`s3 g, `RANDSUBJ sr] random, "is",
+    [`a1 g,`a2 g, `RANDADJ sr] random, "."]
+   ]  random clean
+  ] clean `LINE cat,
+ 
+ ["Behold!","I see.","See!","Hear me!", "Know this.", "Thus it is.",
+  "","","","",""] random
+ `RANDBEGIN cat,
+ 
+ ["the moon","the sun","the earth","the world","mankind","all the world","poetry",
+  "truth","my wisdom","war","peace","the Castle","the poet","every man","a dream",
+  "a man","a woman","a child","the stone","the rock","poetry","music","the Underworld",
+  "each block"] random 
+ `RANDSUBJ cat,
+ 
+ ["dark","light","heavy","grey","bright","unknowable","true","false",
+  "alive","wise","dead","knowable","unknowable","constant",
+  "unwise","clear","right","wrong","everchanging","musical",
+  `RANDCOL sr,
+  [ `RANDPREP sr, `RANDSUBJ sr]
+  ] random `RANDADJ cat,
+ 
+ ["red","green","black","white"] random
+ `RANDCOL cat,
+ 
+ ["within","outside","of","under","over","one with"] random 
+ `RANDPREP cat,
+
+ 
+ `POEM sr `RANDSAY cat
+ ] 
+aiml done
+

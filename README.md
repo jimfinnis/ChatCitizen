@@ -62,6 +62,16 @@ Feel free to just copy and modify all the files from **default**, of course.
 * Once this has been done, restart the server. The plugin will show the AIML files being loaded, and you can refer to this if there are XML parsing problems.
 * Then assign your bot to an NPC (after giving it the trait), and test it.
 
+### Using pandorabots
+You can use a Pandorabots chatbot directory (provided it doesn't do any really clever stuff) by unzipping it into
+its own directory under ```bots``` and moving all the AIML files into a subdirectory called ```aiml```. See the
+existing files for examples.
+
+### My stuff
+Many of my bots use an Angort script to generate the AIML files, run from a script called ```build```. Don't
+worry too much about this unless you're interested in my weird little language; the ```auto.aiml``` files
+are just AIML files (but with all the newlines missing).
+
 ### Spontaneous speech patterns
 Adding categories with certain special patterns will make the robot
 produce spontaneous speech. If the category is not present, the speech

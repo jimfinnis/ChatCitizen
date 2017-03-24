@@ -14,7 +14,7 @@ import org.pale.chatcitizen.plugininterfaces.Sentinel.SentinelData;
 import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
-	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean");
+	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean","debug");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
 	}
@@ -36,6 +36,8 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return sentinel(node,ps);
 			else if(nodeName.equals("clean"))
 				return clean(node,ps);
+			else if(nodeName.equals("debug"))
+				return debug(node,ps);
 			else return (AIMLProcessor.genericXML(node, ps));
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -43,11 +45,18 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		}
 	}
 
+	private String debug(Node node, ParseState ps) {
+		String r = AIMLProcessor.evalTagContent(node, ps,null);
+		Plugin.log("DEBUG: **"+r+"**");
+		return r;
+	}
+
 	private String clean(Node node, ParseState ps) {
 		String r = AIMLProcessor.evalTagContent(node, ps, Utilities.stringSet("opts")).trim();
 		String opts = AIMLProcessor.getAttributeOrTagValue(node, ps, "opts");
 		r = r.replaceAll("\\s+", " "); // replace mult. whitespace with space
 		r = r.replaceAll("\\.(\\w)", ". $1"); // replace "." followed by word char with ". "
+		r = r.replaceAll("\\s+\\.", "."); // replace "  ." with "."
 		if(opts!=null){
 			if(opts.contains("s")) // capitalize initial if true, like <sentence><clean>...
 				r= (r.length() > 1) ? r.substring(0, 1).toUpperCase()+r.substring(1, r.length()) : "";

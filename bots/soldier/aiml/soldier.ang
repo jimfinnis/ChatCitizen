@@ -1,0 +1,65 @@
+include "../../aimlgen.ang"
+
+:sentinel |cmd:| none [% `cmd ?cmd ] `sentinel mktag;
+
+[
+ "Sir" `HONOR cat,
+ 
+ [
+  none [%`type `todstring] `mctime mktag `t s think,
+  [%
+   `morning ["Good morning,", `HONOR sr, "!"],
+   `afternoon ["Good afternoon,", `HONOR sr, "!"],
+   `evening ["Good evening,", `HONOR sr, "!"],
+   `default [
+             [
+              ["Good evening,", `HONOR sr, ". Shouldn't you be in bed?"],
+              ["Good evening,", `HONOR sr, "."],
+              ["Hello,", `HONOR sr, ". The darkness weighs heavy."],
+              ["Hello,", `HONOR sr, ". It's a cold night."],
+              ["Hello,", `HONOR sr, ". It's dark out there."]] random]
+   ] `t switch
+  ] `GREET cleancat,
+              
+  [ 
+   `GREET sr clean,
+   "Time since spawn:", `timeSinceSpawn sentinel,
+   "Time since attack:", `timeSinceAttack sentinel,
+   "Health:", `health sentinel,
+   "Guarding:", `guarding sentinel ] `HELLO cat,
+  
+  ["HOW ARE YOU","WHAT * STATUS","REPORT"] each { `HELLO sr i cat,}
+  
+  ["The time is ", none [%`type `digital] `mctime mktag, "."] "TIME" cat,
+  
+  ["WHAT * TIME","WHAT TIME *"] each {`TIME sr i cat,}
+  
+  [%
+   "ARE YOU READY" "I'm always ready,",
+   "WHY ARE YOU HEAR" "I'm on guard.",
+   "WHY AM I HERE?" "That's an interesting question.",
+   "TELL ME A JOKE" "I'm not here to joke.",
+   "DOING" "I am on guard",
+   "WHAT * GUARDING" "WHATGUARDING" sr,
+   "GUARDING *" "WHATGUARDING" sr,
+   "WHAT * DOING" "DOING" sr ]
+  each {ival i cat,}
+  
+  "Everything." `WHATGUARDING cat "I AM ON GUARD" that,
+  "I am guarding everything." `WHATGUARDING cat,
+  
+  
+   
+  
+  
+  [ # range debugging thing
+   star `t s think,
+   [
+   "le 10" 10 limax,
+   "10-20" 10 20 lirng,
+   "20-30" 20 30 lirng,
+   "30+" 30 limin ] `t cond
+   ] "HT *" cat
+]
+
+aiml done
