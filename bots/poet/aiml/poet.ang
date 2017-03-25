@@ -2,57 +2,92 @@ include "../../aimlgen.ang"
 
 
 [
- [
-  [
-   `RANDSUBJ sr `s1 s,
-   `RANDSUBJ sr `s2 s,
-   `RANDSUBJ sr `s3 s,
-   `RANDADJ sr `a1 s,
-   `RANDADJ sr `a2 s
-   ] think,
-  `POEMROOT sr
-  ]
- `POEM cat,
+    [
+        # A pome. Set up some words we can reuse,
+        # then do the pome.
+        `REGEN sr,
+        `POEMROOT sr
+    ]
+    `POEM cat,
+    
+    # regenerate the "remembered" thingies
+    [
+        `RANDNOUN sr `s1 s,
+        `RANDNOUN sr `s2 s,
+        `RANDNOUN sr `s3 s,
+        `RANDADJ sr `a1 s,
+        `RANDADJ sr `a2 s
+    ] think `REGEN cat,
+    
  
  
- [
-  `LINE sr,
-  [`LINE, `POEMROOT] random sr
-  ] `POEMROOT cleancat,
+    # Made up of lines all using the words we thought up.
+    # Recurses and then stops after a bit. Hopefully.
 
- [
-  `RANDBEGIN sr,
-  [
-   [[`s1 g,`s2 g,`s3 g, `RANDSUBJ sr] random, "is",
-    [`a1 g,`a2 g, `RANDADJ sr] random, "."]
-   ]  random clean
-  ] clean `LINE cat,
+    [
+        `LINE sr,
+        [`LINE, `POEMROOT] random sr
+    ] `POEMROOT cleancat,
+    
+    # clause generator. This generates a "sentence" which could
+    # be an actual sentence or could have a "however, but..." put
+    # on the end
+    
+    [
+        [
+            [`s1 g,`s2 g,`s3 g, `RANDNOUN sr] random, "is",
+            [`a1 g,`a2 g, `RANDADJ sr] random
+        ]
+    ] 
+    random `CLAUSE cat,
+    
+    # and here we have the heart of the matter - the line
+    # generator. Generate a random line type and put "." on the end.
+    [
+        `RANDBEGIN sr,
+        [
+            [`CLAUSE sr clean, "."],
+            [`CLAUSE sr clean, `REGEN sr, "but", `CLAUSE sr, "."]
+        ] random
+    ]  clean `LINE cat,
+    
+    # A random beginning.
+    ["Behold!","I see.","See!","Hear me!", "Know this.", "Thus it is.",
+        "","","","",""] random
+    `RANDBEGIN cat,
+    
+    # people, singular
+    ["a man","a woman","a child","the monster","the villager","the soldier","mankind","all the world",
+        "the poet","every man"] random `RANDPERSON cat,
+    
+    # objects, real
+    ["the moon","the sun","the earth","the world","the Castle","a dream","the stone","the rock",
+        "the Underworld","each block"] random `RANDOBJECT cat,
+    
+    # objects, abstract
+    ["poetry","truth","my wisdom","war","peace","music"] random `RANDABSOBJ cat,
+    
+    # Some noun phrases
+    [`RANDPERSON,`RANDOBJECT,`RANDABSOBJ ] ?sr map random `RANDNOUN cat,
+    
+    # adjectives.
+    ["dark","light","heavy","grey","bright","unknowable","true","false",
+        "alive","wise","dead","knowable","unknowable","constant",
+        "unwise","clear","right","wrong","everchanging","musical",
+        `RANDCOL sr,
+        [ `RANDPREP sr, `RANDNOUN sr]
+    ] random `RANDADJ cat,
  
- ["Behold!","I see.","See!","Hear me!", "Know this.", "Thus it is.",
-  "","","","",""] random
- `RANDBEGIN cat,
+    # colours
+    ["red","green","black","white"] random
+    `RANDCOL cat,
  
- ["the moon","the sun","the earth","the world","mankind","all the world","poetry",
-  "truth","my wisdom","war","peace","the Castle","the poet","every man","a dream",
-  "a man","a woman","a child","the stone","the rock","poetry","music","the Underworld",
-  "each block"] random 
- `RANDSUBJ cat,
- 
- ["dark","light","heavy","grey","bright","unknowable","true","false",
-  "alive","wise","dead","knowable","unknowable","constant",
-  "unwise","clear","right","wrong","everchanging","musical",
-  `RANDCOL sr,
-  [ `RANDPREP sr, `RANDSUBJ sr]
-  ] random `RANDADJ cat,
- 
- ["red","green","black","white"] random
- `RANDCOL cat,
- 
- ["within","outside","of","under","over","one with"] random 
- `RANDPREP cat,
+    # prepositions
+    ["within","outside","of","under","over","one with"] random 
+    `RANDPREP cat,
 
  
- `POEM sr `RANDSAY cat
- ] 
+    `POEM sr `RANDSAY cat
+] 
 aiml done
 
