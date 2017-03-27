@@ -41,7 +41,7 @@ public class ChatterWrapper {
 	 */
 	public void reload(){
 		bot = new Bot(name,path);
-		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething");
+		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething","rightclick");
 		chats= new HashMap<Integer,Chat>();
 	}
 

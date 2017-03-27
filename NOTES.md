@@ -20,4 +20,4 @@ NPC can have a CLICKEDWITHITEM ... special pattern,
 say CLICKEDWITHITEM EMERALD. We can then arrange to be in
 a topic/that to detect this.
 
-
+This would give me shops!

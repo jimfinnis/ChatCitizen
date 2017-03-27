@@ -17,6 +17,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
 
@@ -27,7 +28,7 @@ import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
 //The Trait class also implements Listener so you can add EventHandlers directly to your trait.
 @TraitName("chatcitizen") // convenience annotation in recent CitizensAPI versions for specifying trait name
 public class ChatTrait extends Trait {
-	
+
 	private static final long sayCheckInterval = 5000; //!< how often (in ms) we check random say.
 
 	/**
@@ -67,7 +68,7 @@ public class ChatTrait extends Trait {
 
 	@Persist public double audibleDistance=10; //!< how far this robot is audible
 
-	private boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe,hasHitSomething;
+	private boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe,hasHitSomething,hasRightClick;
 
 
 
@@ -106,17 +107,21 @@ public class ChatTrait extends Trait {
 		key.setBoolean("SomeSetting",SomeSetting);
 	}
 
-	// An example event handler. All traits will be registered automatically as Bukkit Listeners.
 	@EventHandler
 	public void click(net.citizensnpcs.api.event.NPCRightClickEvent event){
 		//Handle a click on a NPC. The event has a getNPC() method. 
 		//Be sure to check event.getNPC() == this.getNPC() so you only handle clicks on this NPC!
 		if(event.getNPC() == this.getNPC()){
-			Messaging.send(event.getClicker(), "oi!");
-			Plugin.log("Click.");
+			// this is where we trap a "give" action or suchlike
+			Player p = event.getClicker();
+			ItemStack held = p.getInventory().getItemInMainHand();
+			// shouldn't be necessary, but it does seem odd that an empty hand is full of air...
+			String hstr = (held==null)?"air":held.getType().toString();
+			bot.setProperty(npc, "itemheld", hstr);
+			respondTo(p,"RIGHTCLICK");
 		}
 	}
-	
+
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void monitorDamageFromEntity(final net.citizensnpcs.api.event.NPCDamageByEntityEvent e){
 		if(e.getNPC() == this.getNPC()){
@@ -129,7 +134,7 @@ public class ChatTrait extends Trait {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void monitorDamageEntity(final net.citizensnpcs.api.event.NPCDamageEntityEvent e){
 		if(e.getNPC() == this.getNPC()){
@@ -174,6 +179,7 @@ public class ChatTrait extends Trait {
 		hasEntityHitMe = bot.hasSpecialCategory("entityhitme");
 		hasPlayerHitMe = bot.hasSpecialCategory("playerhitme");
 		hasHitSomething = bot.hasSpecialCategory("hitsomething");
+		hasRightClick = bot.hasSpecialCategory("hasrightclick");
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.
@@ -203,7 +209,7 @@ public class ChatTrait extends Trait {
 	@Override
 	public void onRemove() {
 	}
-	
+
 	/**
 	 * Generate and send a response to a list of players. 
 	 */
@@ -211,9 +217,11 @@ public class ChatTrait extends Trait {
 		List<Player> q = getNearPlayers(audibleDistance);
 		if(q.size()>0){
 			String msg = bot.respond(npc, pattern);
-			String s = ChatColor.AQUA+"["+npc.getFullName()+" -> "+toName+"] "+ChatColor.WHITE+msg;
-			for(Player p: getNearPlayers(audibleDistance)){
-				p.sendMessage(s);
+			if(msg.trim().length()!=0){
+				String s = ChatColor.AQUA+"["+npc.getFullName()+" -> "+toName+"] "+ChatColor.WHITE+msg;
+				for(Player p: getNearPlayers(audibleDistance)){
+					p.sendMessage(s);
+				}
 			}
 		}
 	}
@@ -227,7 +235,7 @@ public class ChatTrait extends Trait {
 	public void respondTo(Player player,String input) {
 		say(player.getDisplayName(),input);
 	}
-	
+
 	/**
 	 * Say something (typically a spontaneous speech) to everyone nearby. The msg is passed to be bot,
 	 * and should be a special (RANDSAY etc.). 

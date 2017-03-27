@@ -11,7 +11,11 @@ require "util.ang" drop
 
 :aiml [%`version "2.0" ] `aiml mktag;
 
+:br none `br stag;
 :deb `debug stag;
+:sr `srai stag;
+:think `think stag;
+:star none `star stag;
 
 :cat |template,pattern:|
     [
@@ -42,10 +46,6 @@ require "util.ang" drop
 # category with template wrapped in <clean opt="s">
 :cleancat |t,p:| ?t [%`opts "s"] `clean mktag ?p cat;
 
-:sr `srai stag;
-:think `think stag;
-
-:star none `star stag;
 
 
 # set and get

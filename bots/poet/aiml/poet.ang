@@ -2,6 +2,14 @@ include "../../aimlgen.ang"
 
 
 [
+    "" "RCLICK *" cat,
+    "Ah, a very nice and deadly item." `RCLICKWEAPON cat,
+    
+    `RCLICKWEAPON sr "RCLICK * SWORD" cat,
+    `RCLICKWEAPON sr "RCLICK * AXE" cat,
+    
+    [ "RCLICK", `itemheld g] sr "RIGHTCLICK" cat,
+    
     [
         # A pome. Set up some words we can reuse,
         # then do the pome.
