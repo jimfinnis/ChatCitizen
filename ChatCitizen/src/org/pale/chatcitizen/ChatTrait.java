@@ -289,4 +289,13 @@ public class ChatTrait extends Trait {
 			nearPlayersForGreet = nearPlayersNew;
 		}
 	}
+
+	/**
+	 * Used in the "t" test command
+	 * @param msg
+	 * @return
+	 */
+	public String getResponseTest(String msg) {
+		return bot.respond(npc, msg);
+	}
 }

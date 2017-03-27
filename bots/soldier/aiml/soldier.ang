@@ -26,11 +26,11 @@ include "../../aimlgen.ang"
    "Time since spawn:", `timeSinceSpawn sentinel,
    "Time since attack:", `timeSinceAttack sentinel,
    "Health:", `health sentinel,
-   "Guarding:", `guarding sentinel ] `HELLO cat,
+   "Guarding:", `guarding sentinel ] `HELLO cleancat,
   
   ["HOW ARE YOU","WHAT * STATUS","REPORT"] each { `HELLO sr i cat,}
   
-  ["The time is ", none [%`type `digital] `mctime mktag, "."] "TIME" cat,
+  ["The time is ", none [%`type `digital] `mctime mktag, "."] "TIME" cleancat,
   
   ["WHAT * TIME","WHAT TIME *"] each {`TIME sr i cat,}
   

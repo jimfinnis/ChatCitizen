@@ -236,6 +236,16 @@ public class Plugin extends JavaPlugin {
 			c.msg(sb.toString());
 		}
 	}
+	
+	@Cmd(name="t",desc="chat test",permission="chatcitizen.test",usage="[string]",cz=true)
+	public void testBot(CallInfo c){
+		ChatTrait ct = c.getCitizen();
+		String msg = "";
+		for(String s:c.getArgs())
+			msg += s + " ";
+		String m = ct.getResponseTest(msg);
+		getLogger().info("RESPONSE :"+m);
+	}
 
 
 
