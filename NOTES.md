@@ -16,8 +16,11 @@
 Is there any way I can give an NPC stuff, and have them give 
 me stuff in return? NPCs can monitor clicks, we can then do
 getInventory().getItemInHand() on the player. Perhaps the
-NPC can have a CLICKEDWITHITEM ... special pattern,
-say CLICKEDWITHITEM EMERALD. We can then arrange to be in
-a topic/that to detect this.
+NPC can have a RIGHTCLICKED special pattern,
+say RIGHTCLICKED EMERALD. Except that's a bit iffy, because 
+it makes it hard to detect a special pattern. What we can do
+is just have RIGHTCLICKED and put the item into a predicate.
 
-This would give me shops!
+This would give me shops, sort of.
+
+### 

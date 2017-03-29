@@ -12,6 +12,7 @@ import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.Trait;
 
 import org.alicebot.ab.utils.IOUtils;
+import org.bukkit.entity.Player;
 import org.pale.chatcitizen.ChatTrait;
 
 /* Program AB Reference AIML 2.0 implementation
@@ -136,32 +137,9 @@ public class Chat {
 	}
 
 	/**
-	 * Chat session terminal interaction
+	 * Chat session terminal interaction JCF removed
 	 */
-	public void chat () {
-		BufferedWriter bw = null;
-		String logFile = bot.log_path+"/log_"+customerId+".txt";
-		try {
-			//Construct the bw object
-			bw = new BufferedWriter(new FileWriter(logFile, true)) ;
-			String request="SET PREDICATES";
-			String response = multisentenceRespond(request);
-			while (!request.equals("quit")) {
-				System.out.print("Human: ");
-				request = IOUtils.readInputTextLine();
-				response = multisentenceRespond(request);
-				System.out.println("Robot: "+response);
-				bw.write("Human: "+request);
-				bw.newLine();
-				bw.write("Robot: "+response);
-				bw.newLine();
-				bw.flush();
-			}
-			bw.close();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+
 
 	/**
 	 * Return bot response to a single sentence input given conversation context
@@ -172,7 +150,7 @@ public class Chat {
 	 * @param contextThatHistory         history of "that" values for this request/response interaction
 	 * @return              bot's reply
 	 */
-	String respond(String input, String that, String topic, History contextThatHistory) {
+	String respond(String input, String that, String topic, History<String> contextThatHistory) {
 		//MagicBooleans.trace("chat.respond(input: " + input + ", that: " + that + ", topic: " + topic + ", contextThatHistory: " + contextThatHistory + ")");
 		boolean repetition = true;
 		//inputHistory.printHistory();
@@ -220,21 +198,23 @@ public class Chat {
 	 * @return    bot's reply
 	 */
 	String respond(String input, History<String> contextThatHistory) {
-		History hist = thatHistory.get(0);
+		History<?> hist = thatHistory.get(0);
 		String that;
 		if (hist == null) that = MagicStrings.default_that;
-		else that = hist.getString(0);
-		return respond(input, that, predicates.get("topic"), contextThatHistory);
+		else 
+			that = hist.getString(0);
+		return 
+			respond(input, that, predicates.get("topic"), contextThatHistory);
 	}
 
 	/**
 	 * return a compound response to a multiple-sentence request. "Multiple" means one or more.
+	 * @param p            (JCF) player which may be null
 	 *
 	 * @param request      client's multiple-sentence input
 	 * @return
 	 */
-	public String multisentenceRespond(String request) {
-
+	public String multisentenceRespond(Player p, String request) {
 		//MagicBooleans.trace("chat.multisentenceRespond(request: " + request + ")");
 		String response="";
 		matchTrace="";

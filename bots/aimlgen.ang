@@ -51,10 +51,18 @@ require "util.ang" drop
 # set and get
 :s |v,name:| ?v [%`name ?name] `set mktag;
 :g |name:| none [%`name ?name] `get mktag;
+# player predicate set/get
+:setpl |v,name:| ?v [%`name ?name] `setpl mktag;
+:getpl |name:| none [%`name ?name] `getpl mktag;
 
 # conditions - this one requires a list of li tags
 :cond |tags,name:| ?tags [%`name ?name ] `condition mktag;
 
+#default <LI> tag with no condition
+:lidef |v:| ?v `li stag;
+#<LI VALUE=..>
+:lival |v,test:| ?v [%`value ?test] `li mktag;
+# LI with min,max or range
 :limin |v,mn:| ?v [%`min ?mn] `li mktag;
 :limax |v,mx:| ?v [%`max ?mx] `li mktag;
 :lirng |v,mn,mx:| ?v [%`min ?mn, `max ?mx] `li mktag;
@@ -66,7 +74,7 @@ require "util.ang" drop
         i `default = if
             ival `li stag
         else
-            ival [%`value i] `li mktag
+            ival i lival
         then,
     }
     ?name cond;

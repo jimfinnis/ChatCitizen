@@ -88,7 +88,7 @@ There are properties associated with some of these: see above.
 When a player right-clicks on a bot, the RIGHTCLICK pattern is sent.
 If there is something in the player's main hand, the name will be available as ```<get name="itemname"/>```. Otherwise this will produce "air".
 Additionally, the item stack will be stashed away for use by other commands. A brief idea of how you might use it to not respond when you click
-anything other than a weapon, and to say something when a weapon is used.
+anything other than a weapon, and to say something when a weapon is used:
 ```
   <category><pattern>RCLICK *</pattern><template/></category>
 
@@ -110,6 +110,8 @@ anything other than a weapon, and to say something when a weapon is used.
     </template>
   </category>
 ```
+It might seem better to use a ```RIGHTCLICK <ITEM NAME>``` pattern, but that
+would be pretty messy to do internally.
 
 ## AIML extensions
 These have been added using the ```AIMLProcessorExtension``` class inside Program AB. These will hopefully increase over time.
@@ -124,6 +126,7 @@ These are those tags which do not require any extra plugins.
     * **type="raw"** will give raw ticks
     * **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
     * **type="todstring"** will also return a string: morning, afternoon, evening or night.
+* ```<getpl name="..."/>``` and ```<setpl name="...">...</setpl>``` provide player predicates: predicates which are private to a particular player in conversation with a particular NPC. The default value (as with all predicates) is "unknown". This allows each bot to build up a set of predicates for each player. They are not persistent.
 ### NPC Destinations
 These will only work if a recent version (at least 1.43) of nuNPC Destinations is installed.
 * ```<npcdest cmd="go" loc="location" time="staytime"/>``` will tell the bot to go to a given location, specified by name or number. The time is how long the NPC should linger in milliseconds, and is 1 day if not specified.  If this fails for any reason (trait not present, can't find location) the command will return NO. If it succeeds, it will return YES. A suitable usage might be:

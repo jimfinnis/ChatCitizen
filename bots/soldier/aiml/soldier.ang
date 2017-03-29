@@ -3,63 +3,88 @@ include "../../aimlgen.ang"
 :sentinel |cmd:| none [% `cmd ?cmd ] `sentinel mktag;
 
 [
- "Sir" `HONOR cat,
- 
- [
-  none [%`type `todstring] `mctime mktag `t s think,
-  [%
-   `morning ["Good morning,", `HONOR sr, "!"],
-   `afternoon ["Good afternoon,", `HONOR sr, "!"],
-   `evening ["Good evening,", `HONOR sr, "!"],
-   `default [
-             [
-              ["Good evening,", `HONOR sr, ". Shouldn't you be in bed?"],
-              ["Good evening,", `HONOR sr, "."],
-              ["Hello,", `HONOR sr, ". The darkness weighs heavy."],
-              ["Hello,", `HONOR sr, ". It's a cold night."],
-              ["Hello,", `HONOR sr, ". It's dark out there."]] random]
-   ] `t switch
-  ] `GREET cleancat,
-              
-  [ 
-   `GREET sr clean,
-   "Time since spawn:", `timeSinceSpawn sentinel,
-   "Time since attack:", `timeSinceAttack sentinel,
-   "Health:", `health sentinel,
-   "Guarding:", `guarding sentinel ] `HELLO cleancat,
-  
-  ["HOW ARE YOU","WHAT * STATUS","REPORT"] each { `HELLO sr i cat,}
-  
-  ["The time is ", none [%`type `digital] `mctime mktag, "."] "TIME" cleancat,
-  
-  ["WHAT * TIME","WHAT TIME *"] each {`TIME sr i cat,}
-  
-  [%
-   "ARE YOU READY" "I'm always ready,",
-   "WHY ARE YOU HEAR" "I'm on guard.",
-   "WHY AM I HERE?" "That's an interesting question.",
-   "TELL ME A JOKE" "I'm not here to joke.",
-   "DOING" "I am on guard",
-   "WHAT * GUARDING" "WHATGUARDING" sr,
-   "GUARDING *" "WHATGUARDING" sr,
-   "WHAT * DOING" "DOING" sr ]
-  each {ival i cat,}
-  
-  "Everything." `WHATGUARDING cat "I AM ON GUARD" that,
-  "I am guarding everything." `WHATGUARDING cat,
-  
-  
-   
-  
-  
-  [ # range debugging thing
-   star `t s think,
-   [
-   "le 10" 10 limax,
-   "10-20" 10 20 lirng,
-   "20-30" 20 30 lirng,
-   "30+" 30 limin ] `t cond
-   ] "HT *" cat
+    # This slightly clumsy construction sets `t to the value of
+    # the `name player-predicate (i.e. what this bot thinks this
+    # player should be called). It then uses this if it's provided,
+    # otherwise "Sir."
+    [
+        `name getpl `t s think,
+        [
+            "Sir" "unknown" lival,
+            `t g lidef
+        ] `t cond
+    ] `HONOR cat,
+    
+    # CALL ME which sets the 'name' player predicate (i.e. private between a given player and the bot)
+    [star `name setpl think] "CALL ME *" cat,
+    ["MY NAME IS *","PLEASE CALL ME *", "REFER TO ME AS *"] each { ["CALL ME", star] sr i cat,}
+    ["I * FEMALE", "I * WOMAN", "I * LADY", "I * NOT * MAN"] each { "CALL ME Miss" sr i cat,}
+    
+    
+    # the GREET category, for saying hello.
+    [
+        # store the tod-string in the "t" predicate
+        none [%`type `todstring] `mctime mktag `t s think,
+        [%
+            `morning ["Good morning,", `HONOR sr, "!"],
+            `afternoon ["Good afternoon,", `HONOR sr, "!"],
+            `evening ["Good evening,", `HONOR sr, "!"],
+            `default [
+                [
+                    ["Good evening,", `HONOR sr, ". Shouldn't you be in bed?"],
+                    ["Good evening,", `HONOR sr, "."],
+                    ["Hello,", `HONOR sr, ". The darkness weighs heavy."],
+                    ["Hello,", `HONOR sr, ". It's a cold night."],
+                    ["Hello,", `HONOR sr, ". It's dark out there."]] random]
+        ] `t switch
+    ] `GREET cleancat,
+    
+    # The REPORT category, for giving a report.
+    [ 
+        `GREET sr clean,
+        "Time since spawn:", `timeSinceSpawn sentinel,
+        "Time since attack:", `timeSinceAttack sentinel,
+        "Health:", `health sentinel,
+        "Guarding:", `guarding sentinel ] `REPORT cleancat,
+    
+    # and reductions for it.
+    
+    ["HOW ARE YOU","* REPORT","WHAT * STATUS","HELLO"] 
+    each { `REPORT sr i cat,}
+    
+    # asking the time with TIME
+    ["The time is ", none [%`type `digital] `mctime mktag, "."] "TIME" cleancat,
+    ["WHAT * TIME","WHAT TIME *"] each {`TIME sr i cat,}
+    
+    # various things
+    [%
+        "ARE YOU READY" "I'm always ready,",
+        "WHY ARE YOU HEAR" "I'm on guard.",
+        "WHY AM I HERE?" "That's an interesting question.",
+        "TELL ME A JOKE" "I'm not here to joke.",
+        "DOING" "I am on guard",
+        # here we go to WHATGUARDING if we ask what we're guarding
+        "WHAT * GUARDING" "WHATGUARDING" sr,
+        "GUARDING *" "WHATGUARDING" sr,
+        "WHAT * DOING" "DOING" sr ]
+    each {ival i cat,}
+    
+    # "what doing?" "Guarding" "What?" "everything"
+    # Needs to be modified to show a guarded user.
+    "Everything." `WHATGUARDING cat "I AM ON GUARD" that,
+    "Everything." `WHAT cat "I AM ON GUARD" that,
+    "I am guarding everything." `WHATGUARDING cat,
+    
+    
+    
+    [ # range debugging thing. Leaving it here as a reference.
+        star `t s think,
+        [
+            "le 10" 10 limax,
+            "10-20" 10 20 lirng,
+            "20-30" 20 30 lirng,
+            "30+" 30 limin ] `t cond
+    ] "HT *" cat
 ]
 
 aiml done

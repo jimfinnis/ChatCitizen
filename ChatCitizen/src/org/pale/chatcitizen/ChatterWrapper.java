@@ -8,6 +8,7 @@ import net.citizensnpcs.api.npc.NPC;
 
 import org.alicebot.ab.Bot;
 import org.alicebot.ab.Chat;
+import org.bukkit.entity.Player;
 
 /**
  * This class wraps a single chatbot so that it can be reused in
@@ -70,8 +71,15 @@ public class ChatterWrapper {
 //		c.dumpProperties(Plugin.getInstance().getLogger());
 	}
 
-	public synchronized String respond(NPC npc, String msg) {// synch - more than one chatbot might be using this!
-		return getChat(npc).multisentenceRespond(msg);
+	/**
+	 * respond to an utterance from a player (which may be null if the NPC is just saying something)
+	 * @param p
+	 * @param npc
+	 * @param msg
+	 * @return
+	 */
+	public synchronized String respond(Player p,NPC npc, String msg) {// synch - more than one chatbot might be using this!
+		return getChat(npc).multisentenceRespond(p,msg);
 	}
 
 	public String getName() {

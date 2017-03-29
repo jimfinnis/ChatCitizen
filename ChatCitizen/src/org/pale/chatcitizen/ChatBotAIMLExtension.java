@@ -1,11 +1,14 @@
 package org.pale.chatcitizen;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import net.citizensnpcs.api.npc.NPC;
 
 import org.alicebot.ab.AIMLProcessor;
 import org.alicebot.ab.AIMLProcessorExtension;
+import org.alicebot.ab.MagicBooleans;
+import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.ParseState;
 import org.alicebot.ab.Utilities;
 import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
@@ -14,7 +17,8 @@ import org.pale.chatcitizen.plugininterfaces.Sentinel.SentinelData;
 import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
-	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean","debug");
+	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean",
+			"setpl","getpl","debug");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
 	}
@@ -34,6 +38,10 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return npcdest(node,ps);
 			else if(nodeName.equals("sentinel"))
 				return sentinel(node,ps);
+			else if(nodeName.equals("getpl"))
+				return getpl(node,ps);
+			else if(nodeName.equals("setpl"))
+				return setpl(node,ps);
 			else if(nodeName.equals("clean"))
 				return clean(node,ps);
 			else if(nodeName.equals("debug"))
@@ -144,5 +152,36 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		} else return Long.toString(t);
 	}
 
+    private String setpl(Node node, ParseState ps) {
+        HashSet<String> attributeNames = Utilities.stringSet("name");
+        String predicateName = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");
+        String result = AIMLProcessor.evalTagContent(node, ps, attributeNames).trim();
+        result = result.replaceAll("(\r\n|\n\r|\r|\n)", " ");
+        String value=result.trim();
+        if (predicateName != null) {
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	t.setPlayerPredicate(predicateName,value);
+			ps.chatSession.predicates.put(predicateName, result);
+		}
+		return result;
+    }
+
+    /** get the value of an AIML predicate.
+     * implements <get name="predicate"></get>  and <get var="varname"></get>
+     *
+     * @param node     current XML parse node
+     * @param ps       AIML parse state
+     * @return         the result of the <get> operation
+     */
+    private String getpl(Node node, ParseState ps) {
+        String result = MagicStrings.default_get;
+        String predicateName = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");
+        if (predicateName != null){
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+            result = t.getPlayerPredicate(predicateName).trim();        	
+        }
+		//MagicBooleans.trace("in AIMLProcessor.get, returning: " + result);
+        return result;
+    }
 
 }

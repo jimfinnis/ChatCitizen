@@ -12,6 +12,8 @@ import net.citizensnpcs.api.trait.TraitName;
 import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.api.util.Messaging;
 
+import org.alicebot.ab.MagicNumbers;
+import org.alicebot.ab.MagicStrings;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -86,7 +88,8 @@ public class ChatTrait extends Trait {
 
 	List<Player> getNearPlayers(double d){
 		List<Player> r = new ArrayList<Player>();
-		for(Entity e: npc.getEntity().getNearbyEntities(d,d,d)){
+		// note the 1 - we have to be roughly on the same level.
+		for(Entity e: npc.getEntity().getNearbyEntities(d,1,d)){
 			if(e instanceof Player){
 				r.add((Player)e);
 			}
@@ -118,7 +121,7 @@ public class ChatTrait extends Trait {
 			// shouldn't be necessary, but it does seem odd that an empty hand is full of air...
 			String hstr = (held==null)?"air":held.getType().toString();
 			bot.setProperty(npc, "itemheld", hstr);
-			respondTo(p,"RIGHTCLICK");
+			if(hasRightClick)respondTo(p,"RIGHTCLICK");
 		}
 	}
 
@@ -127,8 +130,9 @@ public class ChatTrait extends Trait {
 		if(e.getNPC() == this.getNPC()){
 			Entity bastard = e.getDamager();
 			if(bastard instanceof Player){
-				setPropertiesForSender((Player)bastard);
-				if(hasPlayerHitMe)respondTo((Player)bastard,"PLAYERHITME");
+				Player p = (Player)bastard;
+				setPropertiesForSender(p);
+				if(hasPlayerHitMe)respondTo(p,"PLAYERHITME");
 			} else {
 				if(hasEntityHitMe)sayToAll("ENTITYHITME");
 			}
@@ -211,12 +215,14 @@ public class ChatTrait extends Trait {
 	}
 
 	/**
-	 * Generate and send a response to a list of players. 
+	 * Generate and send a response to a list of players. p (the player responded to) may be null.
+	 * 
 	 */
-	private void say(String toName,String pattern){
+	private void say(Player inResponseTo,String toName,String pattern){
+		curPlayer = inResponseTo;
 		List<Player> q = getNearPlayers(audibleDistance);
 		if(q.size()>0){
-			String msg = bot.respond(npc, pattern);
+			String msg = bot.respond(inResponseTo,npc, pattern);
 			if(msg.trim().length()!=0){
 				String s = ChatColor.AQUA+"["+npc.getFullName()+" -> "+toName+"] "+ChatColor.WHITE+msg;
 				for(Player p: getNearPlayers(audibleDistance)){
@@ -224,6 +230,7 @@ public class ChatTrait extends Trait {
 				}
 			}
 		}
+		curPlayer = null;
 	}
 
 	/**
@@ -233,7 +240,7 @@ public class ChatTrait extends Trait {
 	 * @param msg what they said
 	 */
 	public void respondTo(Player player,String input) {
-		say(player.getDisplayName(),input);
+		say(player,player.getDisplayName(),input);
 	}
 
 	/**
@@ -241,7 +248,7 @@ public class ChatTrait extends Trait {
 	 * and should be a special (RANDSAY etc.). 
 	 */
 	public void sayToAll(String pattern){
-		say("(nearby)",pattern);
+		say(null,"(nearby)",pattern);
 	}
 
 	/**
@@ -260,6 +267,7 @@ public class ChatTrait extends Trait {
 				// try to find someone to talk to
 				List<Player> ps  = getNearPlayers(sayDist);
 				if(ps.size() > 0){
+					// pick one at random.
 					Player p = ps.get(rand.nextInt(ps.size()));
 					respondTo(p,"RANDSAY");
 					lastRandSay = t;
@@ -304,6 +312,34 @@ public class ChatTrait extends Trait {
 	 * @return
 	 */
 	public String getResponseTest(String msg) {
-		return bot.respond(npc, msg);
+		return bot.respond(null,npc, msg);
+	}
+
+	/// per-player predicate map
+	HashMap<Player,HashMap<String,String>> playerPredicateMaps = new HashMap<Player,HashMap<String,String>>();
+
+	private Player curPlayer;
+	
+	private HashMap<String,String> getPlayerPredicateMap(Player p){
+		HashMap<String,String> map = playerPredicateMaps.get(p);
+		if(map==null){
+			map = new HashMap<String,String>();
+			playerPredicateMaps.put(p, map);
+		}
+		return map;
+	}
+	
+	public void setPlayerPredicate(String predicateName, String value) {
+		HashMap<String,String> map = getPlayerPredicateMap(curPlayer);
+		map.put(predicateName,value);
+	}
+
+	public String getPlayerPredicate(String predicateName) {
+		HashMap<String,String> map = getPlayerPredicateMap(curPlayer);
+		String result = map.get(predicateName);
+		if(result==null)
+			return MagicStrings.default_get;
+		else
+			return result;
 	}
 }
