@@ -128,7 +128,7 @@ These are those tags which do not require any extra plugins.
     * **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
     * **type="todstring"** will also return a string: morning, afternoon, evening or night.
 * ```<getpl name="..."/>``` and ```<setpl name="...">...</setpl>``` provide player predicates: predicates which are private to a particular player in conversation with a particular NPC. The default value (as with all predicates) is "unknown". This allows each bot to build up a set of predicates for each player. They are not persistent.
-* ```<insbset set="...">...</insbset>``` is the content a member of a bot's sub-bot set (see sub-bots, below)
+* ```<insbset set=".." yes="yesstring" no="nostring">...</insbset>``` determines whether the text is a member of one of a bot's sub-bot sets (see sub-bots, below). The yes and no strings may be omitted, in which case the tag returns "yes" or "no".
 * ```<randsbset set="..."/>``` generate a random value from the bot's given sub-bot set
 * ```<getsb name="..."/>``` get a value from the bot's sub-bot map (see sub-bots, below)
 ### NPC Destinations
