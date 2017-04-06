@@ -132,8 +132,12 @@ public class ChatTrait extends Trait {
 			ItemStack held = p.getInventory().getItemInMainHand();
 			// shouldn't be necessary, but it does seem odd that an empty hand is full of air...
 			String hstr = (held==null)?"air":held.getType().toString();
-			bot.setProperty(npc, "itemheld", hstr);
-			if(hasRightClick)respondTo(p,"RIGHTCLICK");
+			curPlayer = p; // because we're doing this before respondTo.
+			setPlayerPredicate("itemheld",hstr);
+			if(hasRightClick){
+				Plugin.log("Right click category present");
+				respondTo(p,"RIGHTCLICK");
+			}
 		}
 	}
 
@@ -194,7 +198,7 @@ public class ChatTrait extends Trait {
 		hasEntityHitMe = bot.hasSpecialCategory("entityhitme");
 		hasPlayerHitMe = bot.hasSpecialCategory("playerhitme");
 		hasHitSomething = bot.hasSpecialCategory("hitsomething");
-		hasRightClick = bot.hasSpecialCategory("hasrightclick");
+		hasRightClick = bot.hasSpecialCategory("rightclick");
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.

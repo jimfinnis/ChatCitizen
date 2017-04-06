@@ -1,5 +1,6 @@
 package org.pale.chatcitizen;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,18 +8,21 @@ import net.citizensnpcs.api.npc.NPC;
 
 import org.alicebot.ab.AIMLProcessor;
 import org.alicebot.ab.AIMLProcessorExtension;
-import org.alicebot.ab.MagicBooleans;
 import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.ParseState;
 import org.alicebot.ab.Utilities;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.pale.chatcitizen.plugininterfaces.NPCDestinations;
 import org.pale.chatcitizen.plugininterfaces.Sentinel;
-import org.pale.chatcitizen.plugininterfaces.Sentinel.SentinelData;
 import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean",
-			"insbset","randsbset","getsb",
+			"insbset","randsbset","getsb","hassb","give","take",
 			"setpl","getpl","debug");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
@@ -53,6 +57,12 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return randsbset(node,ps);
 			else if(nodeName.equals("getsb"))
 				return getsb(node,ps);
+			else if(nodeName.equals("hassb"))
+				return hassb(node,ps);
+			else if(nodeName.equals("give"))
+				return give(node,ps);
+			else if(nodeName.equals("take"))
+				return take(node,ps);
 			else return (AIMLProcessor.genericXML(node, ps));
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -78,6 +88,97 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				r= (r.length() > 1) ? r.substring(0, 1).toUpperCase()+r.substring(1, r.length()) : "";
 		}
 		return r;
+	}
+	
+	// <take item="itemname" count="number" yes="YES" unknown="UNKNOWN" wrong="WRONG" noitem="NOITEM" notenough="NOTENOUGH"/>
+	// Will attempt to remove "count" items of type "itemname" from the main hand slot of the player.
+	// Of course the attributes can also be content nodes. The yes/no etc. strings are shown above with defaults.
+	// They are:
+	// yes: string shown when successful
+	// unknown: item type is not a Material member
+	// wrong: wrong type of item 
+	// noitem: no item (AIR)
+	// notenough: item type right, but not enough of them
+	private String take(Node node,ParseState ps){
+        String unknown = AIMLProcessor.getAttributeOrTagValue(node, ps, "unknown","UNKNOWN");
+        String itemName = AIMLProcessor.getAttributeOrTagValue(node, ps, "item");
+        if(itemName==null)return unknown;
+
+        int count=1;
+        String cs = AIMLProcessor.getAttributeOrTagValue(node, ps, "count");
+        if(cs!=null){
+        	try {
+        		count = Integer.parseInt(cs);
+        	} catch(NumberFormatException e) {
+        		count = 1;
+        	}
+        }
+
+        Material m;
+        try {
+        	m = Material.valueOf(itemName.toUpperCase());
+        } catch (IllegalArgumentException e){
+        	return unknown;
+        }
+        
+		ChatTrait t = getTrait(ps.chatSession.npc);
+		Player p = t.getCurPlayer();
+		ItemStack st = p.getInventory().getItemInMainHand();
+		if(st.getType() == Material.AIR) return AIMLProcessor.getAttributeOrTagValue(node, ps, "noitem","NOITEM");
+		if(st.getType()!=m)
+			return AIMLProcessor.getAttributeOrTagValue(node, ps, "wrong","WRONG");
+		int newamount = st.getAmount() - count;
+		if(newamount<0)return AIMLProcessor.getAttributeOrTagValue(node, ps, "notenough","NOTENOUGH");
+		if(newamount==0)
+			p.getInventory().remove(st);
+		else 
+			st.setAmount(newamount);
+		return AIMLProcessor.getAttributeOrTagValue(node, ps, "yes","YES");
+	}
+	
+	// <give item="itemname" count="count" unknown="UNKNOWN" yes="YES">
+	// will give the player that number of that item. If itemname is not a valid Minecraft material, will
+	// return the unknown-string (UNKNOWN by default), otherwise the yes-string. If there is no room in the inventory,
+	// it will put the items on the ground.
+	private String give(Node node,ParseState ps){
+        String itemName = AIMLProcessor.getAttributeOrTagValue(node, ps, "item");
+        String no = AIMLProcessor.getAttributeOrTagValue(node, ps, "no","NO");
+        if(itemName==null){
+        	Plugin.log("give: item name is null");
+        	return no;
+        }
+
+        int count=1;
+        String cs = AIMLProcessor.getAttributeOrTagValue(node, ps, "count");
+        if(cs!=null){
+        	try {
+        		count = Integer.parseInt(cs);
+        	} catch(NumberFormatException e) {
+        		count = 1;
+        	}
+        }
+
+        Material m;
+        try {
+        	m = Material.valueOf(itemName.toUpperCase());
+        } catch (IllegalArgumentException e){
+        	Plugin.log("give: not a legal material: "+itemName.toUpperCase());
+        	return no;
+        }
+        
+        ItemStack st = new ItemStack(m,count);
+		ChatTrait t = getTrait(ps.chatSession.npc);
+		Player p = t.getCurPlayer();
+		PlayerInventory inv = p.getInventory();
+
+		HashMap<Integer,ItemStack> couldntStore = inv.addItem(st);
+
+		// drop remaining items at the player
+		for(ItemStack s: couldntStore.values()){
+			p.getWorld().dropItem(p.getLocation(), s);
+		}
+		
+		return AIMLProcessor.getAttributeOrTagValue(node, ps, "yes","YES");
 	}
 
 	private String npcdest(Node node, ParseState ps) {
@@ -167,11 +268,9 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 	private String insbset(Node node,ParseState ps){
         HashSet<String> attributeNames = Utilities.stringSet("set","yes","no");
         String setName = AIMLProcessor.getAttributeOrTagValue(node, ps, "set");
-        String no = AIMLProcessor.getAttributeOrTagValue(node, ps, "no");
-        if(no==null)no="NO";
+        String no = AIMLProcessor.getAttributeOrTagValue(node, ps, "no","NO");
         if(setName!=null){
-            String yes = AIMLProcessor.getAttributeOrTagValue(node, ps, "yes"); 
-            if(yes==null)yes="YES";
+            String yes = AIMLProcessor.getAttributeOrTagValue(node, ps, "yes","YES"); 
         	String result = AIMLProcessor.evalTagContent(node, ps, attributeNames).trim();
         	result = result.replaceAll("(\r\n|\n\r|\r|\n)", " ");
         	String item=result.trim();
@@ -197,22 +296,35 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         		return sb.randFromSet(setName);
         }
         
-        return "";
+        return "unknown";
 	}
 
 	// get item from a subbot map <sbget name="..."/>
 	private String getsb(Node node,ParseState ps){
-        HashSet<String> attributeNames = Utilities.stringSet("name");
+		String map = AIMLProcessor.getAttributeOrTagValue(node, ps, "map","default");
         String name = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");
-        Plugin.log("GOT MAP KEY: "+name);
+        Plugin.log("Lookup "+map+":"+name);
         if(name!=null){
         	ChatTrait t = getTrait(ps.chatSession.npc);
         	SubBotData sb = t.getSubBot();
         	if(sb!=null)
-        		return sb.getFromMap(name);
+        		return sb.getFromMap(map,name);
         }
         
-        return "";
+        return "unknown";
+	}
+	
+	// yes if a map is present
+	private String hassb(Node node, ParseState ps){
+		String map = AIMLProcessor.getAttributeOrTagValue(node, ps, "map","default");
+        if(map!=null){
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	SubBotData sb = t.getSubBot();
+        	if(sb.hasMap(map))return "yes";
+        }
+        
+        return "no";
+		
 	}
 
 	private String setpl(Node node, ParseState ps) {

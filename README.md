@@ -107,12 +107,12 @@ anything other than a weapon, and to say something when a weapon is used:
   <category>
     <pattern>RIGHTCLICK</pattern>
     <template>
-      <srai>RCLICK <get name="itemheld"/> </srai>
+      <srai>RCLICK <getpl name="itemheld"/> </srai>
     </template>
   </category>
 ```
 It might seem better to use a ```RIGHTCLICK <ITEM NAME>``` pattern, but that
-would be pretty messy to do internally.
+would be pretty messy to do internally. Note the use of ```getpl``` - this is a private variable between the chatbot and the player.
 
 ## AIML extensions
 These have been added using the ```AIMLProcessorExtension``` class inside Program AB. These will hopefully increase over time.

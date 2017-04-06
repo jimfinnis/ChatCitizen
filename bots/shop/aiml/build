@@ -1,0 +1,3 @@
+#!/bin/sh
+
+angort shop.ang >auto.aiml

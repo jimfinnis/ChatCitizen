@@ -1,0 +1,111 @@
+include "../../aimlgen.ang"
+
+# This is a shop, in Angort -> AIML. The AIML generated is pretty revolting
+# and I suppose this Angort is too, but it has the advantage of brevity.
+
+[
+    ["I give", `givestring getdefsb, "in exchange for", `takestring getdefsb, "."] "* SELL" cleancat,
+    
+    # dealing with rightclick
+    [
+        `itemheld getpl `t s think,
+        [
+            # first see if it isn't air
+            `noitem randsbset     `AIR lival,
+            # then if it's our exchange item AND we have a item we'd like to buy from the shop
+            [
+                `exchange getdefsb upper `value stag,
+                [%
+                    # we do have a buy item
+                    `default [
+                        [
+                            # if it is our exchange item, try to take it - checking the cost
+                            `exchange getdefsb upper `item stag,
+                            # look up the cost of the current buy item
+                            [`curbuyitem getpl lower `name stag] [%`map `give ] `getsb mktag `count stag
+                        ] `take stag `t s think,
+                        # and show the result, giving us the thing we wanted too.
+                        [%
+                            `notenough `notenough randsbset,
+                            `wrong `wrong randsbset,
+                            `default "WTF? Something weird has happened",
+                            `yes [
+                                [
+                                    `curbuyitem getpl upper `item stag,
+                                    1 `count stag
+                                ] `give stag think,
+                                `thanks randsbset
+                            ]
+                        ] `t switch
+                    ],
+                    `unknown [
+                        "But what would you like to buy?",
+                        `setbuy settopic think
+                    ]
+                ] `curbuyitem switch
+                
+            ] `li stag,
+            # now if it's anything the shop can buy
+            [
+                # put the exchange rate or "unknown" in q
+                [`t g lower `name stag] [% `map `take] `getsb mktag `q s think,
+                [%
+                    `unknown ["I can't buy that. I only buy",
+                        `takestring getdefsb,
+                        ". My exchange item is ", `exchange getdefsb lower,
+                        "by the way."],
+                    `default [
+                        # it appears I can buy these - try to take that number and store the result in s
+                        [`t g lower `item stag, `q g `count stag] `take stag `t s think,
+                        [%
+                            `notenough `notenough randsbset,
+                            `wrong `wrong randsbset,
+                            `default "WTF? Something weird has happened",
+                            `yes [
+                                [
+                                    `exchange getdefsb upper `item stag,
+                                    1 `count stag
+                                ] `give stag think,
+                                `thanks randsbset
+                            ]
+                        ] `t switch
+                    ]
+                ] `q switch
+            ] lidef
+        ] `t cond
+    ] `RIGHTCLICK cleancat,
+    
+    [
+        # get the item if we can
+        star `denormalize stag `thing s think,
+        [`thing g `name stag] [%`map `give] `getsb mktag `t s think,
+        [%
+            `unknown `dontsell randsbset,
+            `default [
+                `thing g `curbuyitem setpl think,
+                "OK, you're buying", `thing g,
+                "and the cost is", `t g, `exchange getdefsb,
+                ". When you've got enough, just say \"Forget it\" or \"Buy something else.\""
+            ]
+        ] `t switch
+    ] "BUY *" cat,
+    
+    ["BUY", 2 starn] sr "* BUY *" cat,
+    
+    # for the "what would you like to buy"... "x".. convo
+    [
+        [
+            "*" settopic think,
+            ["BUY",star] sr
+        ] "*" cat 
+    ] `setbuy topic,
+    
+    
+    # forgetting
+    
+    [`unknown `curbuyitem setpl think,
+        `agreement randsbset
+    ] "FORGET *" cat,
+    
+    "FORGET" sr "BUY * ELSE" cat
+] aiml done

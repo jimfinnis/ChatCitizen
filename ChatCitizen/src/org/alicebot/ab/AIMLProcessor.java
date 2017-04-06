@@ -393,6 +393,12 @@ public class AIMLProcessor {
 		//MagicBooleans.trace("in AIMLProcessor.getAttributeOrTagValue (), returning: " + result);
         return result;
     }
+    
+    // jcf - as above with default
+    public static String getAttributeOrTagValue(Node node, ParseState ps, String name, String deflt){
+    	String s = getAttributeOrTagValue(node, ps, name);
+    	return (s==null) ? deflt : s;
+    }
 
     /**
      * access external web service for response
