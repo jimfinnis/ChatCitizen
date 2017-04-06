@@ -153,31 +153,40 @@ public class AIMLMap extends HashMap<String, String> {
         }
         return cnt;
     }
+    
+    /**
+     * JCF - read AIML map, specifying the path (but not the name, which is in this object)
+     * @param path
+     * @return
+     */
+    public int readAIMLMap(String path){
+        int cnt = 0;
+        if (MagicBooleans.trace_mode) System.out.println("Reading AIML Map "+path+"/"+mapName+".txt");
+        try{
+            // Open the file that is the first
+            // command line parameter
+            File file = new File(bot.maps_path+"/"+mapName+".txt");
+            if (file.exists()) {
+                FileInputStream fstream = new FileInputStream(path+"/"+mapName+".txt");
+                // Get the object
+                cnt = readAIMLMapFromInputStream(fstream, bot);
+                fstream.close();
+            }
+            else System.out.println(path+"/"+mapName+".txt not found");
+        }catch (Exception e){//Catch exception if any
+            System.err.println("Error: " + e.getMessage());
+        }
+        return cnt;
+    	
+    }
 
        /**
         * read an AIML map for a bot
         *
         * @param bot          the bot associated with this map.
         */
-    public int readAIMLMap (Bot bot) {
-        int cnt = 0;
-        if (MagicBooleans.trace_mode) System.out.println("Reading AIML Map "+bot.maps_path+"/"+mapName+".txt");
-        try{
-            // Open the file that is the first
-            // command line parameter
-            File file = new File(bot.maps_path+"/"+mapName+".txt");
-            if (file.exists()) {
-                FileInputStream fstream = new FileInputStream(bot.maps_path+"/"+mapName+".txt");
-                // Get the object
-                cnt = readAIMLMapFromInputStream(fstream, bot);
-                fstream.close();
-            }
-            else System.out.println(bot.maps_path+"/"+mapName+".txt not found");
-        }catch (Exception e){//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
-        }
-        return cnt;
-
+    public int readAIMLMap(Bot bot) {
+    	return readAIMLMap(bot.maps_path);
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import net.citizensnpcs.api.persistence.Persist;
 import net.citizensnpcs.api.trait.Trait;
@@ -12,6 +13,8 @@ import net.citizensnpcs.api.trait.TraitName;
 import net.citizensnpcs.api.util.DataKey;
 import net.citizensnpcs.api.util.Messaging;
 
+import org.alicebot.ab.AIMLMap;
+import org.alicebot.ab.AIMLSet;
 import org.alicebot.ab.MagicNumbers;
 import org.alicebot.ab.MagicStrings;
 import org.bukkit.ChatColor;
@@ -72,6 +75,10 @@ public class ChatTrait extends Trait {
 
 	private boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe,hasHitSomething,hasRightClick;
 
+	// name of the "sub-bot" data, which contains different maps and sets shared by the bot to provide
+	// variation within a bot.
+	
+	@Persist public String subbotName="default";
 
 
 	// example setting.
@@ -95,6 +102,11 @@ public class ChatTrait extends Trait {
 			}
 		}
 		return r;
+	}
+	
+	SubBotData getSubBot(){
+		Plugin.log("Getting subbot "+subbotName);
+		return bot.getSubBot(subbotName);
 	}
 
 	// Here you should load up any values you have previously saved (optional). 
@@ -167,7 +179,6 @@ public class ChatTrait extends Trait {
 	//This would be a good place to load configurable defaults for new NPCs.
 	@Override
 	public void onAttach() {
-		botName = "default";
 		plugin.getServer().getLogger().info(npc.getName() + " has been assigned ChatCitizen!");
 		// set up the NPCDestinations data (if present)
 		nddat = plugin.ndPlugin.makeData(npc);
@@ -199,12 +210,14 @@ public class ChatTrait extends Trait {
 	@Override
 	public void onSpawn() {
 		if(botName==null)botName="default"; // this really shouldn't be required.
+		if(subbotName==null)subbotName = "default";
+
 		ChatterWrapper b = plugin.getBot(botName);
 		if(b==null)
 			throw new RuntimeException("bot \""+botName+"\" not found - is it in the config?");
 
 		setBot(b);
-
+		
 		plugin.addChatter(npc);
 		Plugin.log(" Spawn run on "+npc.getFullName());
 	}
@@ -341,5 +354,13 @@ public class ChatTrait extends Trait {
 			return MagicStrings.default_get;
 		else
 			return result;
+	}
+
+	/**
+	 * Get the player (or null) to whom the bot is responding
+	 * @return
+	 */
+	public Player getCurPlayer() {
+		return curPlayer;
 	}
 }

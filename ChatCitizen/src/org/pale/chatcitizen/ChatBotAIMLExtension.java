@@ -18,6 +18,7 @@ import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean",
+			"insbset","randsbset","getsb",
 			"setpl","getpl","debug");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
@@ -46,6 +47,12 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return clean(node,ps);
 			else if(nodeName.equals("debug"))
 				return debug(node,ps);
+			else if(nodeName.equals("insbset"))
+				return insbset(node,ps);
+			else if(nodeName.equals("randsbset"))
+				return randsbset(node,ps);
+			else if(nodeName.equals("getsb"))
+				return getsb(node,ps);
 			else return (AIMLProcessor.genericXML(node, ps));
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -58,6 +65,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		Plugin.log("DEBUG: **"+r+"**");
 		return r;
 	}
+
 
 	private String clean(Node node, ParseState ps) {
 		String r = AIMLProcessor.evalTagContent(node, ps, Utilities.stringSet("opts")).trim();
@@ -151,8 +159,63 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return "day";
 		} else return Long.toString(t);
 	}
+	
+	// is an item in a subbot set for the current bot?
+	/// <insbset set="birds" yes=".." no="..">ITEM</insbset>
+	// yes or no default to YES or NO.
+	
+	private String insbset(Node node,ParseState ps){
+        HashSet<String> attributeNames = Utilities.stringSet("set","yes","no");
+        String setName = AIMLProcessor.getAttributeOrTagValue(node, ps, "set");
+        String no = AIMLProcessor.getAttributeOrTagValue(node, ps, "no");
+        if(no==null)no="NO";
+        if(setName!=null){
+            String yes = AIMLProcessor.getAttributeOrTagValue(node, ps, "yes"); 
+            if(yes==null)yes="YES";
+        	String result = AIMLProcessor.evalTagContent(node, ps, attributeNames).trim();
+        	result = result.replaceAll("(\r\n|\n\r|\r|\n)", " ");
+        	String item=result.trim();
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	SubBotData sb = t.getSubBot();
+        	if(sb!=null)
+        		return sb.isInSet(setName, item) ? yes : no;
+        }
+        
+        return no;
+	}
+	
 
-    private String setpl(Node node, ParseState ps) {
+	// get random item from a subbot set <randsbset set="birds"/>
+	private String randsbset(Node node,ParseState ps){
+        HashSet<String> attributeNames = Utilities.stringSet("set");
+        String setName = AIMLProcessor.getAttributeOrTagValue(node, ps, "set");
+        if(setName!=null){
+        	Plugin.log("GOT SET NAME "+setName);
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	SubBotData sb = t.getSubBot();
+        	if(sb!=null)
+        		return sb.randFromSet(setName);
+        }
+        
+        return "";
+	}
+
+	// get item from a subbot map <sbget name="..."/>
+	private String getsb(Node node,ParseState ps){
+        HashSet<String> attributeNames = Utilities.stringSet("name");
+        String name = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");
+        Plugin.log("GOT MAP KEY: "+name);
+        if(name!=null){
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	SubBotData sb = t.getSubBot();
+        	if(sb!=null)
+        		return sb.getFromMap(name);
+        }
+        
+        return "";
+	}
+
+	private String setpl(Node node, ParseState ps) {
         HashSet<String> attributeNames = Utilities.stringSet("name");
         String predicateName = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");
         String result = AIMLProcessor.evalTagContent(node, ps, attributeNames).trim();

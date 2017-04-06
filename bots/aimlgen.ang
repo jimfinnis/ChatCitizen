@@ -51,6 +51,14 @@ require "util.ang" drop
 # set and get
 :s |v,name:| ?v [%`name ?name] `set mktag;
 :g |name:| none [%`name ?name] `get mktag;
+
+# is in private set for this bot
+:insbset |v,set:| ?v [%`set ?set] `insbset mktag;
+
+# get from private set randomly
+:randsbset |set:| none [%`set ?set] `randsbset mktag;
+
+
 # player predicate set/get
 :setpl |v,name:| ?v [%`name ?name] `setpl mktag;
 :getpl |name:| none [%`name ?name] `getpl mktag;

@@ -190,6 +190,7 @@ public class Plugin extends JavaPlugin {
 		ChatTrait ct = c.getCitizen();
 		a = new String[] {
 				"Bot name = "+ct.getBotName(),
+				"Sub-bot name = "+ct.subbotName,
 				"Random speech distance [saydist] = "+ct.sayDist,
 				"Random speech interval [sayint] = "+ct.sayInterval,
 				"Random speech chance [sayprob] = "+(int)(ct.sayProbability*100),
@@ -307,6 +308,14 @@ public class Plugin extends JavaPlugin {
 		}
 	}
 	
+	@Cmd(desc="set a \"sub-bot\" for an NPC",argc=1,usage="<subbot>",cz=true,permission="chatcitizen.set")
+	public void subbot(CallInfo c){
+		String name = c.getArgs()[0];
+		ChatTrait ct = c.getCitizen();
+		ct.subbotName = name;
+		c.msg(ct.getNPC().getFullName()+" is now using sub-bot \""+name+"\".");
+	}
+
 	@Cmd(desc="show help for a command or list commands",argc=-1,usage="[<command name>]")
 	public void help(CallInfo c){
 		if(c.getArgs().length==0){

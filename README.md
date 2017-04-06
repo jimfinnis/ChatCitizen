@@ -34,6 +34,7 @@ plane) and 2 vertically (Y plane).
 * **ccz reloadall** reload all AIML and data files (requires ```chatcitizen.reloadall```).
 * **ccz reload [botname]** reload the AIML and data files for a bot (requires ```chatcitizen.reload```). Note that the name is that of the bot as given in config.yml, not the name of an NPC using that bot: if ```ccz bots``` says that NPC Steve, Graham and Betty are all using the "soldier" bot, doing ```ccz reload soldier``` will work and reset them all, but ```ccz reload Betty``` will give an error.
 * **ccz bots** list all bots and the NPCs which use them.
+* **ccz subbot [subbotname]** tells the currently selected NPC to use the given sub-bot (each bot can have a number of sub-bots, each of which has its own sets and a map, to allow variations within bots).
 
 ## Parameters used by ccz set
 Many of these require spontaneous speech to be enabled by adding RANDSAY and GREETSAY to the bot's categories. The default
@@ -127,6 +128,9 @@ These are those tags which do not require any extra plugins.
     * **type="approx"** will give a string: dawn, dusk, noon, midnight, day or night.
     * **type="todstring"** will also return a string: morning, afternoon, evening or night.
 * ```<getpl name="..."/>``` and ```<setpl name="...">...</setpl>``` provide player predicates: predicates which are private to a particular player in conversation with a particular NPC. The default value (as with all predicates) is "unknown". This allows each bot to build up a set of predicates for each player. They are not persistent.
+* ```<insbset set="...">...</insbset>``` is the content a member of a bot's sub-bot set (see sub-bots, below)
+* ```<randsbset set="..."/>``` generate a random value from the bot's given sub-bot set
+* ```<getsb name="..."/>``` get a value from the bot's sub-bot map (see sub-bots, below)
 ### NPC Destinations
 These will only work if a recent version (at least 1.43) of nuNPC Destinations is installed.
 * ```<npcdest cmd="go" loc="location" time="staytime"/>``` will tell the bot to go to a given location, specified by name or number. The time is how long the NPC should linger in milliseconds, and is 1 day if not specified.  If this fails for any reason (trait not present, can't find location) the command will return NO. If it succeeds, it will return YES. A suitable usage might be:
@@ -161,6 +165,21 @@ Bear in mind I am far from an expert in AIML!
     * **cmd="timeSinceSpawn"** to give the time since the sentinel was created or died and respawned
     * **cmd="guarding"** to describe the sentinel's guard: either a player name, or "something" (for a non-player entity) or "nothing" for normal behaviour.
     * **cmd="health"** to give the health as a percentage. **TODO: THIS SHOULD BE A GENERAL COMMAND!**
+
+
+## Sub-bots
+Because loadings bots is expensive, and you might want to have quite
+a few bots sharing most of their data, we have sub-bots. Each bot type
+can have a number of files in its ```subbots`` directory, called
+```something.yml``` where "something" is the name of the sub-bot.
+This contains:
+* ```sets``` - a set of lists, where each list is a special set of strings (see the ```insbset``` and ```randsbset``` tags)
+* ```map``` - a map of strings to strings.
+
+Each NPC using a bot can be using a different sub-bot, so one "soldier"
+might be very obscene while another chooses his swear words from a milder
+set, by just defining different ```swearword``` sets in the sub-bots files.
+Another usage might be setting variables to different values in the map.
 
 ## Dependencies
 You will need to add the following JARs to your build path if you want to build ChatCitizen yourself:

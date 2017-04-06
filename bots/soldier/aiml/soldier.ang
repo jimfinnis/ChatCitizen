@@ -42,14 +42,51 @@ include "../../aimlgen.ang"
     # The REPORT category, for giving a report.
     [ 
         `GREET sr clean,
-        "Time since spawn:", `timeSinceSpawn sentinel,
-        "Time since attack:", `timeSinceAttack sentinel,
-        "Health:", `health sentinel,
-        "Guarding:", `guarding sentinel ] `REPORT cleancat,
+        `timeSinceAttack sentinel `t s think,
+        [
+            ["There's been trouble recently.",
+                "Things have been hot!",
+                "Lots of monsters around.",
+                "It's been intense."
+            ] random 1000 limax,
+            [
+                "We were under attack recently.",
+                "Been a short while since an attack.",
+                "There were monsters a little while ago.",
+                "Things were hairy a while back."
+            ] random 1000 5000 lirng,
+            [
+                "It's been quiet.", "It's been very quiet.",
+                "Things have been quiet.","All's well.","Everything peaceful.",
+                "Nice and quiet."] random 5000 limin 
+        ] `t cond clean,
+        `timeSinceSpawn sentinel `t s think,
+        [
+            ["I've not been here long.",
+                "I'm fairly new here.",
+                "Not been around long."] random 25000 limax,
+            ["I'm getting the hang of things.",
+                "I'm beginning to settle in now.",
+                "Getting the feel of things now."] random 25000 100000 lirng,
+            ["It's a nice place, this.",
+                "Really feel I belong here.",
+                "It's a good place.",
+                "Nice place you have here."] random 100000 limin
+        ] `t cond clean,
+        
+        `guarding sentinel `t s think,
+        [
+            "" "nothing" lival,
+            "I'm guarding something or other at the moment." "something" lival,
+            ["I'm guarding", `guarding sentinel, "."] lidef
+        ] `t cond clean
+        
+    ]
+    `REPORT cleancat,
     
     # and reductions for it.
     
-    ["HOW ARE YOU","* REPORT","WHAT * STATUS","HELLO"] 
+    ["HOW *","* REPORT","WHAT * STATUS","HELLO"] 
     each { `REPORT sr i cat,}
     
     # asking the time with TIME

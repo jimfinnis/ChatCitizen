@@ -1,13 +1,17 @@
 package org.pale.chatcitizen;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import net.citizensnpcs.api.npc.NPC;
 
+import org.alicebot.ab.AIMLMap;
+import org.alicebot.ab.AIMLSet;
 import org.alicebot.ab.Bot;
 import org.alicebot.ab.Chat;
+import org.alicebot.ab.utils.IOUtils;
 import org.bukkit.entity.Player;
 
 /**
@@ -23,6 +27,7 @@ public class ChatterWrapper {
 	private String path;
 	private String name;
 	private Map<Integer,Chat> chats;
+	private Map<String,SubBotData> subbots = new HashMap<String,SubBotData>();
 
 	public ChatterWrapper(String name,String path){
 		this.path = path;
@@ -32,11 +37,11 @@ public class ChatterWrapper {
 	public boolean hasSpecialCategory(String s){
 		return bot.hasSpecialCategory(s);
 	}
-	
+
 	public Collection<Chat> getChats(){
 		return chats.values();
 	}
-	
+
 	/**
 	 * Discard and reload this bot and clear all chats (and all properties therein).
 	 */
@@ -44,6 +49,28 @@ public class ChatterWrapper {
 		bot = new Bot(name,path);
 		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething","rightclick");
 		chats= new HashMap<Integer,Chat>();
+		
+		// now we load the sets and maps for different "versions" of this bot that know different things.
+		// We look for all "subbot" files.
+		File dir = new File(path+"/subbots");
+		if(dir.exists()){
+			File[] list = IOUtils.listFiles(dir);
+			for(File f: list){
+				if(f.isFile()){
+					String fn = f.getName();
+					if(fn.endsWith(".yml")){
+						SubBotData d = new SubBotData(f.getAbsolutePath());
+						String bn = fn.replace(".yml", "");
+						subbots.put(bn,d);
+						Plugin.log("Loaded subbot "+bn+" from file "+fn);
+					}
+				}
+			}
+		}
+	}
+	
+	public SubBotData getSubBot(String s){
+		return subbots.get(s);
 	}
 
 	public synchronized Chat getChat(NPC npc){ // synch - more than one chatbot might be using this!
@@ -68,7 +95,7 @@ public class ChatterWrapper {
 		Chat c = getChat(npc);
 		Plugin.log("Property set in "+c.toString()+", "+s+"="+o);
 		c.predicates.put(s,o);
-//		c.dumpProperties(Plugin.getInstance().getLogger());
+		//		c.dumpProperties(Plugin.getInstance().getLogger());
 	}
 
 	/**
