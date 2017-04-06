@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean",
-			"insbset","randsbset","getsb","hassb","give","take",
+			"insbset","randsbset","getsb","hassb","give","take","matname",
 			"setpl","getpl","debug");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
@@ -63,6 +63,8 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return give(node,ps);
 			else if(nodeName.equals("take"))
 				return take(node,ps);
+			else if(nodeName.equals("matname"))
+				return matname(node,ps);
 			else return (AIMLProcessor.genericXML(node, ps));
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -114,12 +116,8 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         	}
         }
 
-        Material m;
-        try {
-        	m = Material.valueOf(itemName.toUpperCase());
-        } catch (IllegalArgumentException e){
-        	return unknown;
-        }
+        Material m = MaterialNameParser.get(itemName);
+        if(m==null)return unknown;
         
 		ChatTrait t = getTrait(ps.chatSession.npc);
 		Player p = t.getCurPlayer();
@@ -130,7 +128,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		int newamount = st.getAmount() - count;
 		if(newamount<0)return AIMLProcessor.getAttributeOrTagValue(node, ps, "notenough","NOTENOUGH");
 		if(newamount==0)
-			p.getInventory().remove(st);
+			p.getInventory().setItemInMainHand(null);
 		else 
 			st.setAmount(newamount);
 		return AIMLProcessor.getAttributeOrTagValue(node, ps, "yes","YES");
@@ -158,13 +156,8 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         	}
         }
 
-        Material m;
-        try {
-        	m = Material.valueOf(itemName.toUpperCase());
-        } catch (IllegalArgumentException e){
-        	Plugin.log("give: not a legal material: "+itemName.toUpperCase());
-        	return no;
-        }
+        Material m = MaterialNameParser.get(itemName);
+        if(m==null)return no;
         
         ItemStack st = new ItemStack(m,count);
 		ChatTrait t = getTrait(ps.chatSession.npc);
@@ -179,6 +172,13 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		}
 		
 		return AIMLProcessor.getAttributeOrTagValue(node, ps, "yes","YES");
+	}
+	
+	// <matname>name</matname> convert a material name to a standard Minecraft name (or "unknown")
+	private String matname(Node node, ParseState ps){
+        String result = AIMLProcessor.evalTagContent(node, ps, null);
+        Material m = MaterialNameParser.get(result);
+        return m==null ? "unknown" : m.name();
 	}
 
 	private String npcdest(Node node, ParseState ps) {

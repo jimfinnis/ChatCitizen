@@ -4,7 +4,9 @@ include "../../aimlgen.ang"
 # and I suppose this Angort is too, but it has the advantage of brevity.
 
 [
-    ["I give", `givestring getdefsb, "in exchange for", `takestring getdefsb, "."] "* SELL" cleancat,
+    ["I give", `givestring getdefsb, "in exchange for", `takestring getdefsb, "."] "SELL" cleancat,
+    [`greet randsbset, "SELL" sr] "*" cleancat,
+    "SELL" sr "SELL *" cat,
     
     # dealing with rightclick
     [
@@ -47,7 +49,7 @@ include "../../aimlgen.ang"
             ] `li stag,
             # now if it's anything the shop can buy
             [
-                # put the exchange rate or "unknown" in q
+                # put the exchange rate for t (our item) or "unknown" in q
                 [`t g lower `name stag] [% `map `take] `getsb mktag `q s think,
                 [%
                     `unknown ["I can't buy that. I only buy",
@@ -76,11 +78,14 @@ include "../../aimlgen.ang"
     ] `RIGHTCLICK cleancat,
     
     [
-        # get the item if we can
-        star `denormalize stag `thing s think,
+        # get the item, having processed the material name, into "thing".
+        star `matname stag `lowercase stag `thing s think,
+        # look it up in the "give" map to see if we can give these to the player,
+        # getting the cost into t.
         [`thing g `name stag] [%`map `give] `getsb mktag `t s think,
         [%
-            `unknown `dontsell randsbset,
+            `unknown `dontsell randsbset, # can't.
+            # we can. Set it to be the current buy item.
             `default [
                 `thing g `curbuyitem setpl think,
                 "OK, you're buying", `thing g,

@@ -1,0 +1,52 @@
+maps:
+    default:
+        givestring: gold and emerands
+        takestring: cobblestone or dirt
+
+        # this is the medium of exchange - we give this when we take stuff, and take it when we give stuff.
+        exchange: iron_ingot
+
+    take:
+        # things we buy and how many for 1 exchange item
+        cobblestone: 8
+        dirt: 16
+    give:
+        # things we give and how many exchange items for each one
+        gold_ingot: 16
+        emerald: 32
+        
+
+sets:
+    agreement:
+        - No problem.
+        - Absolutely.
+        - OK.
+        - Right you are.
+    thanks: 
+        - Cheers!
+        - Much obliged.
+        - There you go.
+        - Thanks very much.
+        - And here's your purchase.
+    wrong:
+        - Sorry, I don't accept.. that.
+        - I have no idea what you're trying to give me.
+        - And what is that?
+        - Try giving me what I actually want.
+    noitem:
+        - Don't try to give me nothing at all!
+        - I don't do freebies.
+        - Try giving me what I want.
+        - And?
+    notenough:
+        - I'll need a bit more than that.
+        - Sorry, not enough.
+        - Sorry, I want more.
+        - That's not enough.
+    dontsell:
+        - I'm sorry, I don't sell that.
+        - I don't think I've got one of those.
+    greet:
+        - Hello!
+        - Greetings!
+        - Good to see you! 
