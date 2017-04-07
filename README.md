@@ -170,7 +170,7 @@ Bear in mind I am far from an expert in AIML!
 ## Sub-bots
 Because loadings bots is expensive, and you might want to have quite
 a few bots sharing most of their data, we have sub-bots. Each bot type
-can have a number of files in its ```subbots`` directory, called
+can have a number of files in its ```subbots``` directory, called
 ```something.yml``` where "something" is the name of the sub-bot.
 This contains:
 * ```sets``` - a set of lists, where each list is a special set of strings (see the ```insbset``` and ```randsbset``` tags)
