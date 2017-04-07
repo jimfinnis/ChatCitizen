@@ -1,6 +1,6 @@
 maps:
     default:
-        givestring: gold and emerands
+        givestring: gold and emeralds
         takestring: cobblestone or dirt
 
         # this is the medium of exchange - we give this when we take stuff, and take it when we give stuff.
