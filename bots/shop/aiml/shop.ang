@@ -4,9 +4,97 @@ include "../../aimlgen.ang"
 # and I suppose this Angort is too, but it has the advantage of brevity.
 
 [
-    ["I give", `givestring getdefsb, "in exchange for", `takestring getdefsb, "."] "SELL" cleancat,
-    [`greet randsbset, "SELL" sr] "*" cleancat,
-    "SELL" sr "SELL *" cat,
+    # general info
+    [
+        `givestring getdefsb `t s think,
+        [%
+            `none [
+                "I don't sell anything",
+                "I sell nothing"
+                ] random,
+            `default [
+                "I sell", `givestring getdefsb
+            ]
+        ] `t switch 
+    ] "ISELL" cat,
+    
+    [
+        `takestring getdefsb `t s think,
+        [%
+            `none [
+                "I don't buy anything",
+                "I buy nothing"
+                ] random,
+            `default [
+                "I buy", `takestring getdefsb
+            ]
+        ] `t switch 
+    ] "IBUY" cat,
+    
+    [
+        `exchange getdefsb `t s think,
+        [%
+            `none "",
+            `default [
+                [
+                    "my medium of exchange is",
+                    "as cash I use",
+                    "instead of cash I use",
+                    "I accept payment in"
+                ] random, `exchange getdefsb
+            ]
+        ] `t switch 
+    ] "EXCH" cat,
+        
+    "ISELL" sr "WHAT * SELL" cleancat,
+    "IBUY" sr "WHAT * BUY" cleancat,
+    
+    # joining all those together for wont of anything better to say
+    ["ISELL","IBUY","EXCH"] (sr `sentence stag) map "." listintercalate ["."] + "UNKNOWN" cleancat,
+    
+    # finding out what things cost
+    
+    [
+        # get the cost of star into s
+        star `matname stag lower `name stag [%`map `give ] `getsb mktag `t s think,
+        [%
+            `unknown `dontsell randsbset, #  we don't sell that.
+            # we can. Set it to be the current buy item.
+            `default [
+                `willcost randsbset,
+                `t g, `exchange getdefsb, "."
+            ]
+        ] `t switch
+        
+    ] "COST *" cleancat,
+    
+    "Cost of what?" "COST" cat,
+    
+    # This is the "*" category.
+    # did you just say the name of a thing that we sell or buy? Say that.
+    
+    [
+        star `matname stag lower `t s think,
+        [%
+            `unknown "UNKNOWN" sr,# it wasn't the name of a thing
+            `default [
+                `t g `name stag [%`map `give ] `getsb mktag `p s think,
+                [%
+                    `unknown [
+                        `t g `name stag [%`map `take ] `getsb mktag `p s think,
+                        [%
+                            `unknown `randomitem randsbset,
+                            `default ["I buy those for", `p g, `exchange getdefsb, "."]
+                        ] `p switch
+                    ],
+                    `default ["I sell those for", `p g, `exchange getdefsb, "."]
+                ] `p switch
+            ]
+        ] `t switch
+    ] "*" cleancat,
+    
+    
+    
     
     # dealing with rightclick
     [

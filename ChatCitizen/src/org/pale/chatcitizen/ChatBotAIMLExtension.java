@@ -299,7 +299,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         return "unknown";
 	}
 
-	// get item from a subbot map <sbget name="..."/>
+	// get item from a subbot map <sbget map="..." name="..."/>
 	private String getsb(Node node,ParseState ps){
 		String map = AIMLProcessor.getAttributeOrTagValue(node, ps, "map","default");
         String name = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");

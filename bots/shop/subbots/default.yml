@@ -1,7 +1,7 @@
 maps:
     default:
-        givestring: gold and emeralds
-        takestring: cobblestone or dirt
+        givestring: gold, brick and emeralds
+        takestring: cobblestone, stone, seeds or dirt
 
         # this is the medium of exchange - we give this when we take stuff, and take it when we give stuff.
         exchange: iron_ingot
@@ -9,12 +9,14 @@ maps:
     take:
         # things we buy and how many for 1 exchange item
         cobblestone: 8
+        stone: 6
+        seeds: 4
         dirt: 16
     give:
         # things we give and how many exchange items for each one
         gold_ingot: 16
         emerald: 32
-        
+        brick: 1
 
 sets:
     agreement:
