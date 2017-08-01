@@ -148,7 +148,6 @@ public class ChatTrait extends Trait {
 			Entity bastard = e.getDamager();
 			if(bastard instanceof Player){
 				Player p = (Player)bastard;
-				setPropertiesForSender(p);
 				if(hasPlayerHitMe)respondTo(p,"PLAYERHITME");
 			} else {
 				if(hasEntityHitMe)sayToAll("ENTITYHITME");
@@ -258,6 +257,7 @@ public class ChatTrait extends Trait {
 	 * @param msg what they said
 	 */
 	public void respondTo(Player player,String input) {
+		setPropertiesForSender(player);
 		say(player,player.getDisplayName(),input);
 	}
 
@@ -313,7 +313,6 @@ public class ChatTrait extends Trait {
 					// we didn't greet them recently; let's do that.
 					if(t-lasttime > greetInterval*1000){
 						if(rand.nextDouble()<greetProbability){
-							setPropertiesForSender(p);
 							respondTo(p,"GREETSAY");
 						}
 						lastGreeted.put(p.getName(), t);

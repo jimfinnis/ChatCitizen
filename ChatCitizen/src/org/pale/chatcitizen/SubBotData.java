@@ -116,4 +116,24 @@ public class SubBotData {
 	public boolean hasMap(String mapName){
 		return maps.containsKey(mapName) || (deflt!=null && deflt.maps.containsKey(mapName));
 	}
+
+	public String randKeyFromMap(String mapName) {
+		HashMap<String,String> m;
+		if(maps.containsKey(mapName)){
+			 m = maps.get(mapName);
+		} else if(deflt!=null && deflt.maps.containsKey(mapName)) {
+			m = deflt.maps.get(mapName);
+		} else
+			return "unknownmap";
+		
+		Set<String> s = m.keySet();
+		int sz = s.size();
+		int idx = rnd.nextInt(sz);
+		int i=0;
+		for(String ss: s){
+			if(i==idx)return ss.trim();
+			i++;
+		}
+		return "";
+	}
 }

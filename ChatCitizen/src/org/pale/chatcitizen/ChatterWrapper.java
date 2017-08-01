@@ -47,7 +47,7 @@ public class ChatterWrapper {
 	 */
 	public void reload(){
 		bot = new Bot(name,path);
-		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething","rightclick");
+		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething","rightclick","repetitiondetected");
 		chats= new HashMap<Integer,Chat>();
 		
 		// now we load the sets and maps for different "versions" of this bot that know different things.

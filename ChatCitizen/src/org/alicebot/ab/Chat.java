@@ -16,23 +16,23 @@ import org.bukkit.entity.Player;
 import org.pale.chatcitizen.ChatTrait;
 
 /* Program AB Reference AIML 2.0 implementation
-        Copyright (C) 2013 ALICE A.I. Foundation
-        Contact: info@alicebot.org
+	        Copyright (C) 2013 ALICE A.I. Foundation
+	        Contact: info@alicebot.org
 
-        This library is free software; you can redistribute it and/or
-        modify it under the terms of the GNU Library General Public
-        License as published by the Free Software Foundation; either
-        version 2 of the License, or (at your option) any later version.
+	        This library is free software; you can redistribute it and/or
+	        modify it under the terms of the GNU Library General Public
+	        License as published by the Free Software Foundation; either
+	        version 2 of the License, or (at your option) any later version.
 
-        This library is distributed in the hope that it will be useful,
-        but WITHOUT ANY WARRANTY; without even the implied warranty of
-        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-        Library General Public License for more details.
+	        This library is distributed in the hope that it will be useful,
+	        but WITHOUT ANY WARRANTY; without even the implied warranty of
+	        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	        Library General Public License for more details.
 
-        You should have received a copy of the GNU Library General Public
-        License along with this library; if not, write to the
-        Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
-        Boston, MA  02110-1301, USA.
+	        You should have received a copy of the GNU Library General Public
+	        License along with this library; if not, write to the
+	        Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+	        Boston, MA  02110-1301, USA.
  */
 /**
  * Class encapsulating a chat session between a bot and a client
@@ -52,7 +52,7 @@ public class Chat {
 	public static String longitude;
 	public static String latitude;
 	public TripleStore tripleStore = new TripleStore("anon", this);
-	
+
 	/**
 	 * JCF backreference to trait and NPC. Allows the extensions to get these.
 	 */
@@ -156,16 +156,18 @@ public class Chat {
 		//inputHistory.printHistory();
 		// JCF - special categories for spontaneous speech do not get entered into history, nor do 
 		// they get checked for repetition.
-
 		boolean isSpecial = bot.hasSpecialCategory(input.toUpperCase());
 		if(isSpecial)System.out.println("SPECIAL: "+input);
 		if(!isSpecial){
-			for (int i = 0; i < MagicNumbers.repetition_count; i++) {
-				//System.out.println(request.toUpperCase()+"=="+inputHistory.get(i)+"? "+request.toUpperCase().equals(inputHistory.get(i)));
-				if (inputHistory.get(i) == null || !input.toUpperCase().equals(inputHistory.get(i).toUpperCase()))
-					repetition = false;
-			}
-			if (input.equals(MagicStrings.null_input)) repetition = false;
+			if(bot.hasSpecialCategory(MagicStrings.repetition_detected)){ // ONLY check repetition if this category exists to handle it
+				for (int i = 0; i < MagicNumbers.repetition_count; i++) {
+					//System.out.println(request.toUpperCase()+"=="+inputHistory.get(i)+"? "+request.toUpperCase().equals(inputHistory.get(i)));
+					if (inputHistory.get(i) == null || !input.toUpperCase().equals(inputHistory.get(i).toUpperCase()))
+						repetition = false;
+				}
+				if (input.equals(MagicStrings.null_input)) repetition = false;
+			} else
+				repetition=false;
 			inputHistory.add(input);
 		} else repetition = false;
 		if (repetition) {input = MagicStrings.repetition_detected;}
@@ -205,7 +207,7 @@ public class Chat {
 		else 
 			that = hist.getString(0);
 		return 
-			respond(input, that, predicates.get("topic"), contextThatHistory);
+				respond(input, that, predicates.get("topic"), contextThatHistory);
 	}
 
 	/**

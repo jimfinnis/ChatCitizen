@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean",
-			"insbset","randsbset","getsb","hassb","give","take","matname",
+			"insbset","randsbset","getsb","hassb","give","take","matname","randsbmapkey",
 			"setpl","getpl","debug");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
@@ -55,6 +55,8 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return insbset(node,ps);
 			else if(nodeName.equals("randsbset"))
 				return randsbset(node,ps);
+			else if(nodeName.equals("randsbmapkey"))
+				return randsbmapkey(node,ps);
 			else if(nodeName.equals("getsb"))
 				return getsb(node,ps);
 			else if(nodeName.equals("hassb"))
@@ -84,6 +86,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 		String opts = AIMLProcessor.getAttributeOrTagValue(node, ps, "opts");
 		r = r.replaceAll("\\s+", " "); // replace mult. whitespace with space
 		r = r.replaceAll("\\.(\\w)", ". $1"); // replace "." followed by word char with ". "
+		r = r.replaceAll("\\,(\\w)", ", $1"); // replace "," followed by word char with ", "
 		r = r.replaceAll("\\s+\\.", "."); // replace "  ." with "."
 		if(opts!=null){
 			if(opts.contains("s")) // capitalize initial if true, like <sentence><clean>...
@@ -294,6 +297,21 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         	SubBotData sb = t.getSubBot();
         	if(sb!=null)
         		return sb.randFromSet(setName);
+        }
+        
+        return "unknown";
+	}
+	
+	// get a random key from a subbot map <randsbmapkey map="things"/>
+	private String randsbmapkey(Node node,ParseState ps){
+        HashSet<String> attributeNames = Utilities.stringSet("map");
+        String mapName = AIMLProcessor.getAttributeOrTagValue(node, ps, "map");
+        if(mapName!=null){
+        	Plugin.log("GOT MAP NAME "+mapName);
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	SubBotData sb = t.getSubBot();
+        	if(sb!=null)
+        		return sb.randKeyFromMap(mapName);
         }
         
         return "unknown";
