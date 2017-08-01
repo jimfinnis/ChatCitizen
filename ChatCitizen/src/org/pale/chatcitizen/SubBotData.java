@@ -24,7 +24,11 @@ public class SubBotData {
 
 	static Random rnd = new Random();
 
-	private HashMap<String,Set<String>> sets = new HashMap<String,Set<String>>();;
+	private HashMap<String,Set<String>> sets = new HashMap<String,Set<String>>();
+	
+	// in order that we can get defaults set in "default.yml" we need access to the default data.
+	// This is set on loading.
+	SubBotData deflt;
 
 	// just one map for now, see how it goes.
 	private HashMap<String,HashMap<String,String>> maps = new HashMap<String,HashMap<String,String>>();
@@ -74,31 +78,42 @@ public class SubBotData {
 
 	public String randFromSet(String setName) {
 		Plugin.log("Set "+setName);
+		Set<String> s;
+		
 		if(sets.containsKey(setName)){
 			Plugin.log("Set "+setName+" OK");
-			Set<String> s = sets.get(setName);
-			// this is grim.
-			int sz = s.size();
-			int idx = rnd.nextInt(sz);
-			int i=0;
-			for(String ss: s){
-				if(i==idx)return ss.trim();
-				i++;
-			}
+			s = sets.get(setName);
+		} else if(deflt!=null && deflt.sets.containsKey(setName)){
+			Plugin.log("Set "+setName+" in default");
+			s = deflt.sets.get(setName);
+		} else
+			return "";
+			
+		int sz = s.size();
+		int idx = rnd.nextInt(sz);
+		int i=0;
+		for(String ss: s){
+			if(i==idx)return ss.trim();
+			i++;
 		}
 		return "";
 	}
 
 	public String getFromMap(String mapName,String key) {
+		HashMap<String,String> m;
 		if(maps.containsKey(mapName)){
-			HashMap<String,String> m = maps.get(mapName);
-			if(m.containsKey(key))
-				return m.get(key);
-		}
+			 m = maps.get(mapName);
+		} else if(deflt!=null && deflt.maps.containsKey(mapName)) {
+			m = deflt.maps.get(mapName);
+		} else
+			return "unknownmap";
+
+		if(m.containsKey(key))
+			return m.get(key);
 		return "unknown";
 	}
 	
 	public boolean hasMap(String mapName){
-		return maps.containsKey(mapName);
+		return maps.containsKey(mapName) || (deflt!=null && deflt.maps.containsKey(mapName));
 	}
 }

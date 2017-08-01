@@ -53,6 +53,7 @@ public class ChatterWrapper {
 		// now we load the sets and maps for different "versions" of this bot that know different things.
 		// We look for all "subbot" files.
 		File dir = new File(path+"/subbots");
+		SubBotData defaultSubBot = null; // the subbot from "default.yml" which should exist but may not.
 		if(dir.exists()){
 			File[] list = IOUtils.listFiles(dir);
 			for(File f: list){
@@ -63,8 +64,14 @@ public class ChatterWrapper {
 						String bn = fn.replace(".yml", "");
 						subbots.put(bn,d);
 						Plugin.log("Loaded subbot "+bn+" from file "+fn);
+						if(bn.equals("default"))
+							defaultSubBot = d;
 					}
 				}
+			}
+			// now we need to tell the subbots what the default data is, so they can access it
+			for(SubBotData d: subbots.values()){
+				d.deflt = defaultSubBot;
 			}
 		}
 	}

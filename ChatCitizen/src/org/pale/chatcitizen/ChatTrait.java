@@ -108,7 +108,8 @@ public class ChatTrait extends Trait {
 		Plugin.log("Getting subbot "+subbotName);
 		return bot.getSubBot(subbotName);
 	}
-
+	
+	// 
 	// Here you should load up any values you have previously saved (optional). 
 	// This does NOT get called when applying the trait for the first time, only loading onto an existing npc at server start.
 	// This is called AFTER onAttach so you can load defaults in onAttach and they will be overridden here.

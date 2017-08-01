@@ -314,7 +314,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         return "unknown";
 	}
 	
-	// yes if a map is present
+	// yes if a subbot map is present - even if it's only present in default.yml for this subbot
 	private String hassb(Node node, ParseState ps){
 		String map = AIMLProcessor.getAttributeOrTagValue(node, ps, "map","default");
         if(map!=null){
