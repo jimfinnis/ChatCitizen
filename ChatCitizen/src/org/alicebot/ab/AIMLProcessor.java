@@ -26,7 +26,7 @@ import java.util.Set;
 import org.alicebot.ab.utils.CalendarUtils;
 import org.alicebot.ab.utils.DomUtils;
 import org.alicebot.ab.utils.IOUtils;
-import org.pale.chatcitizen.Plugin;
+import org.pale.chatcitizen.ChatTrait;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -1053,15 +1053,20 @@ public class AIMLProcessor {
         //boolean loop = true;
         NodeList childList = node.getChildNodes();
         ArrayList<Node> liList = new ArrayList<Node>();
-        String predicate=null, varName=null, value=null; //Node p=null, v=null;
+        String predicate=null, varName=null, value=null, playerPredName=null; //Node p=null, v=null;
         HashSet<String> attributeNames = Utilities.stringSet("name", "var", "value");
         // First check if the <condition> has an attribute "name".  If so, get the predicate name.
         predicate = getAttributeOrTagValue(node, ps, "name");
         varName = getAttributeOrTagValue(node, ps, "var");
+        playerPredName = getAttributeOrTagValue(node, ps, "pname");
         
-        // JCF optimisation
+        
+        // JCF optimisation and adding player predicates <condition pname="playerpred"/>
         String comparisonValue=null;
-        if(predicate!=null)
+        if(playerPredName!=null){
+        	ChatTrait t = ps.chatSession.npc.getTrait(ChatTrait.class);
+        	comparisonValue = t.getPlayerPredicate(playerPredName); 
+        } if(predicate!=null)
         	comparisonValue = ps.chatSession.predicates.get(predicate);
         else if(varName!=null)
         	comparisonValue = ps.vars.get(varName);

@@ -1,5 +1,7 @@
 package org.pale.chatcitizen;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,7 +14,6 @@ import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.ParseState;
 import org.alicebot.ab.Utilities;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -22,7 +23,7 @@ import org.w3c.dom.Node;
 
 public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 	public Set<String> extensionTagNames = Utilities.stringSet("mctime","npcdest","sentinel","clean",
-			"insbset","randsbset","getsb","hassb","give","take","matname","randsbmapkey",
+			"insbset","randsbset","getsb","hassb","give","take","matname","randsbmapkey","eachsb",
 			"setpl","getpl","debug");
 	public Set <String> extensionTagSet() {
 		return extensionTagNames;
@@ -55,6 +56,8 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return insbset(node,ps);
 			else if(nodeName.equals("randsbset"))
 				return randsbset(node,ps);
+			else if(nodeName.equals("eachsb"))
+				return eachsb(node,ps);
 			else if(nodeName.equals("randsbmapkey"))
 				return randsbmapkey(node,ps);
 			else if(nodeName.equals("getsb"))
@@ -289,7 +292,6 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 
 	// get random item from a subbot set <randsbset set="birds"/>
 	private String randsbset(Node node,ParseState ps){
-        HashSet<String> attributeNames = Utilities.stringSet("set");
         String setName = AIMLProcessor.getAttributeOrTagValue(node, ps, "set");
         if(setName!=null){
         	Plugin.log("GOT SET NAME "+setName);
@@ -302,9 +304,69 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         return "unknown";
 	}
 	
+	// loop over the content once for each item, setting a variable loopvar each time,
+	// effectively doing SRAI on each item. Item can be a set or map keys. If the latter,
+	// then the loopvar is set to the key, and loopvar+val is set to the val. Defaults are "i" and "ival".
+	// The "sep" is used between each item except for the last pair, which uses "seplast". By default they
+	// are " ".
+	private String eachsb(Node node,ParseState ps){
+        HashSet<String> attributeNames = Utilities.stringSet("set","map");
+        String setName = AIMLProcessor.getAttributeOrTagValue(node, ps, "set");
+        String mapName = AIMLProcessor.getAttributeOrTagValue(node, ps, "map");
+        String loopVar = AIMLProcessor.getAttributeOrTagValue(node, ps, "loopvar");
+        String sep = AIMLProcessor.getAttributeOrTagValue(node, ps, "sep");
+        String seplast = AIMLProcessor.getAttributeOrTagValue(node, ps, "seplast");
+        if(sep==null)sep=" ";
+        if(seplast==null)seplast=" ";
+        if(loopVar == null)loopVar = "i";
+        String loopValVar = loopVar+"val";
+        
+        Set<String> set;
+        HashMap<String, String> map=null;
+    	ChatTrait t = getTrait(ps.chatSession.npc);
+    	SubBotData sb = t.getSubBot();
+        if(setName!=null){
+        	set = sb.getSet(setName);
+        	if(set==null){
+        		Plugin.log("eachsb set "+setName+" does not exist");
+        		return "NOSET";
+        	}
+        } else if(mapName!=null){
+        	map = sb.getMap(mapName);
+        	if(map==null){
+        		Plugin.log("eachsb map "+mapName+" does not exist");
+        		return "NOMAP";
+        	}
+        	set = map.keySet();
+        } else
+        	return "NOSETORMAP";
+    	String out = "";
+        if(set!=null){
+        	ArrayList<String> list = new ArrayList<String>(set);
+        	Collections.sort(list);
+        	int size = list.size();
+        	for(int i=0;i<size;i++){
+        		String s = list.get(i);
+    			ps.chatSession.predicates.put(loopVar, s);
+    			if(map!=null)
+    				ps.chatSession.predicates.put(loopValVar, map.get(s));
+
+                String result = AIMLProcessor.evalTagContent(node, ps, attributeNames).trim();
+                out += result;
+                if(i==size-2)out+=seplast;
+                else if(i!=size-1)out+=sep;
+                
+                Plugin.log("Item "+i+" of "+size+ " is "+result+ " seps "+sep+"/"+seplast);
+                
+        	}
+        }
+        return out;
+	}
+	
+	
+	
 	// get a random key from a subbot map <randsbmapkey map="things"/>
 	private String randsbmapkey(Node node,ParseState ps){
-        HashSet<String> attributeNames = Utilities.stringSet("map");
         String mapName = AIMLProcessor.getAttributeOrTagValue(node, ps, "map");
         if(mapName!=null){
         	Plugin.log("GOT MAP NAME "+mapName);
@@ -354,7 +416,6 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         if (predicateName != null) {
         	ChatTrait t = getTrait(ps.chatSession.npc);
         	t.setPlayerPredicate(predicateName,value);
-			ps.chatSession.predicates.put(predicateName, result);
 		}
 		return result;
     }

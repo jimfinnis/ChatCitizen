@@ -75,6 +75,19 @@ public class SubBotData {
 		}
 		return false;
 	}
+	
+	public Set<String> getSet(String set){
+		if(sets.containsKey(set)){
+			return sets.get(set);
+		}
+		return null;
+	}
+	public HashMap<String, String> getMap(String map){
+		if(maps.containsKey(map)){
+			return maps.get(map);
+		}
+		return null;
+	}
 
 	public String randFromSet(String setName) {
 		Plugin.log("Set "+setName);
