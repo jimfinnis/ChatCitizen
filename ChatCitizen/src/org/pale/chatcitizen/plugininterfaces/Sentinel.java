@@ -1,5 +1,7 @@
 package org.pale.chatcitizen.plugininterfaces;
 
+import java.util.UUID;
+
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Inventory;
 
@@ -23,6 +25,13 @@ public class Sentinel extends ExternalPluginInterface {
 	public Sentinel() {
 		super("Sentinel", "1.0");
 		
+	}
+	
+	public void setGuard(NPC n, UUID id){ // pass null to stop guarding
+		if(isValid()){
+			SentinelTrait t = n.getTrait(SentinelTrait.class);
+			t.setGuarding(id);
+		}
 	}
 	
 	public SentinelData makeData(NPC n){

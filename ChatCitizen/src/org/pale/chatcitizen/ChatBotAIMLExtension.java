@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import net.citizensnpcs.api.npc.NPC;
 
@@ -13,6 +14,7 @@ import org.alicebot.ab.AIMLProcessorExtension;
 import org.alicebot.ab.MagicStrings;
 import org.alicebot.ab.ParseState;
 import org.alicebot.ab.Utilities;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -226,6 +228,23 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return d.guarding;
 			} else if(cmd.equalsIgnoreCase("health")){
 				return Double.toString(d.health); // percentage of max
+			} else if(cmd.equals("guard")){ 
+				// player name, or null to guard me 
+				String name = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");
+				UUID id;
+				Player p;
+				if(name!=null){
+					p = Bukkit.getServer().getPlayer(name);
+					if(p==null)return "NOPLAYER";
+				} else {
+					p = getTrait(ps.chatSession.npc).getCurPlayer();
+				}
+				Plugin.getInstance().sentinelPlugin.setGuard(ps.chatSession.npc,p.getUniqueId());
+				return "OK";
+			} else if(cmd.equals("guardoff")){ 
+				// guard no-one 
+				Plugin.getInstance().sentinelPlugin.setGuard(ps.chatSession.npc,null);
+				return "OK";
 			} else if(cmd.equalsIgnoreCase("debug")){
 				return d.debug;
 			} else 
