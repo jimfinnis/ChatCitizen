@@ -6,13 +6,12 @@ include "../../aimlgen.ang"
     # This slightly clumsy construction sets `t to the value of
     # the `name player-predicate (i.e. what this bot thinks this
     # player should be called). It then uses this if it's provided,
-    # otherwise "Sir."
+    # otherwise "Sir." We set the predicate with "CALL ME"
     [
-        `name getpl `t s think,
         [
             "Sir" "unknown" lival,
-            `t g lidef
-        ] `t cond
+            `name getpl lidef
+        ] `name condpl
     ] `HONOR cat,
     
     # CALL ME which sets the 'name' player predicate (i.e. private between a given player and the bot)
@@ -20,15 +19,27 @@ include "../../aimlgen.ang"
     ["MY NAME IS *","PLEASE CALL ME *", "REFER TO ME AS *"] each { ["CALL ME", star] sr i cat,}
     ["I * FEMALE", "I * WOMAN", "I * LADY", "I * NOT * MAN"] each { "CALL ME Miss" sr i cat,}
     
+    # just a handy thing because I keep forgetting how to use Xaero's minimap :)
+    [
+        "I and O to set the zoom levels, B to set waypoint, U to list "
+        "waypoints and Y to open settings" +,
+        [
+            [". But I'm surprised you don't know that, ", `HONOR sr, "!"],
+            [", ", `HONOR sr,"."],
+            " of course."
+        ] random
+    ] "# MAP" cleancat, # note high priority zero-or-more match
+    
+            
     
     # the GREET category, for saying hello.
     [
         # store the tod-string in the "t" predicate
         none [%`type `todstring] `mctime mktag `t s think,
         [%
-            `morning ["Good morning,", `HONOR sr, "!"],
-            `afternoon ["Good afternoon,", `HONOR sr, "!"],
-            `evening ["Good evening,", `HONOR sr, "!"],
+            `morning ["Good morning,", `HONOR sr, "! "],
+            `afternoon ["Good afternoon,", `HONOR sr, "! "],
+            `evening ["Good evening,", `HONOR sr, "! "],
             `default [
                 [
                     ["Good evening,", `HONOR sr, ". Shouldn't you be in bed?"],
@@ -39,9 +50,32 @@ include "../../aimlgen.ang"
         ] `t switch
     ] `GREET cleancat,
     
-    # The REPORT category, for giving a report.
+    # RANDSAY just greets players at random
     [ 
-        `GREET sr clean,
+        [%
+            `default `greet sr,
+            `false "off" # turns off randsay for this player
+        ] `greetenabled switchpl
+    ] `RANDSAY cat,
+    
+    [
+        `false `greetenabled setpl think,
+        ["Shutting up, ", "Yes, ", "Of course, "] random,
+        `HONOR sr
+    ] `SHUTUP cat,
+    
+    [
+        `true `greetenabled setpl think,
+        "Yes, ", `HONOR sr
+    ] `TALKON cat,
+    
+    ["SHUT UP","BE QUIET","SILENCE"] each {`SHUTUP sr i cat,}
+    
+    `TALKON sr "YOU * TALK" cat,
+    
+    # The REPORT category, for giving a report
+    [ 
+        `GREET sr clean, " ",
         `timeSinceAttack sentinel `t s think,
         [
             ["There's been trouble recently.",
@@ -84,6 +118,35 @@ include "../../aimlgen.ang"
     ]
     `REPORT cleancat,
     
+    [
+        none [% `cmd `guard ] `sentinel mktag `t s think,
+        [%
+            `OK ["Yes, ", `HONOR sr, "!"],
+            `default "Sorry, I can't do that."
+        ] `t switch
+    ] "GUARDME" cat,
+    
+    
+    [
+        none [% `cmd `guardoff ] `sentinel mktag `t s think,
+        [%
+            `OK ["Yes, ", `HONOR sr, "!"],
+            `default "Sorry, I can't do that."
+        ] `t switch
+    ] "GUARDOFF" cat,
+    
+    ["STOP GUARDING", "GO HOME", "RETURN *"]
+    each {"GUARDOFF" sr i cat,}
+    
+    
+    ["* GUARD ME","DEFEND ME","COME WITH ME","HELP ME"]
+    each {"GUARDME" sr i cat,}
+        
+        
+        
+    
+    
+    
     # and reductions for it.
     
     ["HOW *","* REPORT","WHAT * STATUS","HELLO"] 
@@ -96,8 +159,8 @@ include "../../aimlgen.ang"
     # various things
     [%
         "ARE YOU READY" "I'm always ready,",
-        "WHY ARE YOU HEAR" "I'm on guard.",
-        "WHY AM I HERE?" "That's an interesting question.",
+        "WHY * YOU HERE" "I'm on guard.",
+        "WHY * I HERE?" "That's an interesting question.",
         "TELL ME A JOKE" "I'm not here to joke.",
         "DOING" "I am on guard",
         # here we go to WHATGUARDING if we ask what we're guarding

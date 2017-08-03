@@ -1,0 +1,12 @@
+maps:
+    default:
+        givestring: books
+        takestring: gold_ingot
+        exchange: emerald
+        
+    take:
+        gold_ingot: 1
+    give:
+        book: 1
+        
+

@@ -13,7 +13,7 @@ include "../../aimlgen.ang"
                 "I sell nothing"
                 ] random,
             `default [
-                "I sell", `givestring getdefsb
+                "I sell ", `givestring getdefsb
             ]
         ] `t switch 
     ] "ISELL" cat,
@@ -23,10 +23,10 @@ include "../../aimlgen.ang"
         [%
             `none [
                 "I don't buy anything",
-                "I buy nothing"
+                "I'm afraid I don't buy things"
                 ] random,
             `default [
-                "I buy", `takestring getdefsb
+                "I buy ", `takestring getdefsb
             ]
         ] `t switch 
     ] "IBUY" cat,
@@ -37,10 +37,10 @@ include "../../aimlgen.ang"
             `none "",
             `default [
                 [
-                    "my medium of exchange is",
-                    "as cash I use",
-                    "instead of cash I use",
-                    "I accept payment in"
+                    "my medium of exchange is ",
+                    "as cash I use ",
+                    "instead of cash I use ",
+                    "I accept payment in "
                 ] random, `exchange getdefsb
             ]
         ] `t switch 
@@ -62,13 +62,33 @@ include "../../aimlgen.ang"
             # we can. Set it to be the current buy item.
             `default [
                 `willcost randsbset,
-                `t g, `exchange getdefsb, "."
+                `t g, " " , `exchange getdefsb, "."
             ]
         ] `t switch
         
     ] "COST *" cleancat,
     
-    "Cost of what?" "COST" cat,
+    [ "COST ", star] sr "HOW MUCH IS * " cat,
+    [ "COST ", star] sr "HOW MUCH IS A * " cat,
+    [ "COST ", star] sr "HOW MUCH IS AN * " cat,
+    
+    [
+        [
+            "Price of ", `i g, " is ", `ival g, " ", `exchange getdefsb, "."
+        ]
+        " " " " `give eachsbmap
+    ] "PRICES" cleancat,
+    
+    
+    [
+        "I will give one ", `exchange getdefsb, " for: ",
+        [
+            `ival g, " ", `i g
+        ] ", " " or " `take eachsbmap
+    ] "VALUES" cleancat,
+            
+    
+    "PRICES" sr "COST" cat,
     
     # This is the "*" category.
     # did you just say the name of a thing that we sell or buy? Say that.
@@ -84,17 +104,22 @@ include "../../aimlgen.ang"
                         `t g `name stag [%`map `take ] `getsb mktag `p s think,
                         [%
                             `unknown `randomitem randsbset,
-                            `default ["I buy those for", `p g, `exchange getdefsb, "."]
+                            `default ["I buy those for ", `p g, `exchange getdefsb, "."]
                         ] `p switch
                     ],
-                    `default ["I sell those for", `p g, `exchange getdefsb, "."]
+                    `default ["I sell those for ", `p g, `exchange getdefsb, "."]
                 ] `p switch
             ]
-        ] `t switch
+        ] `t switch, "HOWBUY" sr, "To sell something just give it to me.", "PRICES" sr, "VALUES" sr
     ] "*" cleancat,
     
+    [
+        "If you want to buy something, say so. For example, \"buy ",
+        # we look up a random key from the GIVE map, the things we give.
+        none [%`map `give ] `randsbmapkey mktag, "\". Then give me some ", `exchange getdefsb, "."
+    ] "HOWBUY" cat,
     
-    
+    "HOWBUY" sr "HOW * BUY" cat,
     
     # dealing with rightclick
     [
@@ -132,7 +157,7 @@ include "../../aimlgen.ang"
                         "But what would you like to buy?",
                         `setbuy settopic think
                     ]
-                ] `curbuyitem switch
+                ] `curbuyitem switchpl
                 
             ] `li stag,
             # now if it's anything the shop can buy
@@ -140,10 +165,10 @@ include "../../aimlgen.ang"
                 # put the exchange rate for t (our item) or "unknown" in q
                 [`t g lower `name stag] [% `map `take] `getsb mktag `q s think,
                 [%
-                    `unknown ["I can't buy that. I only buy",
+                    `unknown ["I can't buy that. I only buy ",
                         `takestring getdefsb,
                         ". My exchange item is ", `exchange getdefsb lower,
-                        "by the way."],
+                        " by the way."],
                     `default [
                         # it appears I can buy these - try to take that number and store the result in s
                         [`t g lower `item stag, `q g `count stag] `take stag `t s think,
@@ -176,8 +201,8 @@ include "../../aimlgen.ang"
             # we can. Set it to be the current buy item.
             `default [
                 `thing g `curbuyitem setpl think,
-                "OK, you're buying", `thing g,
-                "and the cost is", `t g, `exchange getdefsb,
+                "OK, you're buying ", `thing g,
+                " and the cost is ", `t g, " " , `exchange getdefsb,
                 ". When you've got enough, just say \"Forget it\" or \"Buy something else.\""
             ]
         ] `t switch

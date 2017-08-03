@@ -68,8 +68,10 @@ require "util.ang" drop
 :setpl |v,name:| ?v [%`name ?name] `setpl mktag;
 :getpl |name:| none [%`name ?name] `getpl mktag;
 
-# conditions - this one requires a list of li tags
+# conditions - this one requires a list of li tags, and takes the name of a predicate (set with "s")
 :cond |tags,name:| ?tags [%`name ?name ] `condition mktag;
+# this condition checks against a "player predicate", set with "setpl" on a per-player basis.
+:condpl |tags,name:| ?tags [%`pname ?name ] `condition mktag;
 
 #default <LI> tag with no condition
 :lidef |v:| ?v `li stag;
@@ -95,6 +97,30 @@ require "util.ang" drop
         then,
     }
     ?name cond;
+
+# conditions - this is a shorthand for <li value=> tags, but the condition uses pname so we
+# read a player predicate.
+:switchpl |hash,name:|
+    []
+    ?hash each {
+        i `default = if
+            ival `li stag
+        else
+            ival i lival
+        then,
+    }
+    ?name condpl;
+
+# for each item in an sb map, do a block of content. Loopvars will be "i" / "ival". 
+# Separators should be specified; these are the normal separator and the separator for
+# the last item.
+:eachsbmap |v,sep,seplast,map:| ?v [% `map ?map, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
+# for each item in an sb set, do a block of content. Loopvar will be "i".
+# Separators should be specified; these are the normal separator and the separator for
+# the last item.
+:eachsbset |v,sep,seplast,set:| ?v [% `set ?set, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
+    
+
 :show ?`output@.;
 
 :done show quit;    

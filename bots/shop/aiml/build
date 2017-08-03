@@ -1,3 +1,4 @@
 #!/bin/sh
 
 angort shop.ang >auto.aiml
+more auto.aiml

@@ -1,0 +1,59 @@
+include "../../aimlgen.ang"
+
+[
+    [
+        ["Hello, ", `name g],
+        "Hello.",
+        ["Hello. ", `rand1 sr],
+        ["Hello. ", `rand1 sr]
+    ] random `HELLO cleancat,
+    
+    [ "Why do you keep saying that?", "No need to repeat yourself!", "And?", "Please stop.", `rand1 sr] random
+    `REPETITIONDETECTED cat,
+        
+    
+    [
+        "The Gormenghast books","China Mieville's books",
+            "any interesting books","the poetry of TS Eliot",
+            "Alan Moore's \"Jerusalem\"", "the Lord of the Rings",
+            "Watership Down","the Locke Lamora books"
+    ] random `RANDBOOK cat,
+    
+    [ "The time is ",
+        none [%`type `digital] `mctime mktag, "."]
+    `TIME cat,
+    
+    [
+        "It's very quiet here.",
+        "You should visit more often.",
+        ["Have you read ", `RANDBOOK sr, "?"],
+        "Look at the time!",
+        "Why are you here?",
+        ["Say hello to ", none [% `set `npcs] `randsbset mktag, "."]
+    ] random `rand1 cat,
+    
+    [
+        star [%`set `npcs] `insbset mktag `t s think,
+        [
+            "They're fine, I think." "yes" lival,
+            "I have no idea who that is." lidef
+        ] `t cond
+    ] "HOW IS *" cleancat,
+    
+    [
+        "My name is ", `name g, ", my age is ", `age g
+    ] "GLARK" cat,
+    
+    [
+        ["Goodbye, ", `name g],
+        "Goodbye.",
+        "Please come back soon."
+    ] random `BYE cat,
+    
+    `RAND1 sr `GREETSAY cat,
+    `RAND1 sr `RANDSAY cat
+    
+] aiml done
+
+        
+        
