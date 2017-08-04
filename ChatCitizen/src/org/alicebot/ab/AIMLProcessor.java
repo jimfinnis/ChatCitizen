@@ -1098,6 +1098,14 @@ public class AIMLProcessor {
             	compVal = ps.vars.get(liVarName);
             
             value = getAttributeOrTagValue(n, ps, "value");
+            
+            if(value==null){
+         	   // JCF - value_from_name, compares against the value of a predicate.
+            	String pname = getAttributeOrTagValue(n, ps, "value_from_name");
+         	   if(pname!=null)
+         		   value = ps.chatSession.predicates.get(pname);
+            }
+            
             //System.out.println("condition name="+liPredicate+" value="+value);
             if (value != null) {
             	if(compVal.equalsIgnoreCase(value))

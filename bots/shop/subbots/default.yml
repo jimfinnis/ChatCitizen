@@ -2,7 +2,8 @@ maps:
     default:
         givestring: gold, brick and emeralds
         takestring: cobblestone, stone, seeds or dirt
-
+        # could be night/day/all
+        
         # this is the medium of exchange - we give this when we take stuff, and take it when we give stuff.
         exchange: iron_ingot
 
@@ -19,6 +20,10 @@ maps:
         brick: 1
 
 sets:
+    hours:
+        - evening
+        - morning
+        - afternoon
     agreement:
         - No problem.
         - Absolutely.
@@ -52,3 +57,10 @@ sets:
         - Hello!
         - Greetings!
         - Good to see you! 
+    notopen:
+        - I'm not open right now.
+        - Come and talk to me when I'm open.
+        - Sorry, the shop is closed.
+        - Do you mind? It's after hours!
+        - Sorry, I'm not serving customers right now.
+        - Please come back later when I'm open.

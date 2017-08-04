@@ -77,6 +77,9 @@ require "util.ang" drop
 :lidef |v:| ?v `li stag;
 #<LI VALUE=..>
 :lival |v,test:| ?v [%`value ?test] `li mktag;
+
+# <LI VALUE_FROM_NAME=..> (test against predicate value
+:lipred |v,test:| ?v [%`value_from_name ?test] `li mktag;
 # LI with min,max or range
 :limin |v,mn:| ?v [%`min ?mn] `li mktag;
 :limax |v,mx:| ?v [%`max ?mx] `li mktag;

@@ -52,10 +52,15 @@ include "../../aimlgen.ang"
     
     # RANDSAY just greets players at random
     [ 
+        `guarding sentinel `t s think,
         [%
-            `default `greet sr,
-            `false "off" # turns off randsay for this player
-        ] `greetenabled switchpl
+            # turn off randsay if guarding.
+            `default [%
+                `default "",
+                `nothing `greet sr
+            ] `t switch,
+            `false "" # turns off randsay for this player
+        ] `greetenabled switchpl `foo s
     ] `RANDSAY cat,
     
     [
@@ -135,11 +140,11 @@ include "../../aimlgen.ang"
         ] `t switch
     ] "GUARDOFF" cat,
     
-    ["STOP GUARDING", "GO HOME", "RETURN *"]
+    ["STOP GUARDING", "GO HOME", "RETURN *","* OFF","GO AWAY"]
     each {"GUARDOFF" sr i cat,}
     
     
-    ["* GUARD ME","DEFEND ME","COME WITH ME","HELP ME"]
+    ["GUARD ME","DEFEND ME","COME WITH ME","HELP ME"]
     each {"GUARDME" sr i cat,}
         
         

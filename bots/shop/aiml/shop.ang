@@ -3,6 +3,26 @@ include "../../aimlgen.ang"
 # This is a shop, in Angort -> AIML. The AIML generated is pretty revolting
 # and I suppose this Angort is too, but it has the advantage of brevity.
 
+
+# wraps the entire template in an hours of business check
+:hourscheck |template:|
+    [
+        # is the current time-of-day (or "all") in the "hours" set?
+        "all" [% `set `hours ] `insbset mktag `t s think,
+        [%
+            `default ?template,
+            `NO [
+                none [%`type `todstring] `mctime mktag
+                [% `set `hours ] `insbset mktag `t s think,
+                [%
+                    `default ?template,
+                    `NO `notopen randsbset
+                ] `t switch
+            ]
+        ] `t switch
+    ]
+;
+
 [
     # general info
     [
@@ -188,7 +208,7 @@ include "../../aimlgen.ang"
                 ] `q switch
             ] lidef
         ] `t cond
-    ] `RIGHTCLICK cleancat,
+    ] hourscheck `RIGHTCLICK cleancat,
     
     [
         # get the item, having processed the material name, into "thing".
@@ -206,7 +226,7 @@ include "../../aimlgen.ang"
                 ". When you've got enough, just say \"Forget it\" or \"Buy something else.\""
             ]
         ] `t switch
-    ] "BUY *" cat,
+    ]  hourscheck "BUY *" cat,
     
     ["BUY", 2 starn] sr "* BUY *" cat,
     
