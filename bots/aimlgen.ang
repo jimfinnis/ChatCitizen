@@ -86,7 +86,8 @@ require "util.ang" drop
 :lirng |v,mn,mx:| ?v [%`min ?mn, `max ?mx] `li mktag;
 
 :topic |catlist,name:| ?catlist [%`name ?name] `topic mktag;
-:settopic `topic s;
+:settopic `topic setpl think;
+:clrtopic none [%`name `topic ] `setpl mktag;
 
 
 # conditions - this is a shorthand for <li value=> tags

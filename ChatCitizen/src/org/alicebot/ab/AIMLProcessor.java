@@ -26,6 +26,7 @@ import java.util.Set;
 import org.alicebot.ab.utils.CalendarUtils;
 import org.alicebot.ab.utils.DomUtils;
 import org.alicebot.ab.utils.IOUtils;
+import org.bukkit.entity.Player;
 import org.pale.chatcitizen.ChatTrait;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -84,6 +85,13 @@ public class AIMLProcessor {
 ;
         }
         else categories.add(c);
+    }
+    
+    // JCF used to get player predicates, which are now used for topic. Beware!
+    public static String getPlayerPredicate(ParseState ps,String name){
+    	ChatTrait t = ps.chatSession.npc.getTrait(ChatTrait.class);
+        return t.getPlayerPredicate(ps.player,name).trim();        	
+
     }
 
     public static String cleanPattern(String pattern) {
@@ -167,15 +175,16 @@ public class AIMLProcessor {
      * @param chatSession     current client session.
      * @return              bot's response.
      */
-    public static String respond(String input, String that, String topic, Chat chatSession) {
+    public static String respond(Player p,String input, String that, String topic, Chat chatSession) {
         if (false /*checkForRepeat(input, chatSession) > 0*/) return "Repeat!";
         else {
-            return respond(input, that, topic, chatSession, 0);
+            return respond(p,input, that, topic, chatSession, 0);
         }
     }
 
     /**
      * generate a bot response to a single sentence input.
+     * JCF - added player param
      *
      * @param input      input statement.
      * @param that       bot's last reply.
@@ -184,7 +193,7 @@ public class AIMLProcessor {
      * @param srCnt         number of <srai> activations.
      * @return              bot's reply.
      */
- public static String respond(String input, String that, String topic, Chat chatSession, int srCnt) {
+ public static String respond(Player player, String input, String that, String topic, Chat chatSession, int srCnt) {
 	 MagicBooleans.trace("input: " + input + ", that: " + that + ", topic: " + topic + ", chatSession: " + chatSession + ", srCnt: " + srCnt);
         String response;
         if (input == null || input.length()==0) input = MagicStrings.null_input;
@@ -193,7 +202,7 @@ public class AIMLProcessor {
          try {
             Nodemapper leaf = chatSession.bot.brain.match(input, that, topic);
             if (leaf == null) {return(response);}
-            ParseState ps = new ParseState(0, chatSession, input, that, topic, leaf);
+            ParseState ps = new ParseState(player,0, chatSession, input, that, topic, leaf);
             //chatSession.matchTrace += leaf.category.getTemplate()+"\n";
 			String template = leaf.category.getTemplate();
 			//MagicBooleans.trace("in AIMLProcessor.respond(), template: " + template);
@@ -341,7 +350,7 @@ public class AIMLProcessor {
             result = result.replaceAll("(\r\n|\n\r|\r|\n)", " ");
             result = ps.chatSession.bot.preProcessor.normalize(result);
             // result = JapaneseUtils.tokenizeSentence(result);
-            String topic = ps.chatSession.predicates.get("topic");     // the that stays the same, but the topic may have changed
+            String topic = getPlayerPredicate(ps, "topic");     // the that stays the same, but the topic may have changed
             if (MagicBooleans.trace_mode) {
                 System.out.println(trace_count+". <srai>"+result+"</srai> from "+ps.leaf.category.inputThatTopic()+" topic="+topic+") ");
                 trace_count++;
@@ -349,7 +358,7 @@ public class AIMLProcessor {
             Nodemapper leaf = ps.chatSession.bot.brain.match(result, ps.that, topic);
             if (leaf == null) {return(response);}
             //System.out.println("Srai returned "+leaf.category.inputThatTopic()+":"+leaf.category.getTemplate());
-            response = evalTemplate(leaf.category.getTemplate(), new ParseState(ps.depth+1, ps.chatSession, ps.input, ps.that, topic, leaf));
+            response = evalTemplate(leaf.category.getTemplate(), new ParseState(ps.player,ps.depth+1, ps.chatSession, ps.input, ps.that, topic, leaf));
             //System.out.println("That="+that);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -1065,7 +1074,7 @@ public class AIMLProcessor {
         String comparisonValue=null;
         if(playerPredName!=null){
         	ChatTrait t = ps.chatSession.npc.getTrait(ChatTrait.class);
-        	comparisonValue = t.getPlayerPredicate(playerPredName); 
+        	comparisonValue = t.getPlayerPredicate(ps.player,playerPredName); 
         } if(predicate!=null)
         	comparisonValue = ps.chatSession.predicates.get(predicate);
         else if(varName!=null)
@@ -1375,7 +1384,7 @@ public class AIMLProcessor {
         else if (nodeName.equals("srai"))
             return srai(node, ps);
         else if (nodeName.equals("sr"))
-              return respond(ps.starBindings.inputStars.star(0), ps.that, ps.topic, ps.chatSession, sraiCount);
+              return respond(ps.player,ps.starBindings.inputStars.star(0), ps.that, ps.topic, ps.chatSession, sraiCount);
         else if (nodeName.equals("sraix"))
             return sraix(node, ps);
         else if (nodeName.equals("set"))

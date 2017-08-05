@@ -117,7 +117,7 @@ include "../../aimlgen.ang"
         [
             "" "nothing" lival,
             "I'm guarding something or other at the moment." "something" lival,
-            ["I'm guarding", `guarding sentinel, "."] lidef
+            ["I'm guarding ", `guarding sentinel, "."] lidef
         ] `t cond clean
         
     ]

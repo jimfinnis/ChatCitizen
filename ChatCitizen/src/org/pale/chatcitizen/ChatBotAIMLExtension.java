@@ -128,15 +128,14 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         if(m==null)return unknown;
         
 		ChatTrait t = getTrait(ps.chatSession.npc);
-		Player p = t.getCurPlayer();
-		ItemStack st = p.getInventory().getItemInMainHand();
+		ItemStack st = ps.player.getInventory().getItemInMainHand();
 		if(st.getType() == Material.AIR) return AIMLProcessor.getAttributeOrTagValue(node, ps, "noitem","NOITEM");
 		if(st.getType()!=m)
 			return AIMLProcessor.getAttributeOrTagValue(node, ps, "wrong","WRONG");
 		int newamount = st.getAmount() - count;
 		if(newamount<0)return AIMLProcessor.getAttributeOrTagValue(node, ps, "notenough","NOTENOUGH");
 		if(newamount==0)
-			p.getInventory().setItemInMainHand(null);
+			ps.player.getInventory().setItemInMainHand(null);
 		else 
 			st.setAmount(newamount);
 		return AIMLProcessor.getAttributeOrTagValue(node, ps, "yes","YES");
@@ -169,14 +168,13 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         
         ItemStack st = new ItemStack(m,count);
 		ChatTrait t = getTrait(ps.chatSession.npc);
-		Player p = t.getCurPlayer();
-		PlayerInventory inv = p.getInventory();
+		PlayerInventory inv = ps.player.getInventory();
 
 		HashMap<Integer,ItemStack> couldntStore = inv.addItem(st);
 
 		// drop remaining items at the player
 		for(ItemStack s: couldntStore.values()){
-			p.getWorld().dropItem(p.getLocation(), s);
+			ps.player.getWorld().dropItem(ps.player.getLocation(), s);
 		}
 		
 		return AIMLProcessor.getAttributeOrTagValue(node, ps, "yes","YES");
@@ -237,7 +235,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 					p = Bukkit.getServer().getPlayer(name);
 					if(p==null)return "NOPLAYER";
 				} else {
-					p = getTrait(ps.chatSession.npc).getCurPlayer();
+					p = ps.player;
 				}
 				Plugin.getInstance().sentinelPlugin.setGuard(ps.chatSession.npc,p.getUniqueId());
 				return "OK";
@@ -434,7 +432,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         String value=result.trim();
         if (predicateName != null) {
         	ChatTrait t = getTrait(ps.chatSession.npc);
-        	t.setPlayerPredicate(predicateName,value);
+        	t.setPlayerPredicate(ps.player,predicateName,value);
 		}
 		return result;
     }
@@ -451,7 +449,7 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         String predicateName = AIMLProcessor.getAttributeOrTagValue(node, ps, "name");
         if (predicateName != null){
         	ChatTrait t = getTrait(ps.chatSession.npc);
-            result = t.getPlayerPredicate(predicateName).trim();        	
+            result = t.getPlayerPredicate(ps.player,predicateName).trim();        	
         }
 		//MagicBooleans.trace("in AIMLProcessor.get, returning: " + result);
         return result;

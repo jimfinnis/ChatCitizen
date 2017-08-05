@@ -133,8 +133,7 @@ public class ChatTrait extends Trait {
 			ItemStack held = p.getInventory().getItemInMainHand();
 			// shouldn't be necessary, but it does seem odd that an empty hand is full of air...
 			String hstr = (held==null)?"air":held.getType().toString();
-			curPlayer = p; // because we're doing this before respondTo.
-			setPlayerPredicate("itemheld",hstr);
+			setPlayerPredicate(p,"itemheld",hstr);
 			if(hasRightClick){
 				Plugin.log("Right click category present");
 				respondTo(p,"RIGHTCLICK");
@@ -236,7 +235,6 @@ public class ChatTrait extends Trait {
 	 * 
 	 */
 	private void say(Player inResponseTo,String toName,String pattern){
-		curPlayer = inResponseTo;
 		List<Player> q = getNearPlayers(audibleDistance);
 		if(q.size()>0){
 			String msg = bot.respond(inResponseTo,npc, pattern);
@@ -247,7 +245,6 @@ public class ChatTrait extends Trait {
 				}
 			}
 		}
-		curPlayer = null;
 	}
 
 	/**
@@ -335,36 +332,32 @@ public class ChatTrait extends Trait {
 	/// per-player predicate map
 	HashMap<Player,HashMap<String,String>> playerPredicateMaps = new HashMap<Player,HashMap<String,String>>();
 
-	private Player curPlayer;
-	
 	private HashMap<String,String> getPlayerPredicateMap(Player p){
 		HashMap<String,String> map = playerPredicateMaps.get(p);
 		if(map==null){
 			map = new HashMap<String,String>();
+			createDefaultPlayerPredicates(map);
 			playerPredicateMaps.put(p, map);
 		}
 		return map;
 	}
 	
-	public void setPlayerPredicate(String predicateName, String value) {
-		HashMap<String,String> map = getPlayerPredicateMap(curPlayer);
+	private void createDefaultPlayerPredicates(HashMap<String, String> map) {
+		map.put("topic", MagicStrings.default_topic);
+		
+	}
+
+	public void setPlayerPredicate(Player p,String predicateName, String value) {
+		HashMap<String,String> map = getPlayerPredicateMap(p);
 		map.put(predicateName,value);
 	}
 
-	public String getPlayerPredicate(String predicateName) {
-		HashMap<String,String> map = getPlayerPredicateMap(curPlayer);
+	public String getPlayerPredicate(Player p,String predicateName) {
+		HashMap<String,String> map = getPlayerPredicateMap(p);
 		String result = map.get(predicateName);
 		if(result==null)
 			return MagicStrings.default_get;
 		else
 			return result;
-	}
-
-	/**
-	 * Get the player (or null) to whom the bot is responding
-	 * @return
-	 */
-	public Player getCurPlayer() {
-		return curPlayer;
 	}
 }

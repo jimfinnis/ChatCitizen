@@ -1,4 +1,7 @@
 package org.alicebot.ab;
+
+import org.bukkit.entity.Player;
+
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
         Contact: info@alicebot.org
@@ -20,6 +23,7 @@ package org.alicebot.ab;
 */
  /**
 ParseState is a helper class for AIMLProcessor
+JCF now has a player.
  */
 public class ParseState {
     public Nodemapper leaf;
@@ -30,6 +34,7 @@ public class ParseState {
     public int depth;
     public Predicates vars;
     public StarBindings starBindings;
+    public Player player;
 
      /**
       * Constructor - class has public members
@@ -41,7 +46,8 @@ public class ParseState {
       * @param topic         current topic
       * @param leaf          node containing the category processed
       */
-    public ParseState(int depth, Chat chatSession, String input, String that, String topic, Nodemapper leaf) {
+    public ParseState(Player p,int depth, Chat chatSession, String input, String that, String topic, Nodemapper leaf) {
+    	this.player  = p;
         this.chatSession = chatSession;
         this.input = input;
         this.that = that;

@@ -88,7 +88,8 @@ public class Chat {
 		thatHistory.add(contextThatHistory);
 		addPredicates();
 		addTriples();
-		predicates.put("topic", MagicStrings.default_topic);
+// JCF now is a player pred.
+//		predicates.put("topic", MagicStrings.default_topic);
 		predicates.put("jsenabled", MagicStrings.js_enabled);
 		if (MagicBooleans.trace_mode) System.out.println("Chat Session Created for bot "+bot.name);
 	}
@@ -150,7 +151,7 @@ public class Chat {
 	 * @param contextThatHistory         history of "that" values for this request/response interaction
 	 * @return              bot's reply
 	 */
-	String respond(String input, String that, String topic, History<String> contextThatHistory) {
+	String respond(Player player,String input, String that, String topic, History<String> contextThatHistory) {
 		//MagicBooleans.trace("chat.respond(input: " + input + ", that: " + that + ", topic: " + topic + ", contextThatHistory: " + contextThatHistory + ")");
 		boolean repetition = true;
 		//inputHistory.printHistory();
@@ -174,7 +175,7 @@ public class Chat {
 
 		String response;
 
-		response = AIMLProcessor.respond(input, that, topic, this);
+		response = AIMLProcessor.respond(player,input, that, topic, this);
 		//MagicBooleans.trace("in chat.respond(), response: " + response);
 		String normResponse = bot.preProcessor.normalize(response);
 		//MagicBooleans.trace("in chat.respond(), normResponse: " + normResponse);
@@ -200,24 +201,29 @@ public class Chat {
 	 * @param contextThatHistory  history of "that" values for this request/response interaction
 	 * @return    bot's reply
 	 */
-	String respond(String input, History<String> contextThatHistory) {
+	String respond(Player p,String input, History<String> contextThatHistory) {
 		History<?> hist = thatHistory.get(0);
 		String that;
+		
+		// here, we get THAT from the history, which is wrong but it's either that or we keep a separate damn
+		// history for every player.
 		if (hist == null) that = MagicStrings.default_that;
 		else 
 			that = hist.getString(0);
+		
+		// then we get the topic from the player predicates. We can store that at least.
+		
+		String topic = trait.getPlayerPredicate(p,"topic");
 		return 
-				respond(input, that, predicates.get("topic"), contextThatHistory);
+			respond(p,input, that, topic, contextThatHistory);
 	}
 
 	/**
 	 * return a compound response to a multiple-sentence request. "Multiple" means one or more.
-	 * @param p            (JCF) player which may be null
-	 *
 	 * @param request      client's multiple-sentence input
 	 * @return
 	 */
-	public String multisentenceRespond(Player p, String request) {
+	public String multisentenceRespond(Player p,String request) {
 		//MagicBooleans.trace("chat.multisentenceRespond(request: " + request + ")");
 		String response="";
 		matchTrace="";
@@ -229,7 +235,7 @@ public class Chat {
 			for (int i = 0; i < sentences.length; i++) {
 				//System.out.println("Human: "+sentences[i]);
 				AIMLProcessor.trace_count = 0;
-				String reply = respond(sentences[i], contextThatHistory);
+				String reply = respond(p,sentences[i], contextThatHistory);
 				response += "  "+reply;
 				//System.out.println("Robot: "+reply);
 			}
