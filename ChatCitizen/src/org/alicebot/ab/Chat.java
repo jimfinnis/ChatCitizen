@@ -229,6 +229,7 @@ public class Chat {
 		matchTrace="";
 		try {
 			String normalized = bot.preProcessor.normalize(request);
+			System.out.println("Normalized: "+normalized);
 			//MagicBooleans.trace("in chat.multisentenceRespond(), normalized: " + normalized);
 			String sentences[] = bot.preProcessor.sentenceSplit(normalized);
 			History<String> contextThatHistory = new History<String>("contextThat");

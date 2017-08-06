@@ -257,9 +257,9 @@ public class Graphmaster {
         Nodemapper n = null;
         try {
          String inputThatTopic = inputThatTopic(input, that, topic);
-         //System.out.println("Matching: "+inputThatTopic);
+         System.out.println("Matching: "+inputThatTopic);
          Path p = Path.sentenceToPath(inputThatTopic);
-         //p.print();
+         p.print();
          n = match(p, inputThatTopic);
          if (MagicBooleans.trace_mode) {
              if (n != null) {

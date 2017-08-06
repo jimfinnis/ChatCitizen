@@ -17,6 +17,7 @@ import org.alicebot.ab.AIMLMap;
 import org.alicebot.ab.AIMLSet;
 import org.alicebot.ab.MagicNumbers;
 import org.alicebot.ab.MagicStrings;
+import org.alicebot.ab.Predicates;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -330,12 +331,12 @@ public class ChatTrait extends Trait {
 	}
 
 	/// per-player predicate map
-	HashMap<Player,HashMap<String,String>> playerPredicateMaps = new HashMap<Player,HashMap<String,String>>();
+	HashMap<Player,Predicates> playerPredicateMaps = new HashMap<Player,Predicates>();
 
 	private HashMap<String,String> getPlayerPredicateMap(Player p){
-		HashMap<String,String> map = playerPredicateMaps.get(p);
+		Predicates map = playerPredicateMaps.get(p);
 		if(map==null){
-			map = new HashMap<String,String>();
+			map = new Predicates();
 			createDefaultPlayerPredicates(map);
 			playerPredicateMaps.put(p, map);
 		}
