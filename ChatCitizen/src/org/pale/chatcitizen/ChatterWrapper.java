@@ -41,6 +41,20 @@ public class ChatterWrapper {
 	public Collection<Chat> getChats(){
 		return chats.values();
 	}
+	
+	public void setSpecialCategoryOwnerships(){
+		hasGreetSay = bot.hasSpecialCategory("greetsay");
+		hasRandSay = bot.hasSpecialCategory("randsay");
+		hasEntityHitMe = bot.hasSpecialCategory("entityhitme");
+		hasPlayerHitMe = bot.hasSpecialCategory("playerhitme");
+		hasHitSomething = bot.hasSpecialCategory("hitsomething");
+		hasRightClick = bot.hasSpecialCategory("rightclick");
+		
+	}
+
+	public boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe,hasHitSomething,hasRightClick;
+
+
 
 	/**
 	 * Discard and reload this bot and clear all chats (and all properties therein).
@@ -48,6 +62,7 @@ public class ChatterWrapper {
 	public void reload(){
 		bot = new Bot(name,path);
 		bot.getSpecialCategoriesPresent("randsay","greetsay","entityhitme","playerhitme","hitsomething","rightclick","repetitiondetected");
+		setSpecialCategoryOwnerships();
 		chats= new HashMap<Integer,Chat>();
 		
 		// now we load the sets and maps for different "versions" of this bot that know different things.

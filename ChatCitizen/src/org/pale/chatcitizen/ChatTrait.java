@@ -74,8 +74,6 @@ public class ChatTrait extends Trait {
 
 	@Persist public double audibleDistance=10; //!< how far this robot is audible
 
-	private boolean hasGreetSay,hasRandSay,hasEntityHitMe,hasPlayerHitMe,hasHitSomething,hasRightClick;
-
 	// name of the "sub-bot" data, which contains different maps and sets shared by the bot to provide
 	// variation within a bot.
 	
@@ -135,7 +133,7 @@ public class ChatTrait extends Trait {
 			// shouldn't be necessary, but it does seem odd that an empty hand is full of air...
 			String hstr = (held==null)?"air":held.getType().toString();
 			setPlayerPredicate(p,"itemheld",hstr);
-			if(hasRightClick){
+			if(bot.hasRightClick){
 				Plugin.log("Right click category present");
 				respondTo(p,"RIGHTCLICK");
 			}
@@ -148,9 +146,9 @@ public class ChatTrait extends Trait {
 			Entity bastard = e.getDamager();
 			if(bastard instanceof Player){
 				Player p = (Player)bastard;
-				if(hasPlayerHitMe)respondTo(p,"PLAYERHITME");
+				if(bot.hasPlayerHitMe)respondTo(p,"PLAYERHITME");
 			} else {
-				if(hasEntityHitMe)sayToAll("ENTITYHITME");
+				if(bot.hasEntityHitMe)sayToAll("ENTITYHITME");
 			}
 		}
 	}
@@ -158,7 +156,7 @@ public class ChatTrait extends Trait {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void monitorDamageEntity(final net.citizensnpcs.api.event.NPCDamageEntityEvent e){
 		if(e.getNPC() == this.getNPC()){
-			if(hasHitSomething)sayToAll("HITSOMETHING");
+			if(bot.hasHitSomething)sayToAll("HITSOMETHING");
 		}
 	}
 
@@ -187,18 +185,11 @@ public class ChatTrait extends Trait {
 		// set up the NPCDestinations data (if present)
 		nddat = plugin.ndPlugin.makeData(npc);
 	}
-
+	
 	public void setBot(ChatterWrapper b){
 		b.setProperty(npc,"botname",npc.getFullName());		
 		bot = b;
 		botName = b.getName();
-
-		hasGreetSay = bot.hasSpecialCategory("greetsay");
-		hasRandSay = bot.hasSpecialCategory("randsay");
-		hasEntityHitMe = bot.hasSpecialCategory("entityhitme");
-		hasPlayerHitMe = bot.hasSpecialCategory("playerhitme");
-		hasHitSomething = bot.hasSpecialCategory("hitsomething");
-		hasRightClick = bot.hasSpecialCategory("rightclick");
 	}
 
 	// Run code when the NPC is despawned. This is called before the entity actually despawns so npc.getBukkitEntity() is still valid.
@@ -278,7 +269,7 @@ public class ChatTrait extends Trait {
 	private long lastSayCheckIntervalTime=0;
 	private void processRandSay(){
 		long t = System.currentTimeMillis();
-		if(hasRandSay && (t-lastSayCheckIntervalTime > sayCheckInterval)){
+		if(bot.hasRandSay && (t-lastSayCheckIntervalTime > sayCheckInterval)){
 			if((t-lastRandSay > sayInterval*1000) && (rand.nextDouble()<sayProbability)){
 				// try to find someone to talk to
 				List<Player> ps  = getNearPlayers(sayDist);
@@ -297,7 +288,7 @@ public class ChatTrait extends Trait {
 
 	List<Player> nearPlayersForGreet  = new ArrayList<Player>();
 	private void processGreetSay(){
-		if(hasGreetSay){
+		if(bot.hasGreetSay){
 			List<Player> nearPlayersNew = getNearPlayers(greetDist);
 			for(Player p : nearPlayersNew){
 				// is this someone who has just appeared?

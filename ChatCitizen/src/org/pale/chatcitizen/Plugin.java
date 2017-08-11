@@ -206,13 +206,13 @@ public class Plugin extends JavaPlugin {
 		}
 		c.msg(b.toString());
 	}
-
+	
 	@Cmd(desc="reload all bots",argc=0,permission="chatcitizen.reloadall")
 	public void reloadall(CallInfo c){
 		for(ChatterWrapper b : bots.values()){
 			b.reload();
 		}	
-		Plugin.log("Reload OK");
+		c.msg("Reload OK");
 	}
 	
 	@Cmd(desc="reload a given bot",argc=1,permission="chatcitizen.reload",usage="[botname]")
@@ -224,7 +224,7 @@ public class Plugin extends JavaPlugin {
 			ChatterWrapper b = bots.get(n);
 			b.reload();
 		}
-		Plugin.log("Reload OK");
+		c.msg("Reload OK");
 	}
 	
 	@Cmd(name="bots",desc="list all bots and which NPCs use them",argc=0)

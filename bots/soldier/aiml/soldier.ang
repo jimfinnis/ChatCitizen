@@ -50,7 +50,7 @@ include "../../aimlgen.ang"
         ] `t switch
     ] `GREET cleancat,
     
-    # RANDSAY just greets players at random
+    # GREETSAY just greets players at random
     [ 
         `guarding sentinel `t s think,
         [%
@@ -61,7 +61,7 @@ include "../../aimlgen.ang"
             ] `t switch,
             `false "" # turns off randsay for this player
         ] `greetenabled switchpl `foo s
-    ] `RANDSAY cat,
+    ] `GREETSAY cat,
     
     [
         `false `greetenabled setpl think,
