@@ -67,7 +67,8 @@ Feel free to just copy and modify all the files from **default**, of course.
 ### Using pandorabots
 You can use a Pandorabots chatbot directory (provided it doesn't do any really clever stuff) by unzipping it into
 its own directory under ```bots``` and moving all the AIML files into a subdirectory called ```aiml```. See the
-existing files for examples.
+existing files for examples. Note that "clever stuff" includes sets and
+maps (I think).
 
 ### My stuff
 Many of my bots use an [Angort](https://github.com/jimfinnis/angort) script to generate the AIML files, run from a script called ```build```. Don't
