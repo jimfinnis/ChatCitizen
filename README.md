@@ -54,6 +54,7 @@ player, or just ignore them.
 
 
 ## Adding bots
+Bots each have their own directory under ```plugins/ChatCitizens/bots``` in your plugins directory, so copy the ones you want.
 I'll have to assume you know some AIML, perhaps by playing with [pandorabots.com](http://pandorabots.com). 
 You should end up with a set of AIML files. You should start by copying one of the smaller bots (perhaps Jokebot) and then
 copy your files over its AIML files.
@@ -69,7 +70,7 @@ its own directory under ```bots``` and moving all the AIML files into a subdirec
 existing files for examples.
 
 ### My stuff
-Many of my bots use an Angort script to generate the AIML files, run from a script called ```build```. Don't
+Many of my bots use an [Angort](https://github.com/jimfinnis/angort) script to generate the AIML files, run from a script called ```build```. Don't
 worry too much about this unless you're interested in my weird little language; the ```auto.aiml``` files
 are just AIML files (but with all the newlines missing).
 
@@ -199,3 +200,14 @@ server properties alluded to above.
 And above all
 * **Some nice bots (you can help with this!)**
 
+# Build instructions
+* Make sure you have:
+    * The source code!
+    * Citizens 2
+    * NPC Destinations
+    * Sentinel 1.0
+* Install maven (or you could work out how to do it in Eclipse)
+* Create a symbolic link called "plugins" from your server's plugins directory to the same directory as the pom.xml (or just copy the directory there if you're on a rubbish operating system)
+* From the directory with the pom.xml, run "mvn compile package"
+* Copy the jar which should now be the "target" directory to your server plugin directory
+* Copy config.yml and the bots directory into the "plugins/ChatCitizen" directory.
