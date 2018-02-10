@@ -53,6 +53,11 @@ require "util.ang" drop
 :s |v,name:| ?v [%`name ?name] `set mktag;
 :g |name:| none [%`name ?name] `get mktag;
 
+# does map exist for this bot?
+:hassbmap |map:| none [%`map ?map] `hassbmap mktag;
+
+# does set exist for this bot?
+:hassbset |set:| none [%`set ?set] `hassbset mktag;
 
 # is in private set for this bot
 :insbset |v,set:| ?v [%`set ?set] `insbset mktag;
@@ -115,18 +120,14 @@ require "util.ang" drop
     }
     ?name condpl;
 
-# for each item in an sb map, do a block of content. Loopvars will be "i" / "ival". 
+# for each item in an sb map or set, do a block of content. Loopvars will be "i" / "ival",
+# ival will be undefined for set items.
 # Separators should be specified; these are the normal separator and the separator for
 # the last item.
-:eachsbmap |v,sep,seplast,map:| ?v [% `map ?map, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
-# for each item in an sb set, do a block of content. Loopvar will be "i".
-# Separators should be specified; these are the normal separator and the separator for
-# the last item.
-:eachsbset |v,sep,seplast,set:| ?v [% `set ?set, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
-    
+:eachsb |v,sep,seplast,map:| ?v [% `map ?map, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
 
-:show ?`output@.;
+:output ?`output@.;
 
-:done show quit;    
+:done output quit;    
 
 

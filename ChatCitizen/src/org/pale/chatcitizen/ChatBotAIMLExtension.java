@@ -64,8 +64,10 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
 				return randsbmapkey(node,ps);
 			else if(nodeName.equals("getsb"))
 				return getsb(node,ps);
-			else if(nodeName.equals("hassb"))
-				return hassb(node,ps);
+			else if(nodeName.equals("hassbmap"))
+				return hassbmap(node,ps);
+			else if(nodeName.equals("hassbset"))
+				return hassbset(node,ps);
 			else if(nodeName.equals("give"))
 				return give(node,ps);
 			else if(nodeName.equals("take"))
@@ -321,6 +323,30 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         return "unknown";
 	}
 	
+	// yes if a subbot set is present - even if it's only present in default.yml for this subbot
+	private String hassbset(Node node, ParseState ps){
+		String set = AIMLProcessor.getAttributeOrTagValue(node, ps, "set","default");
+        if(set!=null){
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	SubBotData sb = t.getSubBot();
+        	if(sb.hasSet(set))return "yes";
+        }
+        
+        return "no";
+	}
+
+	// yes if a subbot map is present - even if it's only present in default.yml for this subbot
+	private String hassbmap(Node node, ParseState ps){
+		String map = AIMLProcessor.getAttributeOrTagValue(node, ps, "map","default");
+        if(map!=null){
+        	ChatTrait t = getTrait(ps.chatSession.npc);
+        	SubBotData sb = t.getSubBot();
+        	if(sb.hasMap(map))return "yes";
+        }
+        
+        return "no";
+	}
+
 	// loop over the content once for each item, setting a variable loopvar each time,
 	// effectively doing SRAI on each item. Item can be a set or map keys. If the latter,
 	// then the loopvar is set to the key, and loopvar+val is set to the val. Defaults are "i" and "ival".
@@ -409,19 +435,6 @@ public class ChatBotAIMLExtension implements AIMLProcessorExtension {
         }
         
         return "unknown";
-	}
-	
-	// yes if a subbot map is present - even if it's only present in default.yml for this subbot
-	private String hassb(Node node, ParseState ps){
-		String map = AIMLProcessor.getAttributeOrTagValue(node, ps, "map","default");
-        if(map!=null){
-        	ChatTrait t = getTrait(ps.chatSession.npc);
-        	SubBotData sb = t.getSubBot();
-        	if(sb.hasMap(map))return "yes";
-        }
-        
-        return "no";
-		
 	}
 
 	private String setpl(Node node, ParseState ps) {

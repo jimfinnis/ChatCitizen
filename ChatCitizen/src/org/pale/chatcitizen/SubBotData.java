@@ -129,6 +129,10 @@ public class SubBotData {
 	public boolean hasMap(String mapName){
 		return maps.containsKey(mapName) || (deflt!=null && deflt.maps.containsKey(mapName));
 	}
+	
+	public boolean hasSet(String setName){
+		return sets.containsKey(setName) || (deflt!=null && deflt.sets.containsKey(setName));
+	}
 
 	public String randKeyFromMap(String mapName) {
 		HashMap<String,String> m;

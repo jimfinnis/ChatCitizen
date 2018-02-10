@@ -97,15 +97,21 @@ include "../../aimlgen.ang"
         [
             "Price of ", `i g, " is ", `ival g, " ", `exchange getdefsb, "."
         ]
-        " " " " `give eachsbmap
+        " " " " `give eachsb
     ] "PRICES" cleancat,
     
     
     [
-        "I will give one ", `exchange getdefsb, " for: ",
-        [
-            `ival g, " ", `i g
-        ] ", " " or " `take eachsbmap
+        `take hassbmap `t s think,
+        [%
+            `yes [
+                "I will give one ", `exchange getdefsb, " for: ",
+                [
+                    `ival g, " ", `i g
+                ] ", " " or " `take eachsb
+            ],
+            `default ""
+        ] `t switch
     ] "VALUES" cleancat,
             
     
