@@ -124,7 +124,8 @@ require "util.ang" drop
 # ival will be undefined for set items.
 # Separators should be specified; these are the normal separator and the separator for
 # the last item.
-:eachsb |v,sep,seplast,map:| ?v [% `map ?map, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
+:eachsbmap |v,sep,seplast,map:| ?v [% `map ?map, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
+:eachsbset |v,sep,seplast,map:| ?v [% `set ?map, `sep ?sep, `seplast ?seplast ] `eachsb mktag;
 
 :output ?`output@.;
 

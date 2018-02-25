@@ -15,8 +15,7 @@ public class MaterialNameParser {
 	 */
 	public static Material get(String itemName) {
 		itemName = itemName.toUpperCase();
-		itemName=itemName.replaceAll("INGOTS", "INGOT")
-				.replaceAll("BLOCKS", "BLOCK")
+		itemName=itemName
 				.replaceAll(" UNDERSCORE ", "_")
 				.replaceAll("\\s+", "_")
 				.trim();
@@ -28,7 +27,14 @@ public class MaterialNameParser {
 		try {
 			return Material.valueOf(itemName);
 		} catch(IllegalArgumentException e){
-			return null;
+			// if that didn't work, try eliminating plurals.
+			try {
+				itemName = itemName.replaceAll("S$", "");
+				Plugin.log("Didn't work, trying "+itemName);
+				return Material.valueOf(itemName);
+			} catch(IllegalArgumentException e2) {
+				return null;
+			}
 		}
 	}
 	

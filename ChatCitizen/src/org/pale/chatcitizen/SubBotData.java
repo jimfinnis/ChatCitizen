@@ -70,23 +70,24 @@ public class SubBotData {
 	}
 
 	public boolean isInSet(String set,String v){
-		if(sets.containsKey(set)){
-			return sets.get(set).contains(v);
-		}
-		return false;
+		Set<String> s = getSet(set);
+		if(s!=null)
+			return getSet(set).contains(v);
+		else
+			return false;
 	}
 	
 	public Set<String> getSet(String set){
-		if(sets.containsKey(set)){
+		if(sets.containsKey(set))
 			return sets.get(set);
-		}
-		return null;
+		else 
+			return deflt.sets.get(set);
 	}
 	public HashMap<String, String> getMap(String map){
-		if(maps.containsKey(map)){
+		if(maps.containsKey(map))
 			return maps.get(map);
-		}
-		return null;
+		else
+			return deflt.maps.get(map);
 	}
 
 	public String randFromSet(String setName) {

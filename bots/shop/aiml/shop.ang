@@ -97,7 +97,7 @@ include "../../aimlgen.ang"
         [
             "Price of ", `i g, " is ", `ival g, " ", `exchange getdefsb, "."
         ]
-        " " " " `give eachsb
+        " " " " `give eachsbmap
     ] "PRICES" cleancat,
     
     
@@ -108,7 +108,7 @@ include "../../aimlgen.ang"
                 "I will give one ", `exchange getdefsb, " for: ",
                 [
                     `ival g, " ", `i g
-                ] ", " " or " `take eachsb
+                ] ", " " or " `take eachsbmap
             ],
             `default ""
         ] `t switch
@@ -244,6 +244,18 @@ include "../../aimlgen.ang"
             ["BUY",star] sr
         ] "*" cat 
     ] `setbuy topic,
+    
+    [
+        "I am open ",
+        [`i g] ", " " and " `hours eachsbset,
+        ".",
+        " It is currently ",
+        none [% `type `todstring] `mctime mktag,
+        "."
+    ] "WHENOPEN" cleancat,
+    
+    "WHENOPEN" sr "WHEN * OPEN" cat,
+    "WHENOPEN" sr "HOURS" cat,
     
     
     # forgetting
